@@ -54,7 +54,6 @@ function parseCSV(csv) {
     }
 
     // 清理標題，移除空白並確保正確分割。
-    // 這個headers應該和Google Sheet導出的CSV第一行完全匹配
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
     console.log('--- 解析後的標題 ---');
     console.log(headers);
@@ -65,6 +64,7 @@ function parseCSV(csv) {
 
     // 定義中文標題到英文 key 的映射
     // 再次確認這裡的中文鍵名與您Google Sheet發佈的CSV第一行完全一致
+    // 根據您提供的錯誤訊息，CSV實際有9個欄位，最後一個是「來源備註」
     const headerMap = {
         "優惠代碼": "couponCode",
         "名稱": "name",
@@ -74,70 +74,38 @@ function parseCSV(csv) {
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
-        "來源備註": "sourceNote" // 假設這是第9個欄位，其CSV標題為「來源備註」
+        "來源備註": "sourceNote" // 假設這是第9個欄位
     };
 
-    // 備註：如果 headers 數量與 headerMap 數量不符，這裡的邏輯需要您根據實際 CSV 導出的標題來手動調整 headerMap
-    // 或者，您可以讓 headers 陣列的長度始終等於 headerMap 的長度
-    // 為了解決您之前標題行少一個欄位的問題，如果headers長度是8，但headerMap期望9個，則補充headers
+    // 如果 headers 數量與 headerMap 數量不符，這裡的邏輯需要您根據實際 CSV 導出的標題來手動調整 headerMap
     if (headers.length === 8 && Object.keys(headerMap).length === 9) {
         headers.push(Object.keys(headerMap)[8]); // 將headerMap的最後一個中文鍵名添加到headers
         console.warn("偵測到CSV標題行比數據行少一個欄位，已自動補齊。請檢查Google Sheet。");
     }
 
-    // 更通用的 CSV 解析正則表達式，處理引號和逗號
-    // 來源: https://www.oreilly.com/library/view/regular-expressions-cookbook/9780596802837/ch07s02.html
-    // 或更簡單的：/,(?=(?:(?:[^"]*"){2})*[^"]*$)/ 處理引號外的逗號
-    
-    // 這次我們嘗試用一個更簡單的方法，先按行分割，再按逗號分割，然後手動處理引號
-    // 這可能會更直接地暴露問題
+
+    // **核心修正：更簡單且更直接的 CSV 行解析方法**
+    // 這種方法可能無法完美處理包含逗號的引號字段，但對於 Google Sheets 導出且格式相對規律的 CSV 可能更有效
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
-        const currentLine = [];
-        let inQuote = false;
-        let currentField = '';
+        let currentLine = line.split(','); // 最簡單的逗號分割
 
-        for (let k = 0; k < line.length; k++) {
-            const char = line[k];
-            if (char === '"') {
-                inQuote = !inQuote;
-                // 如果是引號且不是在字段中間的轉義引號，則不添加到字段
-                if (inQuote && line[k+1] === '"') { // 處理 "" 轉義
-                    currentField += char;
-                    k++; // 跳過下一個引號
-                } else if (!inQuote && k > 0 && line[k-1] === '"') {
-                    // 這是引號結束，且可能是轉義引號
-                } else {
-                    // 正常引號，不添加到字段
-                }
-            } else if (char === ',' && !inQuote) {
-                currentLine.push(currentField.trim()); // 字段結束，添加並清空
-                currentField = '';
-            } else {
-                currentField += char; // 添加字符到當前字段
-            }
-        }
-        currentLine.push(currentField.trim()); // 添加最後一個字段
-
-        // 移除最後一個空字段（由末尾逗號引起）
-        if (currentLine.length > headers.length && currentLine[currentLine.length - 1] === '') {
-            currentLine.pop();
-        }
-        // 如果解析出的字段數量仍比預期多，就截斷
-        if (currentLine.length > headers.length) {
-            currentLine.length = headers.length;
+        // 處理行末可能因多餘逗號產生的空字串字段
+        // 如果 currentLine 比 headers 長一個，並且多的那個是空字串，就將其移除
+        if (currentLine.length === headers.length + 1 && currentLine[currentLine.length - 1].trim() === '') {
+            currentLine.pop(); 
         }
 
         console.log(`--- 處理行 ${i} ---`);
         console.log(`原始行: "${line}"`);
-        console.log(`解析後的字段: (${currentLine.length})`, currentLine.map(f => `"${f}"`).join(', '));
+        console.log(`分割後的字段: (${currentLine.length})`, currentLine.map(f => `"${f}"`).join(', '));
         
         // 檢查解析後的列數是否與標題數匹配
         if (currentLine.length !== headers.length) {
             console.warn(`跳過不完整的行（列數不匹配）：`);
             console.warn(`期望列數: ${headers.length}, 實際列數: ${currentLine.length}`);
             console.warn("這是解析失敗的行:", line);
-            console.warn("解析後的字段:", currentLine);
+            console.warn("分割後的字段:", currentLine);
             console.warn("期望的標題:", headers);
             continue; // 如果還是不匹配，跳過此行
         } 
@@ -147,6 +115,7 @@ function parseCSV(csv) {
             const originalHeader = headers[j];
             const newKey = headerMap[originalHeader] || originalHeader; 
             // 確保 currentLine[j] 存在且為字串
+            // 使用 String() 強制轉換，防止 `undefined` 導致 `trim()` 錯誤
             row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
