@@ -62,7 +62,7 @@
 }
 
 /* 篩選按鈕組的間距 */
-.filter-btn {
+.filter-btn, .exclude-filter-btn {
     margin-bottom: 0.5rem; /* 確保按鈕之間有垂直間距 */
     white-space: nowrap; /* 防止按鈕文字換行 */
 }
@@ -128,10 +128,6 @@
 .card-text strong {
     color: #dc3545; 
     font-size: 1.1em;
-}
-
-.card-text small.text-muted {
-    font-size: 0.85em;
 }
 
 /* New: Description in card */
@@ -202,4 +198,23 @@ body {
 .container {
     padding-left: 15px;
     padding-right: 15px;
+}
+
+/* Style for the copy code icon */
+.coupon-code-display .copy-code-btn {
+    cursor: pointer;
+    margin-left: 5px;
+    font-size: 0.9em;
+    vertical-align: middle;
+    color: #007bff; /* Bootstrap primary color */
+    transition: color 0.2s ease-in-out;
+}
+
+.coupon-code-display .copy-code-btn:hover {
+    color: #0056b3;
+}
+
+/* Optional: style for active copy button (e.g., when it shows a checkmark) */
+.coupon-code-display .copy-code-btn.bi-check-lg {
+    color: #28a745; /* Green for success */
 }
