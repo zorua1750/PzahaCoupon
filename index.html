@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="pizacoupon 網站，提供最新的比薩優惠券資訊。">
+    <meta name="author" content="您的名字或團隊名稱">  <title>pizacoupon</title> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./css/jquery-ui.css"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link href="./css/jquery.tagit.css" rel="stylesheet" type="text/css"> <link href="./css/main.css" rel="stylesheet"> </head>
+
+  <body>
+
+    <header>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="hander container d-flex justify-content-between">
+          <strong>pizacoupon</strong> <div class="info">
+            <div class="last-update-time">最後更新: <span id="lastUpdate"></span></div>
+            <div type="button" class="bi bi-info-circle" title="聯絡資訊" data-bs-toggle="modal" data-bs-target="#contactModal"></div>
+            <div type="button" class="bi bi-journal-text" title="更新日誌" data-bs-toggle="modal" data-bs-target="#updateLogModal"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+      <i class="bi bi-arrow-up-circle-fill top-btn"></i>
+      <div class="album py-2 bg-light">
+        <div class="container mb-3" id="container">
+          <div>
+            <ul id="myTags" class="tagit-bar">
+              </ul>
+            <button type="button" class="btn btn-light clear-btn">清除</button>
+            <div class="row tools-row">
+              <div class="col-sm-12 col-md-6 form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
+                <label class="form-check-label" for="enableFlavorSearch">
+                  <strong>搜尋所有選項</strong>
+                </label>
+                <a class="bi bi-info-circle-fill" id="flavorSearchInfo" data-bs-toggle="popover" style="color: dodgerblue"
+                  role="button" data-bs-content="搜尋所有的餐點選項，要注意非預設的選項可能要加價，最終價格會改變"
+                  data-bs-trigger="focus" tabindex="0"></a>
+                <div class="coupon-count text-muted text-end">優惠券: <span id="searchResultCount">0</span></div>
+              </div>
+              <div class="col-sm-12 col-md-6 text-end">
+                <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
+                <select id="sortSelect" class="form-select form-select-sm d-inline-block w-auto" style="min-width:120px;">
+                  <option value="price-asc">價格：低→高</option>
+                  <option value="price-desc">價格：高→低</option>
+                  <option value="coupon_code-asc">代碼：遞增</option>
+                  <option value="coupon_code-desc">代碼：遞減</option>
+                  <option value="end_date-asc">到期日：近→遠</option>
+                  <option value="end_date-desc">到期日：遠→近</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div id="buttons" class="btn-area"></div>
+          <hr>
+
+          <div class="row" id="row"></div>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal fade" id="updateLogModal" tabindex="-1" aria-labelledby="updateLogModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateLogModalLabel"><strong>更新日誌</strong></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6>2025-06-27</h6>
+            <ul>
+              <li>新增排序功能</li>
+            </ul>
+            <h6>2025-06-13</h6>
+            <ul>
+              <li>支援搜尋所有的餐點選項</li>
+              <li>顯示優惠券數量</li>
+            </ul>
+            <h6>2025-01-23</h6>
+            <ul>
+              <li>因應KFC官網改版，改用新版的 API 更新優惠卷資料</li>
+            </ul>
+            <h6>2025-01-20</h6>
+            <ul>
+              <li>支援25XXX系列優惠卷</li>
+            </ul>
+            <h6>2024-10-11</h6>
+            <ul>
+              <li>支援14XXX系列優惠卷</li>
+            </ul>
+            <h6>2024-07-24</h6>
+            <ul>
+              <li>優化搜尋選項</li>
+              <li>升級套件</li>
+            </ul>
+            <h6>2023-08-15</h6>
+            <ul>
+              <li>支援13XXX系列優惠卷</li>
+              <li>新增回到頂部按鈕</li>
+            </ul>
+            <h6>2023-05-01</h6>
+            <ul>
+              <li>新增查看餐點選項功能</li>
+            </ul>
+            <h6>2023-04-22</h6>
+            <ul>
+              <li>新增官網線上點餐連接</li>
+            </ul>
+            <h6>2023-04-12</h6>
+            <ul>
+              <li>新增聯絡方式及更新日誌</li>
+              <li>新增最後更新時間</li>
+              <li>支援 4XXXX, 5XXXX 系列優惠卷</li>
+            </ul>
+            <h6>2023-04-01</h6>
+            <ul><li>初版上線</li></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactModalLabel"><strong>聯絡資訊</strong></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center contact-body">
+            <div><i class="bi bi-github"></i> : <a href="https://github.com/Winedays" target="_blank">https://github.com/Winedays</a></div>
+            <div><img src="images/gmail.png"> : <a href="mailto:adler011014@gmail.com">adler011014@gmail.com</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="detailModel" tabindex="-1" aria-labelledby="detailModelLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title detail-model-label" id="detailModelLabel"><strong id="detail-title"></strong></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="detail-body" class="modal-body"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/jquery-3.3.1.slim.min.js"></script> <script src="./js/popper.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> <script src="./js/tag-it.min.js" type="text/javascript" charset="utf-8"></script> <script src="./js/coupon.js"></script> <script src="./js/main.js"></script> </body>
+</html>
