@@ -2,13 +2,13 @@
 
 /* Header styles (if needed beyond Bootstrap defaults) */
 .navbar-dark .navbar-brand {
-    color: #C8102E; /* 文字顏色已修改 */
+    color: #C8102E !important; /* 文字顏色已修改並強制覆蓋 */
     font-size: 1.5rem;
     font-weight: bold;
 }
 
 .navbar-dark.bg-dark {
-    background-color: #313131 !important; /* 背景顏色已修改 */
+    background-color: #313131 !important; /* 背景顏色已修改並強制覆蓋 */
 }
 
 .navbar-dark .info {
