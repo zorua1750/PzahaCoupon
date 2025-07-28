@@ -5,7 +5,7 @@
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
 
 let allCoupons = []; // 用於儲存所有優惠券資料的陣列
-let filteredCoupons = []; // 用於儲選後的優惠券資料
+let filteredCoupons = []; // 用於儲存篩選後的優惠券資料
 
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
@@ -18,6 +18,10 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
+        console.log('--- 原始 CSV 文本 (前500字元) ---');
+        console.log(csvText.substring(0, 500)); // 打印部分原始 CSV 文本
+        console.log('-----------------------------------');
+
         allCoupons = parseCSV(csvText); // 這裡可能發生 Invalid array length
         filteredCoupons = [...allCoupons]; // 初始化時，篩選的資料等於所有資料
 
@@ -35,6 +39,7 @@ async function fetchCoupons() {
 
     } catch (error) {
         console.error('載入優惠券資料失敗:', error);
+        console.error('詳細錯誤訊息:', error.message); // 打印更詳細的錯誤訊息
         document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入優惠券資料失敗，請稍後再試。</div>';
     }
 }
@@ -42,7 +47,7 @@ async function fetchCoupons() {
 // ==== CSV 解析函數 ====
 // 根據您提供的 Google Sheet 欄位名稱進行解析和映射
 function parseCSV(csv) {
-    const lines = csv.split('\n').filter(line => line.trim() !== ''); // 移除空行
+    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); // 處理不同換行符，並移除空行
     if (lines.length <= 1) { // 至少需要標題行和一行數據
         console.warn("CSV 數據不足或只有標題行。");
         return [];
@@ -51,6 +56,11 @@ function parseCSV(csv) {
     // 清理標題，移除空白並確保正確分割。
     // 這個headers應該和Google Sheet導出的CSV第一行完全匹配
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
+    console.log('--- 解析後的標題 ---');
+    console.log(headers);
+    console.log('期望的標題數量:', headers.length);
+    console.log('--------------------');
+
     const data = [];
 
     // 定義中文標題到英文 key 的映射
@@ -65,51 +75,70 @@ function parseCSV(csv) {
         "開始日期": "startDate",
         "結束日期": "endDate",
         "來源備註": "sourceNote" // 假設這是第9個欄位，其CSV標題為「來源備註」
-                               // 如果它沒有標題，或者標題是別的，請務必修改這裡
     };
 
-    // 為了處理標題行可能少一個欄位的特殊情況
-    // 如果headers只有8個，但headerMap期望9個，且數據行的確有9個字段，則補充headers
+    // 備註：如果 headers 數量與 headerMap 數量不符，這裡的邏輯需要您根據實際 CSV 導出的標題來手動調整 headerMap
+    // 或者，您可以讓 headers 陣列的長度始終等於 headerMap 的長度
+    // 為了解決您之前標題行少一個欄位的問題，如果headers長度是8，但headerMap期望9個，則補充headers
     if (headers.length === 8 && Object.keys(headerMap).length === 9) {
-        // 使用 headerMap 中的最後一個中文鍵名作為補充標題
-        headers.push(Object.keys(headerMap)[8]); 
+        headers.push(Object.keys(headerMap)[8]); // 將headerMap的最後一個中文鍵名添加到headers
         console.warn("偵測到CSV標題行比數據行少一個欄位，已自動補齊。請檢查Google Sheet。");
     }
 
-
-    // 使用一個更強健的正則表達式來解析 CSV 行，處理引號內的逗號和換行符
-    // 這個 regex 應該能正確處理大部分 CSV 格式，包括引號內逗號和空字段
-    const CSV_REGEX = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,\"]*))(?:,|$)/g;
-
+    // 更通用的 CSV 解析正則表達式，處理引號和逗號
+    // 來源: https://www.oreilly.com/library/view/regular-expressions-cookbook/9780596802837/ch07s02.html
+    // 或更簡單的：/,(?=(?:(?:[^"]*"){2})*[^"]*$)/ 處理引號外的逗號
+    
+    // 這次我們嘗試用一個更簡單的方法，先按行分割，再按逗號分割，然後手動處理引號
+    // 這可能會更直接地暴露問題
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
-        let match;
         const currentLine = [];
-        CSV_REGEX.lastIndex = 0; // 重置正則表達式的 lastIndex，防止上次匹配的影響
+        let inQuote = false;
+        let currentField = '';
 
-        // 逐個匹配字段
-        while ((match = CSV_REGEX.exec(line)) !== null) {
-            // match[1] 是引號內的內容，match[2] 是非引號的內容
-            currentLine.push(match[1] !== undefined ? match[1].replace(/\"\"/g, '"') : match[2]);
+        for (let k = 0; k < line.length; k++) {
+            const char = line[k];
+            if (char === '"') {
+                inQuote = !inQuote;
+                // 如果是引號且不是在字段中間的轉義引號，則不添加到字段
+                if (inQuote && line[k+1] === '"') { // 處理 "" 轉義
+                    currentField += char;
+                    k++; // 跳過下一個引號
+                } else if (!inQuote && k > 0 && line[k-1] === '"') {
+                    // 這是引號結束，且可能是轉義引號
+                } else {
+                    // 正常引號，不添加到字段
+                }
+            } else if (char === ',' && !inQuote) {
+                currentLine.push(currentField.trim()); // 字段結束，添加並清空
+                currentField = '';
+            } else {
+                currentField += char; // 添加字符到當前字段
+            }
         }
-        
-        // **修正：處理 Google Sheet 導出 CSV 最後多一個空字段的問題**
-        // 如果解析出的字段數比期望多一個，並且多出的那個是空字符串，就將其移除
-        // 這是因為 Google Sheet 導出的 CSV 常在最後一個非空欄位後多一個逗號，導致一個額外的空欄位
+        currentLine.push(currentField.trim()); // 添加最後一個字段
+
+        // 移除最後一個空字段（由末尾逗號引起）
         if (currentLine.length > headers.length && currentLine[currentLine.length - 1] === '') {
-            currentLine.pop(); // 移除最後多餘的空字段
+            currentLine.pop();
         }
-        // 如果還是比headers長，就截斷
+        // 如果解析出的字段數量仍比預期多，就截斷
         if (currentLine.length > headers.length) {
-            currentLine.length = headers.length; // 直接截斷多餘的字段
+            currentLine.length = headers.length;
         }
 
-
+        console.log(`--- 處理行 ${i} ---`);
+        console.log(`原始行: "${line}"`);
+        console.log(`解析後的字段: (${currentLine.length})`, currentLine.map(f => `"${f}"`).join(', '));
+        
         // 檢查解析後的列數是否與標題數匹配
         if (currentLine.length !== headers.length) {
-            console.warn(`跳過不完整的行（列數不匹配）：${lines[i]} - 解析後列數: ${currentLine.length}, 期望列數: ${headers.length}`);
-            console.warn("解析後的字段:", currentLine.map(f => `"${f}"`).join(', ')); // 讓打印更清晰
-            console.warn("期望的標題:", headers.map(h => `"${h}"`).join(', '));
+            console.warn(`跳過不完整的行（列數不匹配）：`);
+            console.warn(`期望列數: ${headers.length}, 實際列數: ${currentLine.length}`);
+            console.warn("這是解析失敗的行:", line);
+            console.warn("解析後的字段:", currentLine);
+            console.warn("期望的標題:", headers);
             continue; // 如果還是不匹配，跳過此行
         } 
         
@@ -117,8 +146,8 @@ function parseCSV(csv) {
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
             const newKey = headerMap[originalHeader] || originalHeader; 
-            // 確保 currentLine[j] 存在，如果不存在則給予空字串避免錯誤
-            row[newKey] = (currentLine[j] || '').trim().replace(/\r/g, ''); 
+            // 確保 currentLine[j] 存在且為字串
+            row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
     }
