@@ -21,7 +21,7 @@ async function fetchCoupons() {
 
         const csvText = await response.text();
         console.log('--- 原始 CSV 文本 (前500字元) ---');
-        console.log(csvText.substring(0, 500)); // 打印部分原始 CSV 文本
+        console.log(csvText.substring(0, 500)); 
         console.log('-----------------------------------');
 
         allCoupons = parseCSV(csvText); 
@@ -30,7 +30,7 @@ async function fetchCoupons() {
         console.log('優惠券資料已成功載入:', allCoupons.length, '條'); 
 
         // 初始化篩選按鈕的事件監聽
-        initFilterButtons(); // 新增的初始化函數
+        initFilterButtons(); 
         
         // 渲染初始優惠券列表
         renderCoupons(filteredCoupons);
@@ -45,7 +45,7 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 (維持現有工作版本) ====
+// ==== CSV 解析函數 (維持現有工作版本，已解決 RangeError) ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
     if (lines.length <= 1) { 
@@ -271,7 +271,7 @@ function initFilterButtons() {
                 selectedOrderTypes.delete(filterValue);
             }
         }
-        performSearchAndFilter(); // 每次點擊按鈕後重新篩選
+        performSearchAndFilter(); 
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
@@ -300,19 +300,23 @@ function performSearchAndFilter() {
         let includeFilterPass = true;
 
         if (selectedIncludeTags.size > 0) {
-            includeFilterPass = Array.from(selectedIncludeTags).every(filterTag => couponTags.includes(filterTag));
+            // 只要優惠券的標籤包含選中的任何一個包含標籤，就匹配
+            includeFilterPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
         if (selectedOrderTypes.size > 0) {
             let orderTypeFound = false;
             Array.from(selectedOrderTypes).forEach(filterValue => {
                 // **修正：點餐類型精確匹配**
-                // 檢查原始數據中是否包含精確的按鈕值
-                if (couponOrderType === filterValue) { // 精確匹配
+                // 檢查原始數據中是否精確匹配按鈕值
+                if (couponOrderType === filterValue) { 
                     orderTypeFound = true;
                 }
             });
-            includeFilterPass = includeFilterPass && orderTypeFound; 
+            // 如果選中了點餐類型，但沒有找到匹配項，則不通過包含篩選
+            if (selectedOrderTypes.size > 0 && !orderTypeFound) {
+                 includeFilterPass = false;
+            }
         }
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
@@ -398,7 +402,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // 回到頂部按鈕邏輯
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
@@ -414,7 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 清除所有篩選按鈕的邏輯
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
         document.getElementById('searchInput').value = ''; 
         
@@ -436,14 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
         performSearchAndFilter(); 
     });
 
-    // 排序功能監聽
     document.getElementById('sortSelect').addEventListener('change', (event) => {
         sortCoupons(event.target.value);
     });
 
-    // 監聽「同時搜尋詳細內容」的變化
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // 監聽搜尋框輸入事件
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
 });
