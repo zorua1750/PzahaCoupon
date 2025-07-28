@@ -53,8 +53,8 @@ function parseCSV(csv) {
     const data = [];
 
     // 定義中文標題到英文 key 的映射，方便 JavaScript 中使用
-    // 這裡我根據您的截圖和警告，判斷CSV實際有9個欄位
-    // 請務必讓這裡的中文鍵名與您Google Sheet發佈的CSV第一行完全一致
+    // 這裡我根據您的截圖和警告，確認有9個實際資料欄位
+    // 如果未來Google Sheet增加或減少欄位，這裡需要調整
     const headerMap = {
         "優惠代碼": "couponCode",
         "名稱": "name",
@@ -64,21 +64,23 @@ function parseCSV(csv) {
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
-        "來源備註": "sourceNote" // <--- 根據您提供的截圖，這是最後一個欄位。如果CSV實際標題不同，請修改
+        // 這個「來源備註」欄位是根據您提供的CSV警告推測的第9個欄位
+        // 如果您的Google Sheet發布的CSV第一行有這個明確的標題，請保持一致
+        // 如果沒有明確標題，只是單純多了一欄，可以保持這個名稱，或者命名為 "extraColumn"
+        "來源備註": "sourceNote" 
     };
 
-    // 重新檢查並調整headers的數量，如果Google Sheet最後一欄沒有標題，headers.length可能會少1
-    // 我們可以手動確保headers的長度是9
-    // 如果headers的長度是8，但實際行數是9，就需要特別處理
-    if (headers.length === 8 && lines[1].split(',').length >= 9) {
-        // 如果標題只有8個，但第一行數據有9個欄位，則自動補上一個空標題
-        headers.push("未知欄位"); // 或者您可以給它一個具體的名稱，例如 "最後編輯時間"
-        headerMap["未知欄位"] = "unknownField";
+    // 確保 headers 的長度與我們期望的數據欄位數量匹配
+    // 如果 headers 的長度少於我們在 headerMap 中定義的數量，這表示 CSV 標題行有問題
+    // 如果 headers.length 仍然是8，但數據有9個有效欄位，我們手動在headers中補上
+    if (headers.length === 8 && Object.keys(headerMap).length === 9) { // headers是8個但headerMap是9個，表示少了最後一個標題
+        headers.push(Object.keys(headerMap)[8]); // 將headerMap的最後一個中文鍵名添加到headers
         console.warn("偵測到CSV標題行比數據行少一個欄位，已自動補齊。請檢查Google Sheet。");
     }
 
+
     // 使用一個更強健的正則表達式來解析 CSV 行，處理引號內的逗號
-    // 參考：https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-empty-values
+    // 這個 regex 應該可以正確解析包含逗號和引號的字段，並將末尾的空字段也解析出來
     const CSV_REGEX = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,\"]*))(?:,|$)/g;
 
     for (let i = 1; i < lines.length; i++) {
@@ -91,27 +93,26 @@ function parseCSV(csv) {
             currentLine.push(match[1] !== undefined ? match[1].replace(/\"\"/g, '"') : match[2]);
         }
         
-        // 移除行末可能因多餘逗號產生的空字串字段
-        // 注意：這個修正需要更精確，以避免移除中間的有效空字串
-        // 這裡嘗試在處理前先清理可能導致額外空字段的尾部逗號
-        // 更好的做法是確保CSV本身沒有不符合規範的額外逗號
-        
-        // 確保解析出的字段數與標題數匹配
-        // 如果 currentLine 比 headers 長，我們只取前面 headers.length 個
-        // 如果 currentLine 比 headers 短，則數據不完整，我們跳過
-        if (currentLine.length < headers.length) {
-            console.warn(`跳過不完整的行（列數不足，可能是數據缺失）：${lines[i]}`);
-            continue; 
-        } 
-        // 如果 currentLine.length > headers.length，表示 CSV 行比預期多欄
-        // 我們將只取前 headers.length 這麼多個欄位來解析
-        // 這是因為我們已經在 headerMap 裡定義了我們關心的欄位數量
+        // **核心修正：處理 Google Sheet 導出 CSV 最後多一個空字段的問題**
+        // 如果解析出的字段數比預期多一個，並且多出的那個是空字符串，就將其移除
+        // 這是因為 Google Sheet 導出的 CSV 常在最後一個非空欄位後多一個逗號，導致一個額外的空欄位
+        if (currentLine.length === headers.length + 1 && currentLine[currentLine.length - 1] === '') {
+            currentLine.pop(); // 移除最後多餘的空字段
+        }
 
+
+        // 檢查解析後的列數是否與標題數匹配
+        if (currentLine.length !== headers.length) {
+            console.warn(`跳過不完整的行（列數不匹配）：${lines[i]} - 解析後列數: ${currentLine.length}, 期望列數: ${headers.length}`);
+            console.warn("解析後的字段:", currentLine);
+            console.warn("期望的標題:", headers);
+            continue; // 如果還是不匹配，跳過此行
+        } 
+        
         const row = {};
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
             const newKey = headerMap[originalHeader] || originalHeader; 
-            // 確保 currentLine[j] 存在，如果不存在則給予空字串避免錯誤
             row[newKey] = (currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
