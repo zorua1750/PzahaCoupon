@@ -305,16 +305,13 @@ function performSearchAndFilter() {
 
         let orderTypeFilterPass = true; // 預設點餐類型篩選通過
         if (selectedOrderTypes.size > 0) {
-            let foundOrderTypeMatch = false; // 修正：在這裡定義變數
+            let foundOrderTypeMatch = false; 
             Array.from(selectedOrderTypes).forEach(filterValue => {
-                // **修正：點餐類型精確匹配**
-                // 這裡精確匹配 `filterValue`。例如，如果 `filterValue` 是 "外帶"，它只會匹配 "外帶" 不會匹配 "外送/外帶"
-                // 如果 `filterValue` 是 "外送/外帶"，它只會匹配 "外送/外帶"
                 if (couponOrderType === filterValue) { 
                     foundOrderTypeMatch = true;
                 }
             });
-            orderTypeFilterPass = foundOrderTypeMatch; // 賦值給外部變數
+            orderTypeFilterPass = foundOrderTypeMatch; 
         }
         
         // 最終包含篩選必須同時滿足選中的標籤和點餐類型
