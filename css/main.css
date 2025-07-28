@@ -54,21 +54,26 @@
     padding-top: 2rem !important; /* Ensure some top padding */
 }
 
-/* Tag-it specific adjustments */
+/* Tag-it specific adjustments (不再使用輸入框，但樣式可能還需要) */
 .tagit-bar {
     margin-bottom: 1rem;
+    padding: 0; 
+    list-style: none; 
 }
 
-/* Clear button next to Tag-it */
-.clear-btn {
-    margin-left: 10px;
+/* 篩選按鈕組的間距 */
+.filter-btn {
+    margin-bottom: 0.5rem; /* 確保按鈕之間有垂直間距 */
+    white-space: nowrap; /* 防止按鈕文字換行 */
 }
 
-/* Tools row adjustments */
+/* 工具列調整 */
 .tools-row {
     align-items: center;
     margin-top: 1rem;
     margin-bottom: 1rem;
+    padding-left: 15px; 
+    padding-right: 15px;
 }
 
 /* Adjustments for search checkbox */
@@ -81,43 +86,47 @@
 
 /* Adjustments for sort select */
 #sortSelect {
-    min-width: 150px; /* Give enough space for text */
+    min-width: 150px; 
 }
 
 /* Coupon Card Styles */
 .card {
-    position: relative; /* Essential for positioning price badge */
+    position: relative; 
     border: 1px solid rgba(0, 0, 0, 0.125);
     border-radius: 0.25rem;
     transition: transform 0.2s ease-in-out;
-    min-height: 220px; /* Ensure cards have a minimum height */
+    min-height: 250px; /* 增加最小高度，以容納更多內容 */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Push content to top and bottom */
+    justify-content: space-between; 
+    overflow: hidden; 
 }
 
 .card:hover {
-    transform: translateY(-5px); /* Lift effect on hover */
+    transform: translateY(-5px); 
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
 
 .card-body {
     padding: 1.25rem;
-    flex-grow: 1; /* Allow body to grow and push buttons down */
+    flex-grow: 1; 
 }
 
 .card-title {
     font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 0.75rem;
+    color: #333; 
 }
 
 .card-text {
-    margin-bottom: 0.5rem; /* Reduce spacing between text lines */
+    margin-bottom: 0.5rem; 
+    font-size: 0.95rem;
+    color: #555;
 }
 
 .card-text strong {
-    color: #dc3545; /* 例如，讓代碼更醒目 */
+    color: #dc3545; 
     font-size: 1.1em;
 }
 
@@ -125,28 +134,42 @@
     font-size: 0.85em;
 }
 
+/* New: Description in card */
+.coupon-description {
+    font-size: 0.85rem; /* 詳細內容字體小一點 */
+    color: #666;
+    max-height: 4.5em; /* 限制高度，大概3行 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 限制行數 */
+    -webkit-box-orient: vertical;
+    line-height: 1.5em; /* 行高 */
+}
+
+
 /* Price Badge on top right */
 .coupon-price-badge {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: #28a745; /* 綠色背景，可以改為您喜歡的顏色 */
+    top: 0; 
+    right: 0; 
+    background-color: #28a745; 
     color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
+    padding: 8px 15px; 
+    border-bottom-left-radius: 10px; 
     font-weight: bold;
-    font-size: 1.1rem;
-    z-index: 10; /* Ensure it's above other content */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); /* 輕微陰影 */
+    font-size: 1.2rem; 
+    z-index: 10; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
 }
 
 /* Buttons in card footer */
 .btn-group {
-    width: 100%; /* Make button group take full width */
+    width: 100%; 
 }
 .view-detail-btn {
-    width: 100%; /* Make button take full width */
-    margin-top: 15px; /* Add some space above the button */
+    width: 100%; 
+    margin-top: 15px; 
 }
 
 /* Modal Content (Contact Info) */
@@ -154,7 +177,7 @@
     margin-bottom: 10px;
 }
 .contact-body img {
-    height: 18px; /* Adjust as needed */
+    height: 18px; 
     vertical-align: middle;
     margin-right: 5px;
 }
@@ -164,7 +187,7 @@
     margin-right: 5px;
 }
 
-/* Optional: improve general text readability */
+/* General text readability */
 body {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
@@ -173,4 +196,10 @@ body {
 /* For popover info styling */
 .popover {
     font-size: 0.9rem;
+}
+
+/* General container padding to ensure content doesn't stick to edges */
+.container {
+    padding-left: 15px;
+    padding-right: 15px;
 }

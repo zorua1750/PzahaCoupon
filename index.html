@@ -43,9 +43,28 @@
 
           <div class="row mb-3">
               <div class="col-md-12">
-                  <label for="myTags" class="form-label">依標籤篩選:</label>
-                  <ul id="myTags" class="form-control"></ul>
-                  <small class="form-text text-muted">輸入標籤後按 Enter 鍵新增，點擊標籤可移除。</small>
+                  <label class="form-label d-block">依內容標籤篩選:</label>
+                  <div id="contentTagButtons" class="d-flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="比薩">比薩</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="麵">麵</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="飯">飯</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="咔滋餅">咔滋餅</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="薯金幣">薯金幣</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="雞球">雞球</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="甜不辣">甜不辣</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="QQ球">QQ球</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="飲料">飲料</button>
+                  </div>
+              </div>
+          </div>
+
+          <div class="row mb-3">
+              <div class="col-md-12">
+                  <label class="form-label d-block">依點餐類型篩選:</label>
+                  <div id="orderTypeButtons" class="d-flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">外送/外帶</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">外帶</button>
+                  </div>
               </div>
           </div>
           
@@ -53,10 +72,10 @@
             <div class="col-sm-12 col-md-6 form-check form-switch">
               <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
               <label class="form-check-label" for="enableFlavorSearch">
-                <strong>搜尋所有選項</strong>
+                <strong>同時搜尋詳細內容中的關鍵字</strong>
               </label>
               <a class="bi bi-info-circle-fill" id="flavorSearchInfo" data-bs-toggle="popover" style="color: dodgerblue"
-                role="button" data-bs-content="勾選此項，標籤篩選將同時搜尋優惠券的詳細內容，而不僅限於「標籤」欄位。"
+                role="button" data-bs-content="勾選此項，您的關鍵字搜尋將同時搜尋優惠券的詳細內容，而不僅限於標籤或主要欄位。"
                 data-bs-trigger="focus" tabindex="0"></a>
               <div class="coupon-count text-muted text-end d-inline-block ms-3">優惠券: <span id="searchResultCount">0</span></div>
             </div>
@@ -70,7 +89,7 @@
                 <option value="end_date-asc">到期日：近→遠</option>
                 <option value="end_date-desc">到期日：遠→近</option>
               </select>
-              <button type="button" class="btn btn-light clear-btn ms-2">清除所有篩選</button>
+              <button type="button" class="btn btn-outline-danger clear-all-filters-btn ms-2">清除所有篩選</button>
             </div>
           </div>
           
