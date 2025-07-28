@@ -18,7 +18,7 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
-        allCoupons = parseCSV(csvText);
+        allCoupons = parseCSV(csvText); // 這裡可能發生 Invalid array length
         filteredCoupons = [...allCoupons]; // 初始化時，篩選的資料等於所有資料
 
         console.log('優惠券資料已成功載入:', allCoupons.length, '條'); // 打印載入的條目數
@@ -48,13 +48,13 @@ function parseCSV(csv) {
         return [];
     }
 
-    // 清理標題，移除空白並確保正確分割。注意：這裡假設標題行不會有逗號在引號內的問題。
+    // 清理標題，移除空白並確保正確分割。
+    // 這個headers應該和Google Sheet導出的CSV第一行完全匹配
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
     const data = [];
 
-    // 定義中文標題到英文 key 的映射，方便 JavaScript 中使用
-    // 這裡我根據您的截圖和警告，確認有9個實際資料欄位
-    // 如果未來Google Sheet增加或減少欄位，這裡需要調整
+    // 定義中文標題到英文 key 的映射
+    // 再次確認這裡的中文鍵名與您Google Sheet發佈的CSV第一行完全一致
     const headerMap = {
         "優惠代碼": "couponCode",
         "名稱": "name",
@@ -64,48 +64,52 @@ function parseCSV(csv) {
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
-        // 這個「來源備註」欄位是根據您提供的CSV警告推測的第9個欄位
-        // 如果您的Google Sheet發布的CSV第一行有這個明確的標題，請保持一致
-        // 如果沒有明確標題，只是單純多了一欄，可以保持這個名稱，或者命名為 "extraColumn"
-        "來源備註": "sourceNote" 
+        "來源備註": "sourceNote" // 假設這是第9個欄位，其CSV標題為「來源備註」
+                               // 如果它沒有標題，或者標題是別的，請務必修改這裡
     };
 
-    // 確保 headers 的長度與我們期望的數據欄位數量匹配
-    // 如果 headers 的長度少於我們在 headerMap 中定義的數量，這表示 CSV 標題行有問題
-    // 如果 headers.length 仍然是8，但數據有9個有效欄位，我們手動在headers中補上
-    if (headers.length === 8 && Object.keys(headerMap).length === 9) { // headers是8個但headerMap是9個，表示少了最後一個標題
-        headers.push(Object.keys(headerMap)[8]); // 將headerMap的最後一個中文鍵名添加到headers
+    // 為了處理標題行可能少一個欄位的特殊情況
+    // 如果headers只有8個，但headerMap期望9個，且數據行的確有9個字段，則補充headers
+    if (headers.length === 8 && Object.keys(headerMap).length === 9) {
+        // 使用 headerMap 中的最後一個中文鍵名作為補充標題
+        headers.push(Object.keys(headerMap)[8]); 
         console.warn("偵測到CSV標題行比數據行少一個欄位，已自動補齊。請檢查Google Sheet。");
     }
 
 
-    // 使用一個更強健的正則表達式來解析 CSV 行，處理引號內的逗號
-    // 這個 regex 應該可以正確解析包含逗號和引號的字段，並將末尾的空字段也解析出來
+    // 使用一個更強健的正則表達式來解析 CSV 行，處理引號內的逗號和換行符
+    // 這個 regex 應該能正確處理大部分 CSV 格式，包括引號內逗號和空字段
     const CSV_REGEX = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,\"]*))(?:,|$)/g;
 
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         let match;
         const currentLine = [];
+        CSV_REGEX.lastIndex = 0; // 重置正則表達式的 lastIndex，防止上次匹配的影響
 
         // 逐個匹配字段
         while ((match = CSV_REGEX.exec(line)) !== null) {
+            // match[1] 是引號內的內容，match[2] 是非引號的內容
             currentLine.push(match[1] !== undefined ? match[1].replace(/\"\"/g, '"') : match[2]);
         }
         
-        // **核心修正：處理 Google Sheet 導出 CSV 最後多一個空字段的問題**
-        // 如果解析出的字段數比預期多一個，並且多出的那個是空字符串，就將其移除
+        // **修正：處理 Google Sheet 導出 CSV 最後多一個空字段的問題**
+        // 如果解析出的字段數比期望多一個，並且多出的那個是空字符串，就將其移除
         // 這是因為 Google Sheet 導出的 CSV 常在最後一個非空欄位後多一個逗號，導致一個額外的空欄位
-        if (currentLine.length === headers.length + 1 && currentLine[currentLine.length - 1] === '') {
+        if (currentLine.length > headers.length && currentLine[currentLine.length - 1] === '') {
             currentLine.pop(); // 移除最後多餘的空字段
+        }
+        // 如果還是比headers長，就截斷
+        if (currentLine.length > headers.length) {
+            currentLine.length = headers.length; // 直接截斷多餘的字段
         }
 
 
         // 檢查解析後的列數是否與標題數匹配
         if (currentLine.length !== headers.length) {
             console.warn(`跳過不完整的行（列數不匹配）：${lines[i]} - 解析後列數: ${currentLine.length}, 期望列數: ${headers.length}`);
-            console.warn("解析後的字段:", currentLine);
-            console.warn("期望的標題:", headers);
+            console.warn("解析後的字段:", currentLine.map(f => `"${f}"`).join(', ')); // 讓打印更清晰
+            console.warn("期望的標題:", headers.map(h => `"${h}"`).join(', '));
             continue; // 如果還是不匹配，跳過此行
         } 
         
@@ -113,6 +117,7 @@ function parseCSV(csv) {
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
             const newKey = headerMap[originalHeader] || originalHeader; 
+            // 確保 currentLine[j] 存在，如果不存在則給予空字串避免錯誤
             row[newKey] = (currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
@@ -120,29 +125,27 @@ function parseCSV(csv) {
     return data;
 }
 
-// ==== 渲染優惠券到頁面 ====
+// ==== 渲染優惠券到頁面 (不變) ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
-    rowContainer.innerHTML = ''; // 清空現有內容
+    rowContainer.innerHTML = ''; 
 
     if (couponsToRender.length === 0) {
         rowContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5">沒有找到符合條件的優惠券。</div>';
-        updateSearchResultCount(0); // 如果沒有結果，更新計數為0
+        updateSearchResultCount(0); 
         return;
     }
 
     couponsToRender.forEach(coupon => {
-        // 確保價格是數字，以便格式化
         const priceValue = parseFloat(coupon.price);
-        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; // 如果不是數字則顯示N/A
+        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
 
-        // 簡易的卡片 HTML 結構 (基於 Bootstrap Album 範例)
-        // 移除圖片部分，並添加價格徽章
         const couponCard = `
             <div class="col-md-4 mb-4">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <div class="coupon-price-badge">${formattedPrice}</div> <h5 class="card-title">${coupon.name}</h5>
+                        <div class="coupon-price-badge">${formattedPrice}</div>
+                        <h5 class="card-title">${coupon.name}</h5>
                         <p class="card-text">代碼: <strong>${coupon.couponCode}</strong></p>
                         <p class="card-text"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
                         <div class="d-flex justify-content-between align-items-center">
@@ -159,24 +162,21 @@ function renderCoupons(couponsToRender) {
         rowContainer.insertAdjacentHTML('beforeend', couponCard);
     });
 
-    // 為動態生成的「查看詳情」按鈕添加事件監聽器
     document.querySelectorAll('.view-detail-btn').forEach(button => {
         button.addEventListener('click', (event) => {
-            // 從 data-coupon 屬性中解析 JSON 字串
             const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
             showCouponDetailModal(couponData);
         });
     });
 
-    updateSearchResultCount(couponsToRender.length); // 更新計數
+    updateSearchResultCount(couponsToRender.length); 
 }
 
-// ==== 更新搜尋結果數量的函數 ====
+// ==== 其他函數 (不變) ====
 function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
-// ==== 顯示優惠券詳情 Modal 的函數 ====
 function showCouponDetailModal(coupon) {
     document.getElementById('detail-title').textContent = coupon.name;
     const detailBody = document.getElementById('detail-body');
@@ -187,12 +187,11 @@ function showCouponDetailModal(coupon) {
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
         <p><strong>標籤:</strong> ${coupon.tags || '無'}</p>
         <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
-        `;
+    `;
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
     detailModal.show();
 }
 
-// ==== 初始化 Tag-it 自動完成建議標籤 ====
 function initTagItAvailableTags() {
     const allTags = new Set();
     allCoupons.forEach(coupon => {
@@ -205,15 +204,12 @@ function initTagItAvailableTags() {
             });
         }
     });
-    // 更新 Tag-it 的 availableTags 選項
     $('#myTags').tagit('option', 'availableTags', Array.from(allTags));
 }
 
-
-// ==== 主要搜尋與篩選邏輯 ====
 function performSearchAndFilter() {
-    const currentTags = $('#myTags').tagit('assignedTags').map(tag => tag.toLowerCase()); // 獲取當前所有標籤並轉為小寫
-    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; // 搜尋所有選項的狀態
+    const currentTags = $('#myTags').tagit('assignedTags').map(tag => tag.toLowerCase());
+    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
 
     filteredCoupons = allCoupons.filter(coupon => {
         let tagMatch = true;
@@ -244,13 +240,11 @@ function performSearchAndFilter() {
         return true; 
     });
 
-    // 重新排序篩選後的結果，保持排序狀態
     sortCoupons(document.getElementById('sortSelect').value);
 }
 
-// ==== 排序邏輯 ====
 function sortCoupons(sortBy) {
-    let sortedCoupons = [...filteredCoupons]; // 對篩選後的結果進行排序
+    let sortedCoupons = [...filteredCoupons];
 
     switch (sortBy) {
         case 'price-asc':
@@ -278,16 +272,13 @@ function sortCoupons(sortBy) {
 
 // ==== DOMContentLoaded 事件監聽器 (頁面載入完成後執行) ====
 document.addEventListener('DOMContentLoaded', () => {
-    // 載入優惠券資料
     fetchCoupons();
 
-    // 初始化 Bootstrap Popover
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // 回到頂部按鈕邏輯
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
@@ -303,32 +294,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 清除按鈕邏輯
     document.querySelector('.clear-btn').addEventListener('click', () => {
-        $('#myTags').tagit('removeAll'); // 清除 Tag-it 標籤
-        document.getElementById('enableFlavorSearch').checked = false; // 重置搜尋所有選項
-        document.getElementById('sortSelect').value = 'price-asc'; // 重置排序
-        performSearchAndFilter(); // 重新觸發篩選和渲染
+        $('#myTags').tagit('removeAll'); 
+        document.getElementById('enableFlavorSearch').checked = false; 
+        document.getElementById('sortSelect').value = 'price-asc'; 
+        performSearchAndFilter(); 
     });
 
-    // 排序功能監聽
     document.getElementById('sortSelect').addEventListener('change', (event) => {
         sortCoupons(event.target.value);
     });
 
-    // Tag-it 初始化
     $('#myTags').tagit({
-        availableTags: [], // 這裡會動態填充
+        availableTags: [], 
         afterTagAdded: function(evt, ui) {
-            performSearchAndFilter(); // 當標籤添加時觸發搜尋/篩選
+            performSearchAndFilter(); 
         },
         afterTagRemoved: function(evt, ui) {
-            performSearchAndFilter(); // 當標籤移除時觸發搜尋/篩選
+            performSearchAndFilter(); 
         },
-        singleField: true, // 確保只有一個輸入框
-        singleFieldNode: $('#myTags') // 綁定到這個元素
+        singleField: true, 
+        singleFieldNode: $('#myTags') 
     });
 
-    // 監聽 enableFlavorSearch 的變化
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 });
