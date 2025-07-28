@@ -55,6 +55,7 @@
 }
 
 /* Tag-it specific adjustments (不再使用輸入框，但樣式可能還需要) */
+/* 舊的 Tag-it 樣式，如果您確定不再需要，可以刪除這些 */
 .tagit-bar {
     margin-bottom: 1rem;
     padding: 0; 
@@ -69,7 +70,7 @@
 
 /* 工具列調整 */
 .tools-row {
-    align-items: center;
+    align-items: flex-end; /* 讓內容靠底部對齊，因為按鈕會增加高度 */
     margin-top: 1rem;
     margin-bottom: 1rem;
     padding-left: 15px; 
@@ -132,7 +133,7 @@
 
 /* New: Description in card */
 .coupon-description {
-    font-size: 0.85rem; /* 詳細內容字體小一點 */
+    font-size: 0.85rem; 
     color: #666;
     max-height: 4.5em; /* 限制高度，大概3行 */
     overflow: hidden;
@@ -140,7 +141,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 3; /* 限制行數 */
     -webkit-box-orient: vertical;
-    line-height: 1.5em; /* 行高 */
+    line-height: 1.5em; 
 }
 
 

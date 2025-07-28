@@ -21,16 +21,13 @@ async function fetchCoupons() {
 
         const csvText = await response.text();
         console.log('--- 原始 CSV 文本 (前500字元) ---');
-        console.log(csvText.substring(0, 500)); // 打印部分原始 CSV 文本
+        console.log(csvText.substring(0, 500)); 
         console.log('-----------------------------------');
 
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
         console.log('優惠券資料已成功載入:', allCoupons.length, '條'); 
-
-        // 初始化篩選按鈕的事件監聽
-        initFilterButtons(); // 新增的初始化函數
         
         // 渲染初始優惠券列表
         renderCoupons(filteredCoupons);
@@ -77,7 +74,7 @@ function parseCSV(csv) {
     // 確保 headers 的長度與我們期望的數據欄位數量匹配
     const expectedHeaderCount = Object.keys(headerMap).length;
     if (headers.length !== expectedHeaderCount) {
-        console.warn(`警告: CSV標題行實際列數 (${headers.length}) 與程式碼期望列數 (${expectedHeaderCount}) 不符。請檢查Google Sheet的標題行是否正確。`);
+        console.warn(`警告: CSV標題行實際列數 (${headers.length}) 與程式碼期望列數 (${expectedHeaderCount}) 不符。`);
         // 嘗試調整 headers 陣列，使其長度匹配 headerMap
         if (headers.length < expectedHeaderCount) {
             for (let k = headers.length; k < expectedHeaderCount; k++) {
@@ -92,7 +89,6 @@ function parseCSV(csv) {
         let inQuote = false;
         let currentField = '';
 
-        // 這次使用更穩健的手動解析，處理引號內的逗號和雙引號轉義
         for (let k = 0; k < line.length; k++) {
             const char = line[k];
             if (char === '"') {
@@ -103,14 +99,13 @@ function parseCSV(csv) {
                     inQuote = !inQuote;
                 }
             } else if (char === ',' && !inQuote) {
-                currentLine.push(currentField); // 不在這裡trim，保留內部空白
+                currentLine.push(currentField); 
                 currentField = '';
             } else {
                 currentField += char;
             }
         }
-        currentLine.push(currentField); // 添加最後一個字段
-
+        currentLine.push(currentField); 
 
         // 修正：處理 Google Sheet 導出 CSV 最後多一個空字段的問題
         if (currentLine.length > expectedHeaderCount && currentLine[currentLine.length - 1].trim() === '') {
@@ -137,7 +132,7 @@ function parseCSV(csv) {
     return data;
 }
 
-// ==== 渲染優惠券到頁面 ====
+// ==== 渲染優惠券到頁面 (更新以顯示複製按鈕) ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
     rowContainer.innerHTML = ''; 
@@ -153,7 +148,7 @@ function renderCoupons(couponsToRender) {
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
 
         const fullDescription = coupon.description || '';
-        const displayDescription = fullDescription.length > 100 ? // 調整截斷長度
+        const displayDescription = fullDescription.length > 100 ? 
                                    fullDescription.substring(0, 100) + '...' : 
                                    fullDescription;
         const descriptionHtml = coupon.description ? 
@@ -187,7 +182,6 @@ function renderCoupons(couponsToRender) {
         rowContainer.insertAdjacentHTML('beforeend', couponCard);
     });
 
-    // 為動態生成的「查看更多」按鈕添加事件監聽器
     document.querySelectorAll('.view-detail-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
@@ -195,7 +189,6 @@ function renderCoupons(couponsToRender) {
         });
     });
 
-    // 為動態生成的「複製代碼」按鈕添加事件監聽器
     document.querySelectorAll('.copy-code-btn').forEach(button => {
         button.addEventListener('click', (event) => {
             const couponCode = event.currentTarget.dataset.couponCode;
@@ -212,9 +205,8 @@ function copyToClipboard(text, element) {
         const originalTitle = element.title;
         element.title = '已複製!';
         element.classList.remove('bi-files');
-        element.classList.add('bi-check-lg'); // 顯示打勾圖示
+        element.classList.add('bi-check-lg'); 
         
-        // 短暫顯示「已複製!」後恢復原狀
         setTimeout(() => {
             element.title = originalTitle;
             element.classList.remove('bi-check-lg');
@@ -232,7 +224,7 @@ function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
-// ==== 顯示優惠券詳情 Modal 的函數 (不變) ====
+// ==== 顯示優惠券詳情 Modal 的函數 (移除標籤顯示) ====
 function showCouponDetailModal(coupon) {
     document.getElementById('detail-title').textContent = coupon.name;
     const detailBody = document.getElementById('detail-body');
@@ -241,7 +233,6 @@ function showCouponDetailModal(coupon) {
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>標籤:</strong> ${coupon.tags || '無'}</p>
         <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
     `;
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
@@ -250,65 +241,58 @@ function showCouponDetailModal(coupon) {
 
 // ==== 初始化篩選按鈕的事件監聽 ====
 function initFilterButtons() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const filterType = button.dataset.filterType;
-            const filterValue = button.dataset.filterValue.toLowerCase();
+    // 通用處理函數
+    const handleFilterButtonClick = (button, isExclude = false) => {
+        button.classList.toggle('active');
+        if (isExclude) {
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+        } else {
+            button.classList.toggle('btn-outline-primary');
+            button.classList.toggle('btn-primary');
+        }
 
-            if (button.classList.contains('active')) { // 如果已經選中，則取消選中
-                button.classList.remove('active', 'btn-primary');
-                button.classList.add('btn-outline-primary');
-                if (filterType === 'tags') {
-                    selectedIncludeTags.delete(filterValue);
-                } else if (filterType === 'orderType') {
-                    selectedOrderTypes.delete(filterValue);
-                }
-            } else { // 如果未選中，則選中
-                button.classList.add('active', 'btn-primary');
-                button.classList.remove('btn-outline-primary');
-                if (filterType === 'tags') {
-                    selectedIncludeTags.add(filterValue);
-                } else if (filterType === 'orderType') {
-                    selectedOrderTypes.add(filterValue);
-                }
+        const filterType = button.dataset.filterType;
+        const filterValue = button.dataset.filterValue.toLowerCase();
+
+        if (button.classList.contains('active')) {
+            if (filterType === 'tags') {
+                selectedIncludeTags.add(filterValue);
+            } else if (filterType === 'excludeTags') {
+                selectedExcludeTags.add(filterValue);
+            } else if (filterType === 'orderType') {
+                selectedOrderTypes.add(filterValue);
             }
-            performSearchAndFilter(); 
-        });
+        } else {
+            if (filterType === 'tags') {
+                selectedIncludeTags.delete(filterValue);
+            } else if (filterType === 'excludeTags') {
+                selectedExcludeTags.delete(filterValue);
+            } else if (filterType === 'orderType') {
+                selectedOrderTypes.delete(filterValue);
+            }
+        }
+        performSearchAndFilter();
+    };
+
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, false));
     });
 
-    const excludeFilterButtons = document.querySelectorAll('.exclude-filter-btn');
-    excludeFilterButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const filterType = button.dataset.filterType; // 這裡將是 'excludeTags'
-            const filterValue = button.dataset.filterValue.toLowerCase();
-
-            if (button.classList.contains('active')) {
-                button.classList.remove('active', 'btn-danger'); // 排除按鈕用 danger
-                button.classList.add('btn-outline-danger');
-                if (filterType === 'excludeTags') {
-                    selectedExcludeTags.delete(filterValue);
-                }
-            } else {
-                button.classList.add('active', 'btn-danger');
-                button.classList.remove('btn-outline-danger');
-                if (filterType === 'excludeTags') {
-                    selectedExcludeTags.add(filterValue);
-                }
-            }
-            performSearchAndFilter();
-        });
+    document.querySelectorAll('.exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, true));
     });
 }
 
-// ==== 主要搜尋與篩選邏輯 (更新以使用按鈕篩選和排除) ====
+// ==== 主要搜尋與篩選邏輯 (更新以處理「外帶」和「外送/外帶」精確篩選) ====
 function performSearchAndFilter() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); // 獲取搜尋框內容
-    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; // 「同時搜尋詳細內容」的狀態
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); 
+    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; 
 
     filteredCoupons = allCoupons.filter(coupon => {
         // 1. 「包含」篩選邏輯 (來自按鈕)
         let includeFilterMatch = true;
+
         if (selectedIncludeTags.size > 0) {
             const couponTags = String(coupon.tags || '').toLowerCase().split(',').map(tag => tag.trim());
             includeFilterMatch = Array.from(selectedIncludeTags).every(filterTag => couponTags.includes(filterTag));
@@ -318,8 +302,20 @@ function performSearchAndFilter() {
             const couponOrderType = String(coupon.orderType || '').toLowerCase();
             let orderTypeFound = false;
             Array.from(selectedOrderTypes).forEach(filterType => {
-                if (couponOrderType.includes(filterType)) { 
-                    orderTypeFound = true;
+                // **修正：點餐類型精確匹配**
+                if (filterType === '外送/外帶' || filterType === '外送') { // 如果按鈕是外送/外帶或外送
+                    // 則數據中必須包含 '外送' 關鍵字 (例如 '外送/外帶')
+                    if (couponOrderType.includes('外送')) {
+                        orderTypeFound = true;
+                    }
+                } else { // 其他情況，如「外帶」按鈕
+                    // 確保精確匹配，同時排除「外送/外帶」這種情況
+                    // 如果數據是「外送/外帶」，但篩選「外帶」，則不匹配
+                    if (couponOrderType === filterType && !couponOrderType.includes('外送/外帶') && filterType === '外帶') { // 如果按鈕是「外帶」，數據也是「外帶」，則匹配
+                         orderTypeFound = true;
+                    } else if (couponOrderType === filterType) { // 其他精確匹配
+                        orderTypeFound = true;
+                    }
                 }
             });
             includeFilterMatch = includeFilterMatch && orderTypeFound; 
@@ -351,12 +347,10 @@ function performSearchAndFilter() {
             generalSearchMatch = searchableFields.some(field => field.includes(searchTerm));
         }
 
-        // 組合所有篩選條件
-        // 必須同時符合「包含」篩選 AND 「排除」篩選 AND 「通用關鍵字搜尋」
+        // 組合所有篩選條件 (必須同時符合「包含」篩選 AND 「排除」篩選 AND 「通用關鍵字搜尋」)
         return includeFilterMatch && excludeFilterMatch && generalSearchMatch;
     });
 
-    // 重新排序篩選後的結果，保持排序狀態
     sortCoupons(document.getElementById('sortSelect').value);
 }
 
@@ -381,18 +375,18 @@ function sortCoupons(sortBy) {
             sortedCoupons.sort((a, b) => {
                 const dateA = new Date(a.endDate);
                 const dateB = new Date(b.endDate);
-                if (isNaN(dateA)) return isNaN(dateB) ? 0 : 1; 
-                if (isNaN(dateB)) return -1;
-                return dateA - dateB;
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; // 無效日期排在後面
+                if (isNaN(dateB.getTime())) return -1;
+                return dateA.getTime() - dateB.getTime();
             });
             break;
         case 'end_date-desc': 
             sortedCoupons.sort((a, b) => {
                 const dateA = new Date(a.endDate);
                 const dateB = new Date(b.endDate);
-                if (isNaN(dateA)) return isNaN(dateB) ? 0 : 1; 
-                if (isNaN(dateB)) return -1;
-                return dateB - dateA;
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; // 無效日期排在後面
+                if (isNaN(dateB.getTime())) return -1;
+                return dateB.getTime() - dateA.getTime();
             });
             break;
     }
@@ -404,13 +398,11 @@ function sortCoupons(sortBy) {
 document.addEventListener('DOMContentLoaded', () => {
     fetchCoupons();
 
-    // 初始化 Bootstrap Popover
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
-    // 回到頂部按鈕邏輯
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
@@ -426,12 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 清除所有篩選按鈕的邏輯
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
-        // 清空搜尋框
         document.getElementById('searchInput').value = ''; 
         
-        // 取消所有「包含」篩選按鈕的選中狀態
         document.querySelectorAll('.filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-primary');
             button.classList.add('btn-outline-primary');
@@ -439,25 +428,20 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedIncludeTags.clear(); 
         selectedOrderTypes.clear(); 
 
-        // 取消所有「排除」篩選按鈕的選中狀態
         document.querySelectorAll('.exclude-filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-danger');
             button.classList.add('btn-outline-danger');
         });
         selectedExcludeTags.clear();
 
-        document.getElementById('enableFlavorSearch').checked = false; // 重置「同時搜尋詳細內容」
-        document.getElementById('sortSelect').value = 'price-asc'; // 重置排序
-        performSearchAndFilter(); // 重新觸發篩選和渲染
+        document.getElementById('enableFlavorSearch').checked = false; 
+        document.getElementById('sortSelect').value = 'price-asc'; 
+        performSearchAndFilter(); 
     });
 
-    // 排序功能監聽
     document.getElementById('sortSelect').addEventListener('change', (event) => {
         sortCoupons(event.target.value);
     });
-
-    // Tag-it 已移除，這裡不再需要初始化。
-    // initTagItAvailableTags() 函數現在用於獲取所有標籤，但不再用於 Tag-it UI。
 
     // 監聽「同時搜尋詳細內容」的變化
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
