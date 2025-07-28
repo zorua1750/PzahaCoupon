@@ -45,7 +45,7 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 (維持現有工作版本，已解決 RangeError) ====
+// ==== CSV 解析函數 (維持現有工作版本) ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
     if (lines.length <= 1) { 
@@ -310,14 +310,15 @@ function performSearchAndFilter() {
             orderTypeFilterPass = false; // 如果有選中，預設不通過，等待找到匹配
             Array.from(selectedOrderTypes).forEach(filterValue => {
                 // **修正：點餐類型精確匹配**
-                if (couponOrderType === filterValue) { // 精確匹配
-                    orderTypeFilterPass = true;
+                if (couponOrderType === filterValue) { 
+                    orderTypeFound = true;
                 }
             });
+            // 如果選中了點餐類型，但沒有找到匹配項，則不通過包含篩選
+            if (selectedOrderTypes.size > 0 && !orderTypeFound) {
+                 includeFilterPass = false;
+            }
         }
-        // 最終包含篩選必須同時滿足選中的標籤和點餐類型
-        includeFilterPass = includeFilterPass && orderTypeFilterPass;
-
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
         let excludeFilterPass = true; // 預設通過
