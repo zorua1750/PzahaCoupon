@@ -1,4 +1,4 @@
-// PzahaCoupon-website/js/coupon.js (檔案路徑名稱也建議修改)
+// PzahaCoupon/js/coupon.js
 
 // ==== Google Sheet 資料來源 URL ====
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
@@ -12,7 +12,7 @@ let selectedOrderTypes = new Set(); // 儲存選中的點餐類型
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
     try {
-        console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); // 已修改
+        console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); 
         const response = await fetch(GOOGLE_SHEET_URL);
 
         if (!response.ok) {
@@ -27,21 +27,21 @@ async function fetchCoupons() {
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
-        console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); // 已修改
+        console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); 
 
         // 初始化篩選按鈕的事件監聽
         initFilterButtons(); 
         
-        // 渲染初始優惠券列表
-        renderCoupons(filteredCoupons);
-        updateSearchResultCount(filteredCoupons.length);
+        // 渲染初始優惠券列表 (會自動應用預設排序)
+        performSearchAndFilter(); // 直接呼叫篩選函數，它會根據選擇框的預設值進行排序
+        // updateSearchResultCount(filteredCoupons.length); // 這行會被 performSearchAndFilter 內部呼叫
 
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
 
     } catch (error) {
-        console.error('載入 PzahaCoupon 資料失敗:', error); // 已修改
+        console.error('載入 PzahaCoupon 資料失敗:', error); 
         console.error('詳細錯誤訊息:', error.message); 
-        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; // 已修改
+        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; 
     }
 }
 
@@ -151,7 +151,7 @@ function renderCoupons(couponsToRender) {
                                    fullDescription.substring(0, 100) + '...' : 
                                    fullDescription;
         const descriptionHtml = coupon.description ? 
-            `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '<br>')}</p>` : '';
+            `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '')}</p>` : '';
 
         const couponCard = `
             <div class="col-md-4 mb-4">
@@ -232,7 +232,7 @@ function showCouponDetailModal(coupon) {
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
+        <p><strong>詳細內容:</strong>${(coupon.description || '').replace(/\n/g, '')}</p>
     `;
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
     detailModal.show();
