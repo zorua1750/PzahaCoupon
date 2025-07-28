@@ -5,7 +5,7 @@
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
 
 let allCoupons = []; // 用於儲存所有優惠券資料的陣列
-let filteredCoupons = []; // 用於儲存篩選後的優惠券資料
+let filteredCoupons = []; // 用於儲選後的優惠券資料
 
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
@@ -21,7 +21,7 @@ async function fetchCoupons() {
         allCoupons = parseCSV(csvText);
         filteredCoupons = [...allCoupons]; // 初始化時，篩選的資料等於所有資料
 
-        console.log('優惠券資料已成功載入:', allCoupons);
+        console.log('優惠券資料已成功載入:', allCoupons.length, '條'); // 打印載入的條目數
 
         // 初始化標籤建議（從所有優惠券的標籤中提取）
         initTagItAvailableTags();
@@ -43,14 +43,18 @@ async function fetchCoupons() {
 // 根據您提供的 Google Sheet 欄位名稱進行解析和映射
 function parseCSV(csv) {
     const lines = csv.split('\n').filter(line => line.trim() !== ''); // 移除空行
-    if (lines.length === 0) return [];
+    if (lines.length <= 1) { // 至少需要標題行和一行數據
+        console.warn("CSV 數據不足或只有標題行。");
+        return [];
+    }
 
     // 清理標題，移除空白並確保正確分割。注意：這裡假設標題行不會有逗號在引號內的問題。
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
     const data = [];
 
     // 定義中文標題到英文 key 的映射，方便 JavaScript 中使用
-    // 請根據您 Google Sheet 實際的欄位數量和名稱來調整這個映射
+    // 這裡我根據您的截圖和警告，判斷CSV實際有9個欄位
+    // 請務必讓這裡的中文鍵名與您Google Sheet發佈的CSV第一行完全一致
     const headerMap = {
         "優惠代碼": "couponCode",
         "名稱": "name",
@@ -60,28 +64,55 @@ function parseCSV(csv) {
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
-        // 如果您的 Google Sheet 有最後一個欄位 (例如時間戳記)，請在這裡加入映射
-        // "時間戳記": "timestamp" // <-- 假設這是您的最後一欄標題
+        "來源備註": "sourceNote" // <--- 根據您提供的截圖，這是最後一個欄位。如果CSV實際標題不同，請修改
     };
 
-    for (let i = 1; i < lines.length; i++) {
-        // 使用正則表達式來更 robust 地處理 CSV 行，考慮到逗號可能在雙引號內
-        // 這是一個簡化版本，對於複雜的 CSV 可能還需要更強大的解析器
-        const currentLine = lines[i].match(/(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,]*))(?:,|$)/g)
-                                   .map(field => field.endsWith(',') ? field.slice(0, -1) : field) // 移除尾隨逗號
-                                   .map(field => field.replace(/^\"|\"$/g, '').replace(/\"\"/g, '"').trim()); // 移除引號和雙引號轉義
+    // 重新檢查並調整headers的數量，如果Google Sheet最後一欄沒有標題，headers.length可能會少1
+    // 我們可以手動確保headers的長度是9
+    // 如果headers的長度是8，但實際行數是9，就需要特別處理
+    if (headers.length === 8 && lines[1].split(',').length >= 9) {
+        // 如果標題只有8個，但第一行數據有9個欄位，則自動補上一個空標題
+        headers.push("未知欄位"); // 或者您可以給它一個具體的名稱，例如 "最後編輯時間"
+        headerMap["未知欄位"] = "unknownField";
+        console.warn("偵測到CSV標題行比數據行少一個欄位，已自動補齊。請檢查Google Sheet。");
+    }
 
-        // 確保解析後的列數與標題數匹配，否則跳過
-        if (currentLine.length !== headers.length) {
-            console.warn(`跳過不完整的行（列數不匹配，或解析有問題）：${lines[i]}`);
-            continue; 
+    // 使用一個更強健的正則表達式來解析 CSV 行，處理引號內的逗號
+    // 參考：https://stackoverflow.com/questions/8493195/how-can-i-parse-a-csv-string-with-javascript-which-contains-empty-values
+    const CSV_REGEX = /(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|([^,\"]*))(?:,|$)/g;
+
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        let match;
+        const currentLine = [];
+
+        // 逐個匹配字段
+        while ((match = CSV_REGEX.exec(line)) !== null) {
+            currentLine.push(match[1] !== undefined ? match[1].replace(/\"\"/g, '"') : match[2]);
         }
+        
+        // 移除行末可能因多餘逗號產生的空字串字段
+        // 注意：這個修正需要更精確，以避免移除中間的有效空字串
+        // 這裡嘗試在處理前先清理可能導致額外空字段的尾部逗號
+        // 更好的做法是確保CSV本身沒有不符合規範的額外逗號
+        
+        // 確保解析出的字段數與標題數匹配
+        // 如果 currentLine 比 headers 長，我們只取前面 headers.length 個
+        // 如果 currentLine 比 headers 短，則數據不完整，我們跳過
+        if (currentLine.length < headers.length) {
+            console.warn(`跳過不完整的行（列數不足，可能是數據缺失）：${lines[i]}`);
+            continue; 
+        } 
+        // 如果 currentLine.length > headers.length，表示 CSV 行比預期多欄
+        // 我們將只取前 headers.length 這麼多個欄位來解析
+        // 這是因為我們已經在 headerMap 裡定義了我們關心的欄位數量
 
         const row = {};
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
-            const newKey = headerMap[originalHeader] || originalHeader; // 如果有映射就用新鍵，否則保持原樣
-            row[newKey] = currentLine[j].trim().replace(/\r/g, ''); // 移除換行符
+            const newKey = headerMap[originalHeader] || originalHeader; 
+            // 確保 currentLine[j] 存在，如果不存在則給予空字串避免錯誤
+            row[newKey] = (currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
     }
@@ -154,7 +185,7 @@ function showCouponDetailModal(coupon) {
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
         <p><strong>標籤:</strong> ${coupon.tags || '無'}</p>
-        <p><strong>詳細內容:</strong><br>${coupon.description.replace(/\n/g, '<br>')}</p>
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
         `;
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
     detailModal.show();
@@ -196,25 +227,20 @@ function performSearchAndFilter() {
             if (currentTags.length > 0) {
                 flavorMatch = currentTags.some(tag => descriptionLower.includes(tag));
             } else {
-                // 如果啟用了「搜尋所有選項」但沒有輸入任何標籤，這裡需要定義行為
-                // 通常會搜尋所有內容，或者只搜尋有描述的項目，這裡可以留空或設定為true
-                flavorMatch = true; // 如果沒有標籤，當啟用時，描述都算匹配
+                flavorMatch = true; 
             }
         }
         
-        // 結合標籤篩選和「搜尋所有選項」的邏輯
         if (currentTags.length === 0 && !enableFlavorSearch) {
-            return true; // 沒有標籤且沒啟用額外搜尋時，顯示所有
+            return true; 
         } else if (currentTags.length > 0 && enableFlavorSearch) {
-            return tagMatch || flavorMatch; // 有標籤且啟用額外搜尋時，只要符合其中一個條件
+            return tagMatch || flavorMatch; 
         } else if (currentTags.length > 0 && !enableFlavorSearch) {
-            return tagMatch; // 只有標籤篩選
+            return tagMatch; 
         } else if (currentTags.length === 0 && enableFlavorSearch) {
-             // 只有啟用額外搜尋但沒有標籤時，可以定義是否顯示所有或特定行為
-             // 目前設定為顯示所有（因為flavorMatch為true），您可以根據需求調整
             return true; 
         }
-        return true; // Fallback
+        return true; 
     });
 
     // 重新排序篩選後的結果，保持排序狀態
@@ -232,16 +258,16 @@ function sortCoupons(sortBy) {
         case 'price-desc':
             sortedCoupons.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
             break;
-        case 'coupon_code-asc': // 注意這裡使用的是映射後的英文鍵名
-            sortedCoupons.sort((a, b) => a.couponCode.localeCompare(b.couponCode));
+        case 'coupon_code-asc': 
+            sortedCoupons.sort((a, b) => (a.couponCode || '').localeCompare(b.couponCode || ''));
             break;
-        case 'coupon_code-desc': // 注意這裡使用的是映射後的英文鍵名
-            sortedCoupons.sort((a, b) => b.couponCode.localeCompare(a.couponCode));
+        case 'coupon_code-desc': 
+            sortedCoupons.sort((a, b) => (b.couponCode || '').localeCompare(a.couponCode || ''));
             break;
-        case 'end_date-asc': // 注意這裡使用的是映射後的英文鍵名
+        case 'end_date-asc': 
             sortedCoupons.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
             break;
-        case 'end_date-desc': // 注意這裡使用的是映射後的英文鍵名
+        case 'end_date-desc': 
             sortedCoupons.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
             break;
     }
