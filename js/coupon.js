@@ -297,31 +297,29 @@ function performSearchAndFilter() {
 
 
         // 1. 「包含」篩選邏輯 (來自按鈕)
-        let includeFilterPass = true; // 預設通過
-
+        let includeTagsPass = true; // 預設標籤篩選通過
         if (selectedIncludeTags.size > 0) {
             // 只要優惠券的標籤包含選中的任何一個「包含」標籤，就匹配
-            includeFilterPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
+            includeTagsPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
-        // 點餐類型篩選獨立判斷，與標籤篩選是 AND 關係
-        let orderTypeFilterPass = true; // 預設通過
+        let orderTypeFilterPass = true; // 預設點餐類型篩選通過
         if (selectedOrderTypes.size > 0) {
-            orderTypeFilterPass = false; // 如果有選中，預設不通過，等待找到匹配
+            let foundOrderTypeMatch = false; // 修正：在這裡定義變數
             Array.from(selectedOrderTypes).forEach(filterValue => {
                 // **修正：點餐類型精確匹配**
                 // 這裡精確匹配 `filterValue`。例如，如果 `filterValue` 是 "外帶"，它只會匹配 "外帶" 不會匹配 "外送/外帶"
                 // 如果 `filterValue` 是 "外送/外帶"，它只會匹配 "外送/外帶"
                 if (couponOrderType === filterValue) { 
-                    orderTypeFilterPass = true;
+                    foundOrderTypeMatch = true;
                 }
             });
-            // 如果選中了點餐類型，但沒有找到匹配項，則不通過包含篩選
-            // 這個判斷確保當選擇了某個點餐類型時，必須至少有一個匹配
-            if (selectedOrderTypes.size > 0 && !orderTypeFilterPass) { // 這裡修正了錯誤，使用 orderTypeFilterPass
-                 includeFilterPass = false; // 如果沒有找到匹配的點餐類型，則整個包含篩選失敗
-            }
+            orderTypeFilterPass = foundOrderTypeMatch; // 賦值給外部變數
         }
+        
+        // 最終包含篩選必須同時滿足選中的標籤和點餐類型
+        let finalIncludeFilterPass = includeTagsPass && orderTypeFilterPass;
+
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
         let excludeFilterPass = true; // 預設通過
@@ -336,21 +334,20 @@ function performSearchAndFilter() {
             const searchableFields = [
                 couponName,
                 couponCode,
-                String(coupon.price || '').toLowerCase(), // 價格也納入搜尋
+                String(coupon.price || '').toLowerCase(), 
                 couponOrderType,
                 String(coupon.tags || '').toLowerCase()
             ]; 
 
             if (enableFlavorSearch) {
-                searchableFields.push(couponDescription); // 如果勾選，將描述加入搜尋
+                searchableFields.push(couponDescription); 
             }
 
             generalSearchPass = searchableFields.some(field => field.includes(searchTerm));
         }
 
         // 組合所有篩選條件
-        // 必須同時符合「包含」篩選 AND 「排除」篩選 AND 「通用關鍵字搜尋」
-        return includeFilterPass && excludeFilterPass && generalSearchPass;
+        return finalIncludeFilterPass && excludeFilterPass && generalSearchPass;
     });
 
     sortCoupons(document.getElementById('sortSelect').value);
