@@ -310,13 +310,16 @@ function performSearchAndFilter() {
             orderTypeFilterPass = false; // 如果有選中，預設不通過，等待找到匹配
             Array.from(selectedOrderTypes).forEach(filterValue => {
                 // **修正：點餐類型精確匹配**
+                // 這裡精確匹配 `filterValue`。例如，如果 `filterValue` 是 "外帶"，它只會匹配 "外帶" 不會匹配 "外送/外帶"
+                // 如果 `filterValue` 是 "外送/外帶"，它只會匹配 "外送/外帶"
                 if (couponOrderType === filterValue) { 
-                    orderTypeFound = true;
+                    orderTypeFilterPass = true;
                 }
             });
             // 如果選中了點餐類型，但沒有找到匹配項，則不通過包含篩選
-            if (selectedOrderTypes.size > 0 && !orderTypeFound) {
-                 includeFilterPass = false;
+            // 這個判斷確保當選擇了某個點餐類型時，必須至少有一個匹配
+            if (selectedOrderTypes.size > 0 && !orderTypeFilterPass) { // 這裡修正了錯誤，使用 orderTypeFilterPass
+                 includeFilterPass = false; // 如果沒有找到匹配的點餐類型，則整個包含篩選失敗
             }
         }
 
