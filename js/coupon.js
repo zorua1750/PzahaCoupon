@@ -271,7 +271,7 @@ function initFilterButtons() {
                 selectedOrderTypes.delete(filterValue);
             }
         }
-        performSearchAndFilter(); 
+        performSearchAndFilter(); // 每次點擊按鈕後重新篩選
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
@@ -297,37 +297,37 @@ function performSearchAndFilter() {
 
 
         // 1. 「包含」篩選邏輯 (來自按鈕)
-        let includeFilterPass = true;
+        let includeFilterPass = true; // 預設通過
 
         if (selectedIncludeTags.size > 0) {
-            // 只要優惠券的標籤包含選中的任何一個包含標籤，就匹配
+            // 只要優惠券的標籤包含選中的任何一個「包含」標籤，就匹配
             includeFilterPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
+        // 點餐類型篩選獨立判斷，與標籤篩選是 AND 關係
+        let orderTypeFilterPass = true; // 預設通過
         if (selectedOrderTypes.size > 0) {
-            let orderTypeFound = false;
+            orderTypeFilterPass = false; // 如果有選中，預設不通過，等待找到匹配
             Array.from(selectedOrderTypes).forEach(filterValue => {
                 // **修正：點餐類型精確匹配**
-                // 檢查原始數據中是否精確匹配按鈕值
-                if (couponOrderType === filterValue) { 
-                    orderTypeFound = true;
+                if (couponOrderType === filterValue) { // 精確匹配
+                    orderTypeFilterPass = true;
                 }
             });
-            // 如果選中了點餐類型，但沒有找到匹配項，則不通過包含篩選
-            if (selectedOrderTypes.size > 0 && !orderTypeFound) {
-                 includeFilterPass = false;
-            }
         }
+        // 最終包含篩選必須同時滿足選中的標籤和點餐類型
+        includeFilterPass = includeFilterPass && orderTypeFilterPass;
+
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
-        let excludeFilterPass = true;
+        let excludeFilterPass = true; // 預設通過
         if (selectedExcludeTags.size > 0) {
             // 只要優惠券包含任何一個「排除」標籤，就不匹配
             excludeFilterPass = !Array.from(selectedExcludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
         // 3. 通用關鍵字搜尋邏輯 (來自搜尋框)
-        let generalSearchPass = true;
+        let generalSearchPass = true; // 預設通過
         if (searchTerm) {
             const searchableFields = [
                 couponName,
