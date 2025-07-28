@@ -1,4 +1,4 @@
-// pizacoupon-website/js/coupon.js
+// PzahaCoupon-website/js/coupon.js (檔案路徑名稱也建議修改)
 
 // ==== Google Sheet 資料來源 URL ====
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
@@ -12,7 +12,7 @@ let selectedOrderTypes = new Set(); // 儲存選中的點餐類型
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
     try {
-        console.log('正在從 Google Sheet 載入優惠券資料...');
+        console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); // 已修改
         const response = await fetch(GOOGLE_SHEET_URL);
 
         if (!response.ok) {
@@ -27,7 +27,7 @@ async function fetchCoupons() {
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
-        console.log('優惠券資料已成功載入:', allCoupons.length, '條'); 
+        console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); // 已修改
 
         // 初始化篩選按鈕的事件監聽
         initFilterButtons(); 
@@ -39,9 +39,9 @@ async function fetchCoupons() {
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
 
     } catch (error) {
-        console.error('載入優惠券資料失敗:', error);
+        console.error('載入 PzahaCoupon 資料失敗:', error); // 已修改
         console.error('詳細錯誤訊息:', error.message); 
-        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入優惠券資料失敗，請稍後再試。</div>';
+        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; // 已修改
     }
 }
 
