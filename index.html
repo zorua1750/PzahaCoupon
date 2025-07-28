@@ -5,7 +5,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="pizacoupon 網站，提供最新的比薩優惠券資訊。">
-    <meta name="author" content="您的名字或團隊名稱">  <title>pizacoupon</title>
+    <meta name="author" content="您的名字或團隊名稱">
+    <title>pizacoupon</title>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="./css/jquery-ui.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
@@ -33,34 +35,45 @@
       <i class="bi bi-arrow-up-circle-fill top-btn"></i>
       <div class="album py-2 bg-light">
         <div class="container mb-3" id="container">
-          <div>
-            <ul id="myTags" class="tagit-bar">
-              </ul>
-            <button type="button" class="btn btn-light clear-btn">清除</button>
-            <div class="row tools-row">
-              <div class="col-sm-12 col-md-6 form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
-                <label class="form-check-label" for="enableFlavorSearch">
-                  <strong>搜尋所有選項</strong>
-                </label>
-                <a class="bi bi-info-circle-fill" id="flavorSearchInfo" data-bs-toggle="popover" style="color: dodgerblue"
-                  role="button" data-bs-content="搜尋所有的餐點選項，要注意非預設的選項可能要加價，最終價格會改變"
-                  data-bs-trigger="focus" tabindex="0"></a>
-                <div class="coupon-count text-muted text-end">優惠券: <span id="searchResultCount">0</span></div>
-              </div>
-              <div class="col-sm-12 col-md-6 text-end">
-                <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
-                <select id="sortSelect" class="form-select form-select-sm d-inline-block w-auto" style="min-width:120px;">
-                  <option value="price-asc">價格：低→高</option>
-                  <option value="price-desc">價格：高→低</option>
-                  <option value="coupon_code-asc">代碼：遞增</option>
-                  <option value="coupon_code-desc">代碼：遞減</option>
-                  <option value="end_date-asc">到期日：近→遠</option>
-                  <option value="end_date-desc">到期日：遠→近</option>
-                </select>
-              </div>
+          <div class="row mb-3">
+            <div class="col-md-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="輸入關鍵字搜尋 (例如: 比薩, 飲料, 玉山銀行, 25999)" aria-label="搜尋優惠券">
             </div>
           </div>
+
+          <div class="row mb-3">
+              <div class="col-md-12">
+                  <label for="myTags" class="form-label">依標籤篩選:</label>
+                  <ul id="myTags" class="form-control"></ul>
+                  <small class="form-text text-muted">輸入標籤後按 Enter 鍵新增，點擊標籤可移除。</small>
+              </div>
+          </div>
+          
+          <div class="row tools-row mb-3 align-items-center">
+            <div class="col-sm-12 col-md-6 form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
+              <label class="form-check-label" for="enableFlavorSearch">
+                <strong>搜尋所有選項</strong>
+              </label>
+              <a class="bi bi-info-circle-fill" id="flavorSearchInfo" data-bs-toggle="popover" style="color: dodgerblue"
+                role="button" data-bs-content="勾選此項，標籤篩選將同時搜尋優惠券的詳細內容，而不僅限於「標籤」欄位。"
+                data-bs-trigger="focus" tabindex="0"></a>
+              <div class="coupon-count text-muted text-end d-inline-block ms-3">優惠券: <span id="searchResultCount">0</span></div>
+            </div>
+            <div class="col-sm-12 col-md-6 text-end">
+              <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
+              <select id="sortSelect" class="form-select form-select-sm d-inline-block w-auto" style="min-width:120px;">
+                <option value="price-asc">價格：低→高</option>
+                <option value="price-desc">價格：高→低</option>
+                <option value="coupon_code-asc">代碼：遞增</option>
+                <option value="coupon_code-desc">代碼：遞減</option>
+                <option value="end_date-asc">到期日：近→遠</option>
+                <option value="end_date-desc">到期日：遠→近</option>
+              </select>
+              <button type="button" class="btn btn-light clear-btn ms-2">清除所有篩選</button>
+            </div>
+          </div>
+          
           <div id="buttons" class="btn-area"></div>
           <hr>
 
@@ -113,5 +126,12 @@
       </div>
     </div>
 
-    <script src="./js/jquery-3.3.1.slim.min.js"></script> <script src="./js/popper.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> <script src="./js/tag-it.min.js" type="text/javascript" charset="utf-8"></script> <script src="./js/coupon.js"></script> <script src="./js/main.js"></script> </body>
+    <script src="./js/jquery-3.3.1.slim.min.js"></script> 
+    <script src="./js/popper.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+    <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> 
+    <script src="./js/tag-it.min.js" type="text/javascript" charset="utf-8"></script> 
+    <script src="./js/coupon.js"></script> 
+    <script src="./js/main.js"></script> 
+  </body>
 </html>

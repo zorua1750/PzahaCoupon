@@ -22,7 +22,7 @@ async function fetchCoupons() {
         console.log(csvText.substring(0, 500)); // 打印部分原始 CSV 文本
         console.log('-----------------------------------');
 
-        allCoupons = parseCSV(csvText); // 這裡可能發生 Invalid array length
+        allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; // 初始化時，篩選的資料等於所有資料
 
         console.log('優惠券資料已成功載入:', allCoupons.length, '條'); // 打印載入的條目數
@@ -123,34 +123,36 @@ function parseCSV(csv) {
     return data;
 }
 
-// ==== 渲染優惠券到頁面 (不變) ====
+// ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
-    rowContainer.innerHTML = ''; 
+    rowContainer.innerHTML = ''; // 清空現有內容
 
     if (couponsToRender.length === 0) {
         rowContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5">沒有找到符合條件的優惠券。</div>';
-        updateSearchResultCount(0); 
+        updateSearchResultCount(0); // 如果沒有結果，更新計數為0
         return;
     }
 
     couponsToRender.forEach(coupon => {
+        // 確保價格是數字，以便格式化
         const priceValue = parseFloat(coupon.price);
-        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
+        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; // 如果不是數字則顯示N/A
+
+        // 顯示詳細內容在外層
+        const descriptionHtml = coupon.description ? 
+            `<p class="card-text coupon-description mt-2">${coupon.description.replace(/\n/g, '<br>')}</p>` : '';
 
         const couponCard = `
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="coupon-price-badge">${formattedPrice}</div>
-                        <h5 class="card-title">${coupon.name}</h5>
+                <div class="card shadow-sm h-100"> <div class="card-body d-flex flex-column"> <div class="coupon-price-badge">${formattedPrice}</div> <h5 class="card-title">${coupon.name}</h5>
                         <p class="card-text">代碼: <strong>${coupon.couponCode}</strong></p>
-                        <p class="card-text"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
-                                    查看詳情
-                                </button>
+                        ${descriptionHtml} <div class="mt-auto"> <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group w-100"> <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
+                                        查看更多
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -160,21 +162,24 @@ function renderCoupons(couponsToRender) {
         rowContainer.insertAdjacentHTML('beforeend', couponCard);
     });
 
+    // 為動態生成的「查看詳情」按鈕添加事件監聽器
     document.querySelectorAll('.view-detail-btn').forEach(button => {
         button.addEventListener('click', (event) => {
+            // 從 data-coupon 屬性中解析 JSON 字串
             const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
             showCouponDetailModal(couponData);
         });
     });
 
-    updateSearchResultCount(couponsToRender.length); 
+    updateSearchResultCount(couponsToRender.length); // 更新計數
 }
 
-// ==== 其他函數 (不變) ====
+// ==== 更新搜尋結果數量的函數 ====
 function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
+// ==== 顯示優惠券詳情 Modal 的函數 (不變) ====
 function showCouponDetailModal(coupon) {
     document.getElementById('detail-title').textContent = coupon.name;
     const detailBody = document.getElementById('detail-body');
@@ -190,10 +195,12 @@ function showCouponDetailModal(coupon) {
     detailModal.show();
 }
 
+// ==== 初始化 Tag-it 自動完成建議標籤 ====
 function initTagItAvailableTags() {
     const allTags = new Set();
     allCoupons.forEach(coupon => {
         if (coupon.tags) {
+            // 將標籤字串按逗號分割，並處理每個標籤
             coupon.tags.split(',').forEach(tag => {
                 const trimmedTag = tag.trim();
                 if (trimmedTag) {
@@ -202,47 +209,94 @@ function initTagItAvailableTags() {
             });
         }
     });
+    // 更新 Tag-it 的 availableTags 選項
     $('#myTags').tagit('option', 'availableTags', Array.from(allTags));
+    console.log('可用的標籤已載入:', Array.from(allTags));
 }
 
+
+// ==== 主要搜尋與篩選邏輯 ====
 function performSearchAndFilter() {
-    const currentTags = $('#myTags').tagit('assignedTags').map(tag => tag.toLowerCase());
-    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
+    const currentTags = $('#myTags').tagit('assignedTags').map(tag => tag.toLowerCase()); // 獲取當前所有標籤並轉為小寫
+    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; // 搜尋所有選項的狀態
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); // 獲取搜尋框內容
 
     filteredCoupons = allCoupons.filter(coupon => {
+        // 1. 標籤篩選邏輯
         let tagMatch = true;
         if (currentTags.length > 0) {
             const couponTags = coupon.tags ? coupon.tags.split(',').map(tag => tag.trim().toLowerCase()) : [];
+            // 檢查優惠券是否包含所有選定的標籤
             tagMatch = currentTags.every(tag => couponTags.includes(tag));
         }
 
-        let flavorMatch = true;
-        if (enableFlavorSearch && coupon.description) {
-            const descriptionLower = coupon.description.toLowerCase();
-            if (currentTags.length > 0) {
-                flavorMatch = currentTags.some(tag => descriptionLower.includes(tag));
-            } else {
-                flavorMatch = true; 
-            }
+        // 2. 通用關鍵字搜尋邏輯
+        let generalSearchMatch = true;
+        if (searchTerm) {
+            const searchableFields = [
+                coupon.name,
+                coupon.couponCode,
+                coupon.description,
+                coupon.tags,
+                coupon.orderType
+            ].map(field => String(field || '').toLowerCase()); // 確保所有欄位都是字串並轉小寫
+
+            generalSearchMatch = searchableFields.some(field => field.includes(searchTerm));
+        }
+
+        // 3. 「同時搜尋詳細內容中的關鍵字」邏輯 (原 enableFlavorSearch)
+        // 這個選項現在會影響標籤篩選和通用搜尋的結合方式
+        let flavorSearchMatch = true; // 預設為真，除非 enableFlavorSearch 啟用且有標籤
+        if (enableFlavorSearch && currentTags.length > 0) {
+            // 如果啟用且有標籤，則標籤必須在 description 中找到一個
+            const descriptionLower = String(coupon.description || '').toLowerCase();
+            flavorSearchMatch = currentTags.some(tag => descriptionLower.includes(tag));
+        }
+
+
+        // 組合篩選條件
+        // 如果沒有任何標籤和搜尋詞，則顯示所有
+        if (currentTags.length === 0 && !searchTerm) {
+            return true;
+        }
+
+        // 情況1: 只有標籤篩選 (不啟用 enableFlavorSearch)
+        if (currentTags.length > 0 && !enableFlavorSearch && !searchTerm) {
+            return tagMatch;
         }
         
-        if (currentTags.length === 0 && !enableFlavorSearch) {
-            return true; 
-        } else if (currentTags.length > 0 && enableFlavorSearch) {
-            return tagMatch || flavorMatch; 
-        } else if (currentTags.length > 0 && !enableFlavorSearch) {
-            return tagMatch; 
-        } else if (currentTags.length === 0 && enableFlavorSearch) {
-            return true; 
+        // 情況2: 只有通用搜尋 (沒有標籤)
+        if (!currentTags.length && searchTerm) {
+            return generalSearchMatch;
         }
-        return true; 
+
+        // 情況3: 標籤篩選 + 通用搜尋 (不啟用 enableFlavorSearch)
+        if (currentTags.length > 0 && searchTerm && !enableFlavorSearch) {
+            return tagMatch && generalSearchMatch;
+        }
+
+        // 情況4: 標籤篩選 + 啟用 enableFlavorSearch (無論是否有通用搜尋詞)
+        // 這裡的邏輯是：標籤必須匹配 AND (標籤在詳細內容中找到 OR 通用搜尋詞找到)
+        if (currentTags.length > 0 && enableFlavorSearch) {
+            return tagMatch && (flavorSearchMatch || generalSearchMatch);
+        }
+
+        // 情況5: 只有通用搜尋 + 啟用 enableFlavorSearch (沒有標籤)
+        // 這種情況下，enableFlavorSearch 其實沒有額外作用，直接用通用搜尋
+        if (!currentTags.length && searchTerm && enableFlavorSearch) {
+            return generalSearchMatch;
+        }
+        
+        return true; // 預設返回 true，以防所有條件都不符合
     });
 
+    // 重新排序篩選後的結果，保持排序狀態
     sortCoupons(document.getElementById('sortSelect').value);
 }
 
+// ==== 排序邏輯 (不變) ====
 function sortCoupons(sortBy) {
-    let sortedCoupons = [...filteredCoupons];
+    let sortedCoupons = [...filteredCoupons]; // 對篩選後的結果進行排序
 
     switch (sortBy) {
         case 'price-asc':
@@ -272,11 +326,13 @@ function sortCoupons(sortBy) {
 document.addEventListener('DOMContentLoaded', () => {
     fetchCoupons();
 
+    // 初始化 Bootstrap Popover
     const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
     popoverTriggerList.map(function (popoverTriggerEl) {
         return new bootstrap.Popover(popoverTriggerEl);
     });
 
+    // 回到頂部按鈕邏輯
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 200) {
@@ -292,28 +348,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // 清除按鈕邏輯
     document.querySelector('.clear-btn').addEventListener('click', () => {
-        $('#myTags').tagit('removeAll'); 
-        document.getElementById('enableFlavorSearch').checked = false; 
-        document.getElementById('sortSelect').value = 'price-asc'; 
-        performSearchAndFilter(); 
+        $('#myTags').tagit('removeAll'); // 清除 Tag-it 標籤
+        document.getElementById('enableFlavorSearch').checked = false; // 重置搜尋所有選項
+        document.getElementById('searchInput').value = ''; // 清空搜尋框
+        document.getElementById('sortSelect').value = 'price-asc'; // 重置排序
+        performSearchAndFilter(); // 重新觸發篩選和渲染
     });
 
+    // 排序功能監聽
     document.getElementById('sortSelect').addEventListener('change', (event) => {
         sortCoupons(event.target.value);
     });
 
+    // Tag-it 初始化
     $('#myTags').tagit({
-        availableTags: [], 
+        availableTags: [], // 這裡會動態填充
         afterTagAdded: function(evt, ui) {
-            performSearchAndFilter(); 
+            performSearchAndFilter(); // 當標籤添加時觸發搜尋/篩選
         },
         afterTagRemoved: function(evt, ui) {
-            performSearchAndFilter(); 
+            performSearchAndFilter(); // 當標籤移除時觸發搜尋/篩選
         },
-        singleField: true, 
-        singleFieldNode: $('#myTags') 
+        singleField: true, // 確保只有一個輸入框
+        singleFieldNode: $('#myTags') // 綁定到這個元素
     });
 
+    // 監聽 enableFlavorSearch 的變化
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
+
+    // 監聽搜尋框輸入事件
+    document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
 });
