@@ -20,9 +20,10 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
-        console.log('--- 原始 CSV 文本 (前500字元) ---');
-        console.log(csvText.substring(0, 500)); 
-        console.log('-----------------------------------');
+        // 移除原始 CSV 文本的 Console 輸出
+        // console.log('--- 原始 CSV 文本 (前500字元) ---');
+        // console.log(csvText.substring(0, 500)); 
+        // console.log('-----------------------------------');
 
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
@@ -33,8 +34,7 @@ async function fetchCoupons() {
         initFilterButtons(); 
         
         // 渲染初始優惠券列表 (會自動應用預設排序)
-        performSearchAndFilter(); // 直接呼叫篩選函數，它會根據選擇框的預設值進行排序
-        // updateSearchResultCount(filteredCoupons.length); // 這行會被 performSearchAndFilter 內部呼叫
+        performSearchAndFilter(); 
 
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
 
@@ -45,7 +45,7 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 (維持現有工作版本) ====
+// ==== CSV 解析函數 (維持現有工作版本，移除詳細偵錯輸出) ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
     if (lines.length <= 1) { 
@@ -54,10 +54,11 @@ function parseCSV(csv) {
     }
 
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
-    console.log('--- 解析後的標題 ---');
-    console.log(headers);
-    console.log('期望的標題數量:', headers.length);
-    console.log('--------------------');
+    // 移除解析後的標題的 Console 輸出
+    // console.log('--- 解析後的標題 ---');
+    // console.log(headers);
+    // console.log('期望的標題數量:', headers.length);
+    // console.log('--------------------');
 
     const data = [];
 
@@ -112,11 +113,12 @@ function parseCSV(csv) {
             currentLine.pop(); 
         }
         if (currentLine.length !== expectedHeaderCount) {
-            console.warn(`跳過不完整的行（列數不匹配）：`);
-            console.warn(`期望列數: ${expectedHeaderCount}, 實際列數: ${currentLine.length}`);
-            console.warn("這是解析失敗的行:", line);
-            console.warn("解析後的字段:", currentLine.map(f => `"${f}"`).join(', ')); 
-            console.warn("期望的標題:", headers.map(h => `"${h}"`).join(', '));
+            // 移除每行處理過程的 Console 輸出
+            // console.warn(`跳過不完整的行（列數不匹配）：`);
+            // console.warn(`期望列數: ${expectedHeaderCount}, 實際列數: ${currentLine.length}`);
+            // console.warn("這是解析失敗的行:", line);
+            // console.warn("解析後的字段:", currentLine.map(f => `"${f}"`).join(', ')); 
+            // console.warn("期望的標題:", headers.map(h => `"${h}"`).join(', '));
             continue; 
         } 
         
@@ -151,7 +153,7 @@ function renderCoupons(couponsToRender) {
                                    fullDescription.substring(0, 100) + '...' : 
                                    fullDescription;
         const descriptionHtml = coupon.description ? 
-            `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '')}</p>` : '';
+            `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '<br>')}</p>` : '';
 
         const couponCard = `
             <div class="col-md-4 mb-4">
@@ -232,7 +234,7 @@ function showCouponDetailModal(coupon) {
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong>${(coupon.description || '').replace(/\n/g, '')}</p>
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
     `;
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
     detailModal.show();
@@ -297,13 +299,12 @@ function performSearchAndFilter() {
 
 
         // 1. 「包含」篩選邏輯 (來自按鈕)
-        let includeTagsPass = true; // 預設標籤篩選通過
+        let includeTagsPass = true; 
         if (selectedIncludeTags.size > 0) {
-            // 只要優惠券的標籤包含選中的任何一個「包含」標籤，就匹配
             includeTagsPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
-        let orderTypeFilterPass = true; // 預設點餐類型篩選通過
+        let orderTypeFilterPass = true; 
         if (selectedOrderTypes.size > 0) {
             let foundOrderTypeMatch = false; 
             Array.from(selectedOrderTypes).forEach(filterValue => {
@@ -314,19 +315,17 @@ function performSearchAndFilter() {
             orderTypeFilterPass = foundOrderTypeMatch; 
         }
         
-        // 最終包含篩選必須同時滿足選中的標籤和點餐類型
         let finalIncludeFilterPass = includeTagsPass && orderTypeFilterPass;
 
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
-        let excludeFilterPass = true; // 預設通過
+        let excludeFilterPass = true; 
         if (selectedExcludeTags.size > 0) {
-            // 只要優惠券包含任何一個「排除」標籤，就不匹配
             excludeFilterPass = !Array.from(selectedExcludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
         // 3. 通用關鍵字搜尋邏輯 (來自搜尋框)
-        let generalSearchPass = true; // 預設通過
+        let generalSearchPass = true; 
         if (searchTerm) {
             const searchableFields = [
                 couponName,

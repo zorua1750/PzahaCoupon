@@ -18,7 +18,8 @@
     font-size: 0.9rem;
 }
 
-.navbar-dark .info .header-icon { /* 新增的通用圖示樣式 */
+/* 橫幅圖示的通用樣式 */
+.navbar-dark .info .header-icon { 
     font-size: 1.2rem;
     cursor: pointer;
     margin-left: 10px;
