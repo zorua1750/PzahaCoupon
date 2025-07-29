@@ -1,34 +1,33 @@
 /* Custom styles for PzahaCoupon website */
 
-/* Header styles (if needed beyond Bootstrap defaults) */
-/* 修正：更精確地針對 .navbar-brand 類別本身設定顏色 */
+/* Header styles */
 .navbar-dark .navbar-brand {
-    color: #C8102E !important; /* 文字顏色已修改並強制覆蓋 */
+    color: #FFFFFF !important; /* 文字顏色改為純白 */
     font-size: 1.5rem;
     font-weight: bold;
 }
 
-/* 調整橫幅背景色，使其與紅色文字對比更明顯 */
 .navbar-dark.bg-dark {
-    background-color: #2C3E50 !important; /* 背景顏色已修改並強制覆蓋 */
+    background-color: #C8102E !important; /* 背景顏色改為 #C8102E */
 }
 
 .navbar-dark .info {
     display: flex;
     align-items: center;
-    color: rgba(255, 255, 255, 0.75);
+    color: rgba(255, 255, 255, 0.75); /* 預設資訊文字顏色 */
     font-size: 0.9rem;
 }
 
-.navbar-dark .info .bi {
+.navbar-dark .info .header-icon { /* 新增的通用圖示樣式 */
     font-size: 1.2rem;
     cursor: pointer;
     margin-left: 10px;
+    color: rgba(255, 255, 255, 0.75); /* 預設圖示顏色為淺色 */
     transition: color 0.2s ease-in-out;
 }
 
-.navbar-dark .info .bi:hover {
-    color: #fff;
+.navbar-dark .info .header-icon:hover {
+    color: #fff; /* 懸停時圖示變更為白色 */
 }
 
 .last-update-time {
@@ -58,14 +57,6 @@
 .album {
     min-height: calc(100vh - 56px); /* Adjust based on header height */
     padding-top: 2rem !important; /* Ensure some top padding */
-}
-
-/* Tag-it specific adjustments (不再使用輸入框，但樣式可能還需要) */
-/* 舊的 Tag-it 樣式，如果您確定不再需要，可以刪除這些 */
-.tagit-bar {
-    margin-bottom: 1rem;
-    padding: 0; 
-    list-style: none; 
 }
 
 /* 篩選按鈕組的間距 */

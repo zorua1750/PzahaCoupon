@@ -3,16 +3,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <!-- Google AdSense 自動廣告程式碼 (請勿修改此處，這是您提供的程式碼) -->
+    <!-- Google AdSense 自動廣告程式碼 -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5422367827215301"
          crossorigin="anonymous"></script>
     
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- 優化 description 標籤 -->
     <meta name="description" content="PzahaCoupon 提供最新必勝客優惠代碼、優惠券，快速查詢 Pizza Hut 優惠資訊。">
-    <!-- 新增 keywords 標籤 -->
     <meta name="keywords" content="pizza hut, pizzahut, 必勝客, 優惠碼, 優惠代碼, 優惠券, PzahaCoupon">
-    <!-- 修改 author 標籤 -->
     <meta name="author" content="Zoura">
     <title>PzahaCoupon - 必勝客優惠碼、優惠券查詢</title> 
     
@@ -22,8 +19,6 @@
     <link rel="stylesheet" href="./css/jquery-ui.css">
     <!-- Bootstrap Icons CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
-    <!-- Tag-it CSS (已移除，不再需要) -->
-    <!-- <link href="./css/jquery.tagit.css" rel="stylesheet" type="text/css"> -->
     <!-- Custom Main CSS -->
     <link href="./css/main.css" rel="stylesheet">
   </head>
@@ -37,8 +32,10 @@
 
           <div class="info">
             <div class="last-update-time">最後更新: <span id="lastUpdate"></span></div>
-            <div type="button" class="bi bi-info-circle" title="聯絡資訊" data-bs-toggle="modal" data-bs-target="#contactModal"></div>
-            <div type="button" class="bi bi-journal-text" title="更新日誌" data-bs-toggle="modal" data-bs-target="#updateLogModal"></div>
+            <!-- 新增點餐符號 -->
+            <a href="https://www.pizzahut.com.tw/promotions/?mode=cpSch&type=plu" target="_blank" class="bi bi-cart-fill header-icon" title="前往點餐"></a>
+            <div type="button" class="bi bi-info-circle header-icon" title="聯絡資訊" data-bs-toggle="modal" data-bs-target="#contactModal"></div>
+            <div type="button" class="bi bi-journal-text header-icon" title="更新日誌" data-bs-toggle="modal" data-bs-target="#updateLogModal"></div>
           </div>
         </div>
       </div>
@@ -181,37 +178,22 @@
           </div>
           <div class="modal-body text-center contact-body">
             <div><i class="bi bi-github"></i> : <a href="https://github.com/zorua1750" target="_blank">https://github.com/zorua1750</a></div>
-            <!-- 修改聯絡郵件連結 -->
+            <!-- 修改聯絡郵件連結，移除 body 後面的「內文：」字樣 -->
             <div><img src="images/gmail.png"> : <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">zorua6518570@gmail.com</a></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Modal for Coupon Detail -->
-    <div class="modal fade" id="detailModel" tabindex="-1" aria-labelledby="detailModelLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title detail-model-label" id="detailModelLabel"><strong id="detail-title"></strong></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div id="detail-body" class="modal-body"></div>
-        </div>
-      </div>
-    </div>
-
     <!-- JavaScript 引用順序很重要 -->
-    <!-- jQuery 核心 (更換為完整版，並確保在 jQuery UI 之前) -->
+    <!-- jQuery 核心 -->
     <script src="./js/jquery-3.3.1.min.js"></script> 
     <!-- Popper.js (Bootstrap 5 的前置依賴) -->
     <script src="./js/popper.min.js"></script> 
     <!-- Bootstrap 5 JavaScript Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
-    <!-- jQuery UI JavaScript (這個錯誤很頑固，我們會再次強制確保它是對的) -->
+    <!-- jQuery UI JavaScript -->
     <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> 
-    <!-- Tag-it JavaScript (此處已移除引用，因為不再使用其 UI) -->
-    <!-- <script src="./js/tag-it.min.js" type="text/javascript" charset="utf-8"></script> -->
     <!-- 您的自定義 JavaScript 邏輯 -->
     <script src="./js/coupon.js"></script> 
     <script src="./js/main.js"></script> 
