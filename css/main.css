@@ -1,4 +1,4 @@
-/* Custom styles for pizacoupon website */
+/* Custom styles for PzahaCoupon website */
 
 /* Header styles (if needed beyond Bootstrap defaults) */
 /* 修正：更精確地針對 .navbar-brand 類別本身設定顏色 */
@@ -8,8 +8,9 @@
     font-weight: bold;
 }
 
+/* 調整橫幅背景色，使其與紅色文字對比更明顯 */
 .navbar-dark.bg-dark {
-    background-color: #313131 !important; /* 背景顏色已修改並強制覆蓋 */
+    background-color: #2C3E50 !important; /* 背景顏色已修改並強制覆蓋 */
 }
 
 .navbar-dark .info {
