@@ -20,11 +20,6 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
-        // 清理原始 CSV 文本的 Console 輸出
-        // console.log('--- 原始 CSV 文本 (前500字元) ---');
-        // console.log(csvText.substring(0, 500)); 
-        // console.log('-----------------------------------');
-
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
@@ -54,12 +49,6 @@ function parseCSV(csv) {
     }
 
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
-    // 移除解析後的標題的 Console 輸出
-    // console.log('--- 解析後的標題 ---');
-    // console.log(headers);
-    // console.log('期望的標題數量:', headers.length);
-    // console.log('--------------------');
-
     const data = [];
 
     const headerMap = {
@@ -113,12 +102,6 @@ function parseCSV(csv) {
             currentLine.pop(); 
         }
         if (currentLine.length !== expectedHeaderCount) {
-            // 移除每行處理過程的 Console 輸出
-            // console.warn(`跳過不完整的行（列數不匹配）：`);
-            // console.warn(`期望列數: ${expectedHeaderCount}, 實際列數: ${currentLine.length}`);
-            // console.warn("這是解析失敗的行:", line);
-            // console.warn("解析後的字段:", currentLine.map(f => `"${f}"`).join(', ')); 
-            // console.warn("期望的標題:", headers.map(h => `"${h}"`).join(', '));
             continue; 
         } 
         
@@ -361,8 +344,8 @@ function sortCoupons(sortBy) {
                 const priceB = parseFloat(b.price);
                 // 將 NaN (N/A) 價格排在最後
                 if (isNaN(priceA) && isNaN(priceB)) return 0;
-                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面
-                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面 (升序)
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面 (升序)
                 return priceA - priceB;
             });
             break;
@@ -372,8 +355,8 @@ function sortCoupons(sortBy) {
                 const priceB = parseFloat(b.price);
                 // 將 NaN (N/A) 價格排在最後
                 if (isNaN(priceA) && isNaN(priceB)) return 0;
-                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面
-                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面 (降序)
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面 (降序)
                 return priceB - priceA;
             });
             break;

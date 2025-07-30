@@ -362,9 +362,9 @@ body {
 }
 
 /* 修正：聯絡資訊的 Gmail 圖示大小，適用於所有螢幕尺寸 */
-.contact-body .bi-envelope-fill { /* 針對 Bootstrap Icons 的信封圖示 */
-    font-size: 20px; /* 調整為適合的大小 */
+.contact-body .bi-envelope-fill { 
+    font-size: 20px; 
     vertical-align: middle;
     margin-right: 5px;
-    color: var(--text-color); /* 確保在兩種模式下都清晰 */
+    color: var(--text-color); 
 }
