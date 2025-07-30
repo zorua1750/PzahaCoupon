@@ -166,33 +166,20 @@ function performSearchAndFilter() {
         const couponTags = String(coupon.tags || '').toLowerCase().split(',').map(tag => tag.trim());
         const couponOrderType = String(coupon.orderType || '').toLowerCase();
 
-        // 包含標籤篩選
-        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) {
-            return false;
-        }
-        // 點餐類型篩選
-        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType.includes(type))) {
-            return false;
-        }
-        // 排除標籤篩選
-        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) {
-            return false;
-        }
-        // 關鍵字搜尋
+        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) return false;
+        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType.includes(type))) return false;
+        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) return false;
+        
         if (searchTerm) {
             const searchableFields = [
                 String(coupon.name || '').toLowerCase(),
                 String(coupon.couponCode || '').toLowerCase(),
                 String(coupon.price || '').toLowerCase(),
                 couponOrderType,
-                ...couponTags
+                ...couponTags,
+                ...(enableFlavorSearch ? [String(coupon.description || '').toLowerCase()] : [])
             ];
-            if (enableFlavorSearch) {
-                searchableFields.push(String(coupon.description || '').toLowerCase());
-            }
-            if (!searchableFields.some(field => field.includes(searchTerm))) {
-                return false;
-            }
+            if (!searchableFields.some(field => field.includes(searchTerm))) return false;
         }
         return true;
     });
@@ -231,59 +218,69 @@ function sortCoupons(sortBy) {
 
 // ==== 初始化所有事件監聽 ====
 function initializeEventListeners() {
-    // 篩選按鈕
-    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            // **修正核心**：只切換 .active class
-            button.classList.toggle('active');
-            // **修正核心**：點擊後立即讓按鈕失焦
-            button.blur();
+    // 篩選按鈕事件處理
+    const handleFilterButtonClick = (button) => {
+        const { filterType, filterValue } = button.dataset;
+        const value = filterValue.toLowerCase();
+        
+        const sets = {
+            tags: selectedIncludeTags,
+            excludeTags: selectedExcludeTags,
+            orderType: selectedOrderTypes
+        };
+        const currentSet = sets[filterType];
+        
+        // **修正核心**：直接管理 class 和 Set 中的數據
+        if (currentSet.has(value)) {
+            currentSet.delete(value);
+            button.classList.remove('active');
+            if(button.classList.contains('btn-primary')) button.classList.replace('btn-primary', 'btn-outline-primary');
+            if(button.classList.contains('btn-danger')) button.classList.replace('btn-danger', 'btn-outline-danger');
+        } else {
+            currentSet.add(value);
+            button.classList.add('active');
+            if(button.classList.contains('btn-outline-primary')) button.classList.replace('btn-outline-primary', 'btn-primary');
+            if(button.classList.contains('btn-outline-danger')) button.classList.replace('btn-outline-danger', 'btn-danger');
+        }
+        
+        button.blur(); // 點擊後失焦，避免樣式殘留
+        performSearchAndFilter();
+    };
 
-            const { filterType, filterValue } = button.dataset;
-            const value = filterValue.toLowerCase();
-            const isActive = button.classList.contains('active');
-            
-            const sets = {
-                tags: selectedIncludeTags,
-                excludeTags: selectedExcludeTags,
-                orderType: selectedOrderTypes
-            };
-            
-            if (isActive) {
-                sets[filterType].add(value);
-            } else {
-                sets[filterType].delete(value);
-            }
-            
-            performSearchAndFilter();
-        });
+    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button));
     });
 
     // 清除所有篩選
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
         document.getElementById('searchInput').value = '';
-        document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(b => b.classList.remove('active'));
+        
+        document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(b => {
+            b.classList.remove('active');
+            if (b.classList.contains('btn-primary')) b.classList.replace('btn-primary', 'btn-outline-primary');
+            if (b.classList.contains('btn-danger')) b.classList.replace('btn-danger', 'btn-outline-danger');
+        });
+        
         selectedIncludeTags.clear();
         selectedExcludeTags.clear();
         selectedOrderTypes.clear();
+        
         document.getElementById('enableFlavorSearch').checked = false;
         document.getElementById('sortSelect').value = 'price-asc';
         performSearchAndFilter();
     });
 
-    // 排序、搜尋框、詳細搜尋開關
+    // 其他事件監聽
     document.getElementById('sortSelect').addEventListener('change', (e) => sortCoupons(e.target.value));
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // 回到頂部按鈕
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         topBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
     });
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-    // 事件委派：處理卡片內的點擊事件
     document.getElementById('row').addEventListener('click', (event) => {
         const detailButton = event.target.closest('.view-detail-btn');
         if (detailButton) {
@@ -299,7 +296,6 @@ function initializeEventListeners() {
         }
     });
 
-    // 夜間模式
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
     const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -319,7 +315,6 @@ function initializeEventListeners() {
         localStorage.setItem('theme', newTheme);
     });
 
-    // 初始化 Bootstrap Popover
     new bootstrap.Popover(document.getElementById('flavorSearchInfo'));
 }
 
