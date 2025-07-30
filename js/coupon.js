@@ -12,7 +12,7 @@ let selectedOrderTypes = new Set(); // 儲存選中的點餐類型
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
     try {
-        // console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); 
+        // console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...');
         const response = await fetch(GOOGLE_SHEET_URL);
 
         if (!response.ok) {
@@ -20,35 +20,35 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
-        allCoupons = parseCSV(csvText); 
-        filteredCoupons = [...allCoupons]; 
+        allCoupons = parseCSV(csvText);
+        filteredCoupons = [...allCoupons];
 
-        // console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); 
+        // console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條');
 
         // 初始化篩選按鈕的事件監聽
-        initFilterButtons(); 
-        
+        initFilterButtons();
+
         // 渲染初始優惠券列表 (會自動應用預設排序)
-        performSearchAndFilter(); 
+        performSearchAndFilter();
 
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
 
     } catch (error) {
-        console.error('載入 PzahaCoupon 資料失敗:', error); 
-        console.error('詳細錯誤訊息:', error.message); 
-        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; 
+        console.error('載入 PzahaCoupon 資料失敗:', error);
+        console.error('詳細錯誤訊息:', error.message);
+        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>';
     }
 }
 
 // ==== CSV 解析函數 (已清理 Console 輸出) ====
 function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
-    if (lines.length <= 1) { 
+    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== '');
+    if (lines.length <= 1) {
         console.warn("CSV 數據不足或只有標題行。");
         return [];
     }
 
-    const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
+    const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, ''));
     const data = [];
 
     const headerMap = {
@@ -60,16 +60,16 @@ function parseCSV(csv) {
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
-        "爬取時間": "crawlTime", 
-        "備註": "note" 
+        "爬取時間": "crawlTime",
+        "備註": "note"
     };
-    
+
     const expectedHeaderCount = Object.keys(headerMap).length;
     if (headers.length !== expectedHeaderCount) {
         console.warn(`警告: CSV標題行實際列數 (${headers.length}) 與程式碼期望列數 (${expectedHeaderCount}) 不符。`);
         if (headers.length < expectedHeaderCount) {
             for (let k = headers.length; k < expectedHeaderCount; k++) {
-                headers.push(Object.keys(headerMap)[k]); 
+                headers.push(Object.keys(headerMap)[k]);
             }
         }
     }
@@ -83,33 +83,33 @@ function parseCSV(csv) {
         for (let k = 0; k < line.length; k++) {
             const char = line[k];
             if (char === '"') {
-                if (inQuote && k + 1 < line.length && line[k+1] === '"') { 
+                if (inQuote && k + 1 < line.length && line[k+1] === '"') {
                     currentField += '"';
-                    k++; 
+                    k++;
                 } else {
                     inQuote = !inQuote;
                 }
             } else if (char === ',' && !inQuote) {
-                currentLine.push(currentField); 
+                currentLine.push(currentField);
                 currentField = '';
             } else {
                 currentField += char;
             }
         }
-        currentLine.push(currentField); 
+        currentLine.push(currentField);
 
         if (currentLine.length > expectedHeaderCount && currentLine[currentLine.length - 1].trim() === '') {
-            currentLine.pop(); 
+            currentLine.pop();
         }
         if (currentLine.length !== expectedHeaderCount) {
-            continue; 
-        } 
-        
+            continue;
+        }
+
         const row = {};
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
-            const newKey = headerMap[originalHeader] || originalHeader; 
-            row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, ''); 
+            const newKey = headerMap[originalHeader] || originalHeader;
+            row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, '');
         }
         data.push(row);
     }
@@ -119,40 +119,40 @@ function parseCSV(csv) {
 // ==== 渲染優惠券到頁面 (更新以顯示複製按鈕) ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
-    rowContainer.innerHTML = ''; 
+    rowContainer.innerHTML = '';
 
     if (couponsToRender.length === 0) {
         rowContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5">沒有找到符合條件的優惠券。</div>';
-        updateSearchResultCount(0); 
+        updateSearchResultCount(0);
         return;
     }
 
     couponsToRender.forEach(coupon => {
         const priceValue = parseFloat(coupon.price);
-        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
+        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`;
 
         const fullDescription = coupon.description || '';
-        const displayDescription = fullDescription.length > 100 ? 
-                                   fullDescription.substring(0, 100) + '...' : 
+        const displayDescription = fullDescription.length > 100 ?
+                                   fullDescription.substring(0, 100) + '...' :
                                    fullDescription;
-        const descriptionHtml = coupon.description ? 
+        const descriptionHtml = coupon.description ?
             `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '<br>')}</p>` : '';
 
         const couponCard = `
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100"> 
-                    <div class="card-body d-flex flex-column"> 
-                        <div class="coupon-price-badge">${formattedPrice}</div> 
+                <div class="card shadow-sm h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="coupon-price-badge">${formattedPrice}</div>
                         <h5 class="card-title">${coupon.name}</h5>
                         <p class="card-text coupon-code-display">
-                            代碼: <strong class="coupon-code-text" data-coupon-code="${coupon.couponCode}">${coupon.couponCode}</strong> 
+                            代碼: <strong class="coupon-code-text" data-coupon-code="${coupon.couponCode}">${coupon.couponCode}</strong>
                             <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i>
                         </p>
-                        ${descriptionHtml} 
-                        <div class="mt-auto"> 
+                        ${descriptionHtml}
+                        <div class="mt-auto">
                             <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <div class="btn-group w-100"> 
+                                <div class="btn-group w-100">
                                     <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
                                         查看更多
                                     </button>
@@ -180,7 +180,7 @@ function renderCoupons(couponsToRender) {
         });
     });
 
-    updateSearchResultCount(couponsToRender.length); 
+    updateSearchResultCount(couponsToRender.length);
 }
 
 // ==== 複製代碼到剪貼簿功能 (不變) ====
@@ -189,8 +189,8 @@ function copyToClipboard(text, element) {
         const originalTitle = element.title;
         element.title = '已複製!';
         element.classList.remove('bi-files');
-        element.classList.add('bi-check-lg'); 
-        
+        element.classList.add('bi-check-lg');
+
         setTimeout(() => {
             element.title = originalTitle;
             element.classList.remove('bi-check-lg');
@@ -258,6 +258,12 @@ function initFilterButtons() {
         }
         performSearchAndFilter(); // 每次點擊按鈕後重新篩選
         button.blur(); // 修正：點擊後移除按鈕的焦點，解決手機版顏色切換問題
+
+        // 嘗試強制重繪以解決移動端黏滯問題
+        // 這是一個常見的 workaround，可能會在某些設備上解決問題
+        button.style.display = 'none';
+        button.offsetWidth; // 觸發重排
+        button.style.display = ''; // 恢復顯示
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
@@ -271,8 +277,8 @@ function initFilterButtons() {
 
 // ==== 主要搜尋與篩選邏輯 (更新精確篩選和排除邏輯) ====
 function performSearchAndFilter() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); 
-    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; 
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
 
     filteredCoupons = allCoupons.filter(coupon => {
         const couponName = String(coupon.name || '').toLowerCase();
@@ -283,44 +289,44 @@ function performSearchAndFilter() {
 
 
         // 1. 「包含」篩選邏輯 (來自按鈕)
-        let includeTagsPass = true; 
+        let includeTagsPass = true;
         if (selectedIncludeTags.size > 0) {
             includeTagsPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
-        let orderTypeFilterPass = true; 
+        let orderTypeFilterPass = true;
         if (selectedOrderTypes.size > 0) {
-            let foundOrderTypeMatch = false; 
+            let foundOrderTypeMatch = false;
             Array.from(selectedOrderTypes).forEach(filterValue => {
-                if (couponOrderType === filterValue) { 
+                if (couponOrderType === filterValue) {
                     foundOrderTypeMatch = true;
                 }
             });
-            orderTypeFilterPass = foundOrderTypeMatch; 
+            orderTypeFilterPass = foundOrderTypeMatch;
         }
-        
+
         let finalIncludeFilterPass = includeTagsPass && orderTypeFilterPass;
 
 
         // 2. 「排除」篩選邏輯 (來自按鈕)
-        let excludeFilterPass = true; 
+        let excludeFilterPass = true;
         if (selectedExcludeTags.size > 0) {
             excludeFilterPass = !Array.from(selectedExcludeTags).some(filterTag => couponTags.includes(filterTag));
         }
 
         // 3. 通用關鍵字搜尋邏輯 (來自搜尋框)
-        let generalSearchPass = true; 
+        let generalSearchPass = true;
         if (searchTerm) {
             const searchableFields = [
                 couponName,
                 couponCode,
-                String(coupon.price || '').toLowerCase(), 
+                String(coupon.price || '').toLowerCase(),
                 couponOrderType,
                 String(coupon.tags || '').toLowerCase()
-            ]; 
+            ];
 
             if (enableFlavorSearch) {
-                searchableFields.push(couponDescription); 
+                searchableFields.push(couponDescription);
             }
 
             generalSearchPass = searchableFields.some(field => field.includes(searchTerm));
@@ -360,26 +366,26 @@ function sortCoupons(sortBy) {
                 return priceB - priceA;
             });
             break;
-        case 'coupon_code-asc': 
+        case 'coupon_code-asc':
             sortedCoupons.sort((a, b) => (a.couponCode || '').localeCompare(b.couponCode || ''));
             break;
-        case 'coupon_code-desc': 
+        case 'coupon_code-desc':
             sortedCoupons.sort((a, b) => (b.couponCode || '').localeCompare(a.couponCode || ''));
             break;
-        case 'end_date-asc': 
+        case 'end_date-asc':
             sortedCoupons.sort((a, b) => {
                 const dateA = new Date(a.endDate);
                 const dateB = new Date(b.endDate);
-                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; 
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1;
                 if (isNaN(dateB.getTime())) return -1;
                 return dateA.getTime() - dateB.getTime();
             });
             break;
-        case 'end_date-desc': 
+        case 'end_date-desc':
             sortedCoupons.sort((a, b) => {
                 const dateA = new Date(a.endDate);
                 const dateB = new Date(b.endDate);
-                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; 
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1;
                 if (isNaN(dateB.getTime())) return -1;
                 return dateB.getTime() - dateA.getTime();
             });
@@ -415,14 +421,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
-        document.getElementById('searchInput').value = ''; 
-        
+        document.getElementById('searchInput').value = '';
+
         document.querySelectorAll('.filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-primary');
             button.classList.add('btn-outline-primary');
         });
-        selectedIncludeTags.clear(); 
-        selectedOrderTypes.clear(); 
+        selectedIncludeTags.clear();
+        selectedOrderTypes.clear();
 
         document.querySelectorAll('.exclude-filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-danger');
@@ -430,9 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         selectedExcludeTags.clear();
 
-        document.getElementById('enableFlavorSearch').checked = false; 
-        document.getElementById('sortSelect').value = 'price-asc'; 
-        performSearchAndFilter(); 
+        document.getElementById('enableFlavorSearch').checked = false;
+        document.getElementById('sortSelect').value = 'price-asc';
+        performSearchAndFilter();
     });
 
     document.getElementById('sortSelect').addEventListener('change', (event) => {
