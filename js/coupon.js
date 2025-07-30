@@ -12,7 +12,7 @@ let selectedOrderTypes = new Set(); // 儲存選中的點餐類型
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
     try {
-        // console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); // 清理 Console 輸出
+        // console.log('正在從 Google Sheet 載入 PzahaCoupon 資料...'); 
         const response = await fetch(GOOGLE_SHEET_URL);
 
         if (!response.ok) {
@@ -28,7 +28,7 @@ async function fetchCoupons() {
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
-        // console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); // 清理 Console 輸出
+        // console.log('PzahaCoupon 資料已成功載入:', allCoupons.length, '條'); 
 
         // 初始化篩選按鈕的事件監聽
         initFilterButtons(); 

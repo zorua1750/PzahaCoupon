@@ -47,8 +47,8 @@ body[data-theme="dark"] {
     --input-text: #E0E0E0;
     --button-outline-primary-color: #7B68EE; 
     --button-primary-bg: #6A5ACD;
-    --button-outline-secondary-color: #ADB5BD; /* 新增：夜間模式下點餐類型按鈕邊框色 */
-    --button-secondary-bg: #495057; /* 新增：夜間模式下點餐類型按鈕背景色 */
+    --button-outline-secondary-color: #ADB5BD; 
+    --button-secondary-bg: #495057; 
     --button-outline-danger-color: #FF6347;
     --button-danger-bg: #DC143C;
     --popover-bg: #333333;
@@ -124,7 +124,7 @@ body {
 
 /* Main Content Area */
 .album {
-    background-color: var(--body-bg); /* 使用主題背景色 */
+    background-color: var(--body-bg); 
     min-height: calc(100vh - 56px); 
     padding-top: 2rem !important; 
 }
@@ -154,7 +154,7 @@ body {
 .btn-outline-primary:hover, .btn-primary.active {
     background-color: var(--button-primary-bg);
     border-color: var(--button-primary-bg);
-    color: #FFFFFF;
+    color: #FFFFFF !important; /* 強制文字為白色 */
 }
 
 /* 點餐類型篩選按鈕樣式 (secondary) */
@@ -166,7 +166,7 @@ body {
 #orderTypeButtons .btn-outline-primary:hover, #orderTypeButtons .btn-primary.active {
     background-color: var(--button-secondary-bg);
     border-color: var(--button-secondary-bg);
-    color: #FFFFFF;
+    color: #FFFFFF !important; /* 強制文字為白色 */
 }
 
 
@@ -178,7 +178,7 @@ body {
 .btn-outline-danger:hover, .btn-danger.active {
     background-color: var(--button-danger-bg);
     border-color: var(--button-danger-bg);
-    color: #FFFFFF;
+    color: #FFFFFF !important; /* 強制文字為白色 */
 }
 
 /* 清除篩選按鈕 */
@@ -363,7 +363,7 @@ body {
 
 /* 修正：聯絡資訊的 Gmail 圖示大小，適用於所有螢幕尺寸 */
 .contact-body img {
-    width: 20px; /* 預設大小 */
+    width: 20px; 
     height: auto;
     vertical-align: middle;
     margin-right: 5px;
@@ -371,8 +371,8 @@ body {
 
 /* 提醒區塊文字顏色修正 */
 .card.border-warning .card-text {
-    color: var(--reminder-text-color) !important; /* 確保在兩種模式下都清晰 */
+    color: var(--reminder-text-color) !important; 
 }
 .card.border-warning {
-    border-color: var(--reminder-border-color) !important; /* 確保邊框顏色也正確 */
+    border-color: var(--reminder-border-color) !important; 
 }
