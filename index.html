@@ -32,11 +32,9 @@
 
           <div class="info">
             <div class="last-update-time">最後更新: <span id="lastUpdate"></span></div>
-            <!-- 新增點餐符號 -->
             <a href="https://www.pizzahut.com.tw/promotions/?mode=cpSch&type=plu" target="_blank" class="bi bi-cart-fill header-icon" title="前往點餐"></a>
             <div type="button" class="bi bi-info-circle header-icon" title="聯絡資訊" data-bs-toggle="modal" data-bs-target="#contactModal"></div>
             <div type="button" class="bi bi-journal-text header-icon" title="更新日誌" data-bs-toggle="modal" data-bs-target="#updateLogModal"></div>
-            <!-- 夜間模式開關 -->
             <button id="themeToggle" class="btn btn-link p-0 ms-2 header-icon" title="切換夜間模式">
               <i class="bi bi-moon-fill"></i>
             </button>
@@ -59,7 +57,7 @@
           <!-- 內容標籤篩選按鈕組 -->
           <div class="row mb-3">
               <div class="col-md-12">
-                  <label class="form-label d-block">依內容標籤篩選:</label>
+                  <label class="form-label d-block">依餐點內容篩選:</label> <!-- 文字已修改 -->
                   <div id="contentTagButtons" class="d-flex flex-wrap gap-2">
                       <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="比薩">比薩</button>
                       <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="麵">麵</button>
@@ -77,7 +75,7 @@
           <!-- 「不要」內容標籤篩選按鈕組 -->
           <div class="row mb-3">
             <div class="col-md-12">
-                <label class="form-label d-block text-danger">排除以下內容標籤:</label>
+                <label class="form-label d-block text-danger">排除以下餐點:</label> <!-- 文字已修改 -->
                 <div id="excludeContentTagButtons" class="d-flex flex-wrap gap-2">
                     <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="比薩">不要比薩</button>
                     <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="麵">不要麵</button>
@@ -97,9 +95,9 @@
               <div class="col-md-12">
                   <label class="form-label d-block">依點餐類型篩選:</label>
                   <div id="orderTypeButtons" class="d-flex flex-wrap gap-2">
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">外送/外帶</button>
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">外帶</button>
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送">外送</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">可外送或外帶</button> <!-- 文字已修改 -->
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">僅可外帶</button> <!-- 文字已修改 -->
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送">僅可外送</button> <!-- 文字已修改 -->
                   </div>
               </div>
           </div>
@@ -207,8 +205,7 @@
           </div>
           <div class="modal-body text-center contact-body">
             <div><i class="bi bi-github"></i> : <a href="https://github.com/zorua1750" target="_blank">https://github.com/zorua1750</a></div>
-            <!-- 修改聯絡郵件連結 -->
-            <div><img src="images/gmail.png"> : <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">zorua6518570@gmail.com</a></div>
+            <div><img src="images/gmail.png"> : <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%B1%8B%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">zorua6518570@gmail.com</a></div>
           </div>
         </div>
       </div>

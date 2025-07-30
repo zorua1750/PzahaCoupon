@@ -138,39 +138,6 @@ body {
     white-space: nowrap; 
 }
 
-/* 篩選按鈕樣式 */
-.btn-outline-primary {
-    color: var(--button-outline-primary-color);
-    border-color: var(--button-outline-primary-color);
-}
-.btn-outline-primary:hover, .btn-primary.active {
-    background-color: var(--button-primary-bg);
-    border-color: var(--button-primary-bg);
-    color: #FFFFFF;
-}
-
-.btn-outline-danger {
-    color: var(--button-outline-danger-color);
-    border-color: var(--button-outline-danger-color);
-}
-.btn-outline-danger:hover, .btn-danger.active {
-    background-color: var(--button-danger-bg);
-    border-color: var(--button-danger-bg);
-    color: #FFFFFF;
-}
-
-/* 清除篩選按鈕 */
-.clear-all-filters-btn {
-    background-color: transparent; /* 保持透明 */
-    color: var(--button-outline-danger-color); /* 使用排除按鈕的顏色 */
-    border-color: var(--button-outline-danger-color);
-}
-.clear-all-filters-btn:hover {
-    background-color: var(--button-danger-bg);
-    color: #FFFFFF;
-}
-
-
 /* 工具列調整 */
 .tools-row {
     align-items: flex-end; 
@@ -180,14 +147,17 @@ body {
     padding-right: 15px;
 }
 
-/* 優惠券計數文字顏色 */
-.coupon-count {
-    color: var(--text-color) !important; /* 確保在暗色模式下可見 */
+/* Adjustments for search checkbox */
+#enableFlavorSearch {
+    margin-right: 5px;
+}
+.form-check-label strong {
+    font-size: 1.05rem;
 }
 
-/* hr 分隔線顏色 */
-hr {
-    border-top: 1px solid var(--hr-border-color);
+/* Adjustments for sort select */
+#sortSelect {
+    min-width: 150px; 
 }
 
 /* Coupon Card Styles */
@@ -337,4 +307,12 @@ body {
 /* Optional: style for active copy button (e.g., when it shows a checkmark) */
 .coupon-code-display .copy-code-btn.bi-check-lg {
     color: #28a745; /* Green for success */
+}
+
+/* 修正：聯絡資訊的 Gmail 圖示大小，僅在小螢幕上調整 */
+@media (max-width: 767.98px) { /* Bootstrap's default for small devices */
+    .contact-body img {
+        width: 18px; /* 調整為適合手機版的大小 */
+        height: auto;
+    }
 }
