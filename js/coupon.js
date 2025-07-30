@@ -135,16 +135,31 @@ function performSearchAndFilter() {
         const couponTags = (coupon.tags || '').toLowerCase().split(',').map(t => t.trim());
         const couponOrderType = (coupon.orderType || '').toLowerCase();
 
-        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(t => couponTags.includes(t))) return false;
-        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(t => couponOrderType.includes(t))) return false;
-        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(t => couponTags.includes(t))) return false;
+        // **修正後的篩選邏輯**
+        // 1. 「包含」標籤：如果選取了任何「包含」標籤，則優惠券必須至少包含其中一個。
+        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) {
+            return false;
+        }
+        
+        // 2. 「點餐類型」：如果選取了任何「點餐類型」，則優惠券的類型必須符合其中一個。
+        //    (例如：選"外帶"，則"外帶"或"外送/外帶"的券都會顯示)
+        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType.includes(type))) {
+            return false;
+        }
 
+        // 3. 「排除」標籤：如果優惠券包含任何一個「排除」標籤，則將其過濾掉。
+        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) {
+            return false;
+        }
+
+        // 4. 「關鍵字」搜尋
         if (searchTerm) {
             const fields = [coupon.name, coupon.couponCode, coupon.price, couponOrderType, ...couponTags];
             if (enableFlavorSearch) fields.push(coupon.description);
             if (!fields.some(f => (f || '').toLowerCase().includes(searchTerm))) return false;
         }
-        return true;
+
+        return true; // 如果通過所有檢查，則保留該優惠券
     });
     sortCoupons(document.getElementById('sortSelect').value);
 }
@@ -169,7 +184,7 @@ function initializeEventListeners() {
             const { filterType, filterValue } = button.dataset;
             const value = filterValue.toLowerCase();
             
-            button.classList.toggle('active');
+            button.classList.toggle('active'); // **只切換 .active class**
 
             const sets = {
                 tags: selectedIncludeTags,
