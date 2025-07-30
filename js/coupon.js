@@ -29,7 +29,8 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 ====
+// ==== **修正後的 CSV 解析函數** ====
+// 恢復到原始的、可以處理複雜引號的健壯版本
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length <= 1) return [];
@@ -43,12 +44,39 @@ function parseCSV(csv) {
     };
 
     for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map(v => v.trim().replace(/\r/g, ''));
-        if (values.length >= headers.length) {
+        const line = lines[i];
+        let currentLine = [];
+        let inQuote = false;
+        let currentField = '';
+
+        for (let k = 0; k < line.length; k++) {
+            const char = line[k];
+            if (char === '"') {
+                if (inQuote && k + 1 < line.length && line[k+1] === '"') {
+                    currentField += '"';
+                    k++;
+                } else {
+                    inQuote = !inQuote;
+                }
+            } else if (char === ',' && !inQuote) {
+                currentLine.push(currentField);
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        currentLine.push(currentField);
+
+        if (currentLine.length >= headers.length) {
             const row = {};
             headers.forEach((header, j) => {
                 const newKey = headerMap[header] || header;
-                row[newKey] = values[j] || '';
+                // 去除值前後可能存在的引號
+                let value = (currentLine[j] || '').trim();
+                if (value.startsWith('"') && value.endsWith('"')) {
+                    value = value.substring(1, value.length - 1);
+                }
+                row[newKey] = value.replace(/""/g, '"').replace(/\r/g, '');
             });
             data.push(row);
         }
@@ -135,14 +163,12 @@ function performSearchAndFilter() {
         const couponTags = (coupon.tags || '').toLowerCase().split(',').map(t => t.trim());
         const couponOrderType = (coupon.orderType || '').toLowerCase();
 
-        // **修正後的篩選邏輯**
         // 1. 「包含」標籤：如果選取了任何「包含」標籤，則優惠券必須至少包含其中一個。
         if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) {
             return false;
         }
         
         // 2. 「點餐類型」：如果選取了任何「點餐類型」，則優惠券的類型必須符合其中一個。
-        //    (例如：選"外帶"，則"外帶"或"外送/外帶"的券都會顯示)
         if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType.includes(type))) {
             return false;
         }
@@ -159,7 +185,7 @@ function performSearchAndFilter() {
             if (!fields.some(f => (f || '').toLowerCase().includes(searchTerm))) return false;
         }
 
-        return true; // 如果通過所有檢查，則保留該優惠券
+        return true;
     });
     sortCoupons(document.getElementById('sortSelect').value);
 }

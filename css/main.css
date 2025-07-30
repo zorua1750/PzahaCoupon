@@ -70,7 +70,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* **修正**：到期日文字顏色 */
+/* 修正 Muted 文字顏色 */
 .text-muted {
     color: var(--text-muted-color) !important;
 }
