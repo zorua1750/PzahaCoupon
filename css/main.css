@@ -5,21 +5,21 @@
     /* 淺色模式 (Light Mode) 顏色 */
     --body-bg: #F8F9FA;
     --text-color: #212529;
-    --text-muted-color: #6c757d; /* 新增：Muted 文字顏色 */
-    --header-bg: #C8102E; /* 橫幅背景色 */
-    --header-text: #FFFFFF; /* 橫幅文字色 */
+    --text-muted-color: #6c757d;
+    --header-bg: #C8102E;
+    --header-text: #FFFFFF;
     --card-bg: #FFFFFF;
     --card-title-color: #333;
     --card-text-color: #555;
     --card-description-color: #666;
-    --card-code-color: #dc3545; /* 優惠代碼紅色 */
+    --card-code-color: #dc3545;
     --hr-border-color: rgba(0, 0, 0, .1);
     --input-bg: #FFFFFF;
     --input-text: #212529;
-    --button-outline-primary-color: #007bff; /* 內容篩選按鈕邊框色 */
-    --button-primary-bg: #007bff; /* 內容篩選按鈕背景色 */
-    --button-outline-secondary-color: #6c757d; /* 點餐類型按鈕邊框色 */
-    --button-secondary-bg: #6c757d; /* 點餐類型按鈕背景色 */
+    --button-outline-primary-color: #007bff;
+    --button-primary-bg: #007bff;
+    --button-outline-secondary-color: #6c757d;
+    --button-secondary-bg: #6c757d;
     --button-outline-danger-color: #dc3545;
     --button-danger-bg: #dc3545;
     --popover-bg: #FFFFFF;
@@ -28,15 +28,15 @@
     --modal-text: #212529;
     --modal-header-bg: #E9ECEF;
     --modal-header-text: #212529;
-    --reminder-text-color: #664d03; /* 提醒文字顏色 */
-    --reminder-border-color: #ffc107; /* 提醒邊框顏色 */
+    --reminder-text-color: #664d03;
+    --reminder-border-color: #ffc107;
 }
 
 /* 夜間模式 (Dark Mode) 顏色 */
 body[data-theme="dark"] {
     --body-bg: #1A1A1A;
     --text-color: #E0E0E0;
-    --text-muted-color: #A0A0A0; /* 新增：夜間 Muted 文字顏色 */
+    --text-muted-color: #A0A0A0; /* 夜間模式 Muted 文字顏色修正 */
     --header-bg: #C8102E; 
     --header-text: #FFFFFF; 
     --card-bg: #2C2C2C;
@@ -70,7 +70,7 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* **修正**：到期日文字顏色 */
+/* 修正 Muted 文字顏色 */
 .text-muted {
     color: var(--text-muted-color) !important;
 }
@@ -90,40 +90,36 @@ body {
 /* Main Content Area */
 .album { background-color: var(--body-bg); min-height: calc(100vh - 56px); padding-top: 2rem !important; }
 
-/* 搜尋輸入框樣式 */
 #searchInput { background-color: var(--input-bg); color: var(--input-text); border-color: var(--hr-border-color); }
 #searchInput::placeholder { color: var(--card-description-color); opacity: 1; }
 
-/* 篩選按鈕組的間距 */
 .filter-btn, .exclude-filter-btn { margin-bottom: 0.5rem; white-space: nowrap; }
 
 /* === **最終按鈕狀態修正** START === */
 /* 內容篩選按鈕 (Primary) */
 .btn-outline-primary { color: var(--button-outline-primary-color); border-color: var(--button-outline-primary-color); background-color: transparent; }
-.btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-primary-bg); border-color: var(--button-primary-bg); }
+.btn-outline-primary:hover { color: #FFFFFF; background-color: var(--button-primary-bg); border-color: var(--button-primary-bg); }
 .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-primary-bg) !important; border-color: var(--button-primary-bg) !important; }
 
 /* 點餐類型篩選按鈕 (Secondary) */
 #orderTypeButtons .btn-outline-primary { color: var(--button-outline-secondary-color); border-color: var(--button-outline-secondary-color); background-color: transparent; }
-#orderTypeButtons .btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-secondary-bg); border-color: var(--button-secondary-bg); }
+#orderTypeButtons .btn-outline-primary:hover { color: #FFFFFF; background-color: var(--button-secondary-bg); border-color: var(--button-secondary-bg); }
 #orderTypeButtons .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-secondary-bg) !important; border-color: var(--button-secondary-bg) !important; }
 
 /* 排除篩選按鈕 (Danger) */
 .btn-outline-danger { color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); background-color: transparent; }
-.btn-outline-danger:not(.active):hover { color: #FFFFFF; background-color: var(--button-danger-bg); border-color: var(--button-danger-bg); }
+.btn-outline-danger:hover { color: #FFFFFF; background-color: var(--button-danger-bg); border-color: var(--button-danger-bg); }
 .btn-outline-danger.active { color: #FFFFFF !important; background-color: var(--button-danger-bg) !important; border-color: var(--button-danger-bg) !important; }
 /* === 最終按鈕狀態修正 END === */
 
-/* 清除篩選按鈕 */
 .clear-all-filters-btn { background-color: transparent; color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); }
 .clear-all-filters-btn:hover { background-color: var(--button-danger-bg); color: #FFFFFF; }
 
-/* 工具列調整 */
 .tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
 .coupon-count { color: var(--text-color) !important; }
 hr { border-top: 1px solid var(--hr-border-color); }
 
-/* Coupon Card Styles */
+/* Coupon Card & General Styles */
 .card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
 .card:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
 .card-body { padding: 1.25rem; flex-grow: 1; }
@@ -132,9 +128,7 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .card-text strong { color: var(--card-code-color); font-size: 1.1em; }
 .coupon-description { font-size: 0.85rem; color: var(--card-description-color); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.5em; }
 .coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #28a745; color: white; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-.card .btn-group, .card .view-detail-btn { width: 100%; margin-top: 15px; }
-
-/* Modal & Popover */
+.card .view-detail-btn { width: 100%; margin-top: 15px; }
 .modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
 .modal-header { background-color: var(--modal-header-bg); color: var(--modal-header-text); border-bottom-color: var(--hr-border-color); }
 .modal-title { color: var(--modal-header-text); }
@@ -143,8 +137,6 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .popover { background-color: var(--popover-bg); color: var(--popover-text); border-color: var(--hr-border-color); }
 .popover .popover-header { background-color: var(--popover-bg); color: var(--popover-text); border-bottom-color: var(--hr-border-color); }
 .popover .popover-body { color: var(--popover-text); }
-
-/* General Styles */
 body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
 .container { padding-left: 15px; padding-right: 15px; }
 .coupon-code-display .copy-code-btn { cursor: pointer; margin-left: 5px; font-size: 0.9em; vertical-align: middle; color: var(--button-outline-primary-color); transition: color 0.2s ease-in-out; }
