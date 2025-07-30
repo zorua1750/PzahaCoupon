@@ -20,11 +20,6 @@ async function fetchCoupons() {
         }
 
         const csvText = await response.text();
-        // 移除原始 CSV 文本的 Console 輸出
-        // console.log('--- 原始 CSV 文本 (前500字元) ---');
-        // console.log(csvText.substring(0, 500)); 
-        // console.log('-----------------------------------');
-
         allCoupons = parseCSV(csvText); 
         filteredCoupons = [...allCoupons]; 
 
@@ -45,7 +40,7 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 (維持現有工作版本，移除詳細偵錯輸出) ====
+// ==== CSV 解析函數 (已清理 Console 輸出) ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
     if (lines.length <= 1) { 
@@ -442,4 +437,33 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
+
+    // 夜間模式切換邏輯
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // 載入用戶偏好主題
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        body.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+        }
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // 如果沒有保存偏好，但系統偏好是暗色模式
+        body.setAttribute('data-theme', 'dark');
+        themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+    }
+
+    themeToggle.addEventListener('click', () => {
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            themeToggle.querySelector('i').classList.replace('bi-sun-fill', 'bi-moon-fill');
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+            localStorage.setItem('theme', 'dark');
+        }
+    });
 });
