@@ -70,293 +70,84 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* 新增：修正 Muted 文字顏色 */
+/* **修正**：到期日文字顏色 */
 .text-muted {
     color: var(--text-muted-color) !important;
 }
 
 /* Header styles */
-.navbar-dark {
-    background-color: var(--header-bg) !important; 
-}
-.navbar-dark .navbar-brand {
-    color: var(--header-text) !important; 
-    font-size: 1.5rem;
-    font-weight: bold;
-}
-.navbar-dark .info {
-    display: flex;
-    align-items: center;
-    color: var(--header-text); 
-    font-size: 0.9rem;
-}
-.navbar-dark .info .header-icon { 
-    font-size: 1.2rem;
-    cursor: pointer;
-    margin-left: 10px;
-    color: var(--header-text); 
-    transition: color 0.2s ease-in-out;
-}
-.navbar-dark .info .header-icon:hover {
-    color: rgba(255, 255, 255, 0.8); 
-}
-.last-update-time {
-    margin-right: 15px;
-}
+.navbar-dark { background-color: var(--header-bg) !important; }
+.navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
+.navbar-dark .info { display: flex; align-items: center; color: var(--header-text); font-size: 0.9rem; }
+.navbar-dark .info .header-icon { font-size: 1.2rem; cursor: pointer; margin-left: 10px; color: var(--header-text); transition: color 0.2s ease-in-out; }
+.navbar-dark .info .header-icon:hover { color: rgba(255, 255, 255, 0.8); }
+.last-update-time { margin-right: 15px; }
 
 /* Back to Top Button */
-.top-btn {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    font-size: 2.5rem;
-    color: var(--button-outline-primary-color); 
-    cursor: pointer;
-    display: none; 
-    z-index: 1000; 
-    opacity: 0.8;
-    transition: opacity 0.3s ease-in-out;
-}
-.top-btn:hover {
-    opacity: 1;
-    color: var(--button-primary-bg); 
-}
+.top-btn { position: fixed; bottom: 20px; right: 20px; font-size: 2.5rem; color: var(--button-outline-primary-color); cursor: pointer; display: none; z-index: 1000; opacity: 0.8; transition: opacity 0.3s ease-in-out; }
+.top-btn:hover { opacity: 1; color: var(--button-primary-bg); }
 
 /* Main Content Area */
-.album {
-    background-color: var(--body-bg); 
-    min-height: calc(100vh - 56px); 
-    padding-top: 2rem !important; 
-}
+.album { background-color: var(--body-bg); min-height: calc(100vh - 56px); padding-top: 2rem !important; }
 
 /* 搜尋輸入框樣式 */
-#searchInput {
-    background-color: var(--input-bg);
-    color: var(--input-text);
-    border-color: var(--hr-border-color);
-}
-#searchInput::placeholder { 
-    color: var(--card-description-color);
-    opacity: 1; 
-}
+#searchInput { background-color: var(--input-bg); color: var(--input-text); border-color: var(--hr-border-color); }
+#searchInput::placeholder { color: var(--card-description-color); opacity: 1; }
 
 /* 篩選按鈕組的間距 */
-.filter-btn, .exclude-filter-btn {
-    margin-bottom: 0.5rem; 
-    white-space: nowrap; 
-}
+.filter-btn, .exclude-filter-btn { margin-bottom: 0.5rem; white-space: nowrap; }
 
-/* === 按鈕狀態修正 START === */
+/* === **最終按鈕狀態修正** START === */
 /* 內容篩選按鈕 (Primary) */
-.btn-outline-primary {
-    color: var(--button-outline-primary-color);
-    border-color: var(--button-outline-primary-color);
-    background-color: transparent;
-}
-.btn-outline-primary:not(.active):hover {
-    color: #FFFFFF;
-    background-color: var(--button-primary-bg);
-    border-color: var(--button-primary-bg);
-}
-.btn-primary, .btn-outline-primary.active {
-    color: #FFFFFF !important;
-    background-color: var(--button-primary-bg) !important;
-    border-color: var(--button-primary-bg) !important;
-}
+.btn-outline-primary { color: var(--button-outline-primary-color); border-color: var(--button-outline-primary-color); background-color: transparent; }
+.btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-primary-bg); border-color: var(--button-primary-bg); }
+.btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-primary-bg) !important; border-color: var(--button-primary-bg) !important; }
 
 /* 點餐類型篩選按鈕 (Secondary) */
-#orderTypeButtons .btn-outline-primary {
-    color: var(--button-outline-secondary-color);
-    border-color: var(--button-outline-secondary-color);
-    background-color: transparent;
-}
-#orderTypeButtons .btn-outline-primary:not(.active):hover {
-    color: #FFFFFF;
-    background-color: var(--button-secondary-bg);
-    border-color: var(--button-secondary-bg);
-}
-#orderTypeButtons .btn-primary, #orderTypeButtons .btn-outline-primary.active {
-    color: #FFFFFF !important;
-    background-color: var(--button-secondary-bg) !important;
-    border-color: var(--button-secondary-bg) !important;
-}
+#orderTypeButtons .btn-outline-primary { color: var(--button-outline-secondary-color); border-color: var(--button-outline-secondary-color); background-color: transparent; }
+#orderTypeButtons .btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-secondary-bg); border-color: var(--button-secondary-bg); }
+#orderTypeButtons .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-secondary-bg) !important; border-color: var(--button-secondary-bg) !important; }
 
 /* 排除篩選按鈕 (Danger) */
-.btn-outline-danger {
-    color: var(--button-outline-danger-color);
-    border-color: var(--button-outline-danger-color);
-    background-color: transparent;
-}
-.btn-outline-danger:not(.active):hover {
-    color: #FFFFFF;
-    background-color: var(--button-danger-bg);
-    border-color: var(--button-danger-bg);
-}
-.btn-danger, .btn-outline-danger.active {
-    color: #FFFFFF !important;
-    background-color: var(--button-danger-bg) !important;
-    border-color: var(--button-danger-bg) !important;
-}
-/* === 按鈕狀態修正 END === */
+.btn-outline-danger { color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); background-color: transparent; }
+.btn-outline-danger:not(.active):hover { color: #FFFFFF; background-color: var(--button-danger-bg); border-color: var(--button-danger-bg); }
+.btn-outline-danger.active { color: #FFFFFF !important; background-color: var(--button-danger-bg) !important; border-color: var(--button-danger-bg) !important; }
+/* === 最終按鈕狀態修正 END === */
 
 /* 清除篩選按鈕 */
-.clear-all-filters-btn {
-    background-color: transparent; 
-    color: var(--button-outline-danger-color); 
-    border-color: var(--button-outline-danger-color);
-}
-.clear-all-filters-btn:hover {
-    background-color: var(--button-danger-bg);
-    color: #FFFFFF;
-}
+.clear-all-filters-btn { background-color: transparent; color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); }
+.clear-all-filters-btn:hover { background-color: var(--button-danger-bg); color: #FFFFFF; }
 
 /* 工具列調整 */
-.tools-row {
-    align-items: flex-end; 
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    padding-left: 15px; 
-    padding-right: 15px;
-}
-
-.coupon-count {
-    color: var(--text-color) !important; 
-}
-
-hr {
-    border-top: 1px solid var(--hr-border-color);
-}
+.tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
+.coupon-count { color: var(--text-color) !important; }
+hr { border-top: 1px solid var(--hr-border-color); }
 
 /* Coupon Card Styles */
-.card {
-    position: relative; 
-    border: 1px solid var(--hr-border-color); 
-    border-radius: 0.25rem;
-    transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease;
-    background-color: var(--card-bg); 
-    color: var(--card-text-color); 
-    min-height: 250px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; 
-    overflow: hidden; 
-}
-.card:hover {
-    transform: translateY(-5px); 
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-}
-.card-body {
-    padding: 1.25rem;
-    flex-grow: 1; 
-}
-.card-title {
-    font-size: 1.3rem;
-    font-weight: bold;
-    margin-bottom: 0.75rem;
-    color: var(--card-title-color); 
-}
-.card-text {
-    margin-bottom: 0.5rem; 
-    font-size: 0.95rem;
-    color: var(--card-text-color); 
-}
-.card-text strong {
-    color: var(--card-code-color); 
-    font-size: 1.1em;
-}
-.coupon-description {
-    font-size: 0.85rem; 
-    color: var(--card-description-color); 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3; 
-    -webkit-box-orient: vertical;
-    line-height: 1.5em; 
-}
-.coupon-price-badge {
-    position: absolute;
-    top: 0; 
-    right: 0; 
-    background-color: #28a745; 
-    color: white;
-    padding: 8px 15px; 
-    border-bottom-left-radius: 10px; 
-    font-weight: bold;
-    font-size: 1.2rem; 
-    z-index: 10; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
-}
-.card .btn-group, .card .view-detail-btn {
-    width: 100%;
-    margin-top: 15px;
-}
+.card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
+.card-body { padding: 1.25rem; flex-grow: 1; }
+.card-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
+.card-text { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--card-text-color); }
+.card-text strong { color: var(--card-code-color); font-size: 1.1em; }
+.coupon-description { font-size: 0.85rem; color: var(--card-description-color); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; line-height: 1.5em; }
+.coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #28a745; color: white; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.card .btn-group, .card .view-detail-btn { width: 100%; margin-top: 15px; }
 
-/* Modal Content */
-.modal-content {
-    background-color: var(--modal-bg);
-    color: var(--modal-text);
-}
-.modal-header {
-    background-color: var(--modal-header-bg);
-    color: var(--modal-header-text);
-    border-bottom-color: var(--hr-border-color);
-}
-.modal-title {
-    color: var(--modal-header-text);
-}
-.modal-body {
-    color: var(--modal-text);
-}
-.modal-footer {
-    border-top-color: var(--hr-border-color);
-}
+/* Modal & Popover */
+.modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
+.modal-header { background-color: var(--modal-header-bg); color: var(--modal-header-text); border-bottom-color: var(--hr-border-color); }
+.modal-title { color: var(--modal-header-text); }
+.modal-body { color: var(--modal-text); }
+.modal-footer { border-top-color: var(--hr-border-color); }
+.popover { background-color: var(--popover-bg); color: var(--popover-text); border-color: var(--hr-border-color); }
+.popover .popover-header { background-color: var(--popover-bg); color: var(--popover-text); border-bottom-color: var(--hr-border-color); }
+.popover .popover-body { color: var(--popover-text); }
 
-/* General text readability */
-body {
-    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
-}
-
-/* For popover info styling */
-.popover {
-    background-color: var(--popover-bg);
-    color: var(--popover-text);
-    border-color: var(--hr-border-color);
-}
-.popover .popover-header {
-    background-color: var(--popover-bg);
-    color: var(--popover-text);
-    border-bottom-color: var(--hr-border-color);
-}
-.popover .popover-body {
-    color: var(--popover-text);
-}
-
-.container {
-    padding-left: 15px;
-    padding-right: 15px;
-}
-
-/* Style for the copy code icon */
-.coupon-code-display .copy-code-btn {
-    cursor: pointer;
-    margin-left: 5px;
-    font-size: 0.9em;
-    vertical-align: middle;
-    color: var(--button-outline-primary-color); 
-    transition: color 0.2s ease-in-out;
-}
-.coupon-code-display .copy-code-btn:hover {
-    color: var(--button-primary-bg); 
-}
-.coupon-code-display .copy-code-btn.bi-check-lg {
-    color: #28a745; 
-}
-
-.contact-body .bi-envelope-fill { 
-    font-size: 20px; 
-    vertical-align: middle;
-    margin-right: 5px;
-    color: var(--text-color); 
-}
+/* General Styles */
+body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
+.container { padding-left: 15px; padding-right: 15px; }
+.coupon-code-display .copy-code-btn { cursor: pointer; margin-left: 5px; font-size: 0.9em; vertical-align: middle; color: var(--button-outline-primary-color); transition: color 0.2s ease-in-out; }
+.coupon-code-display .copy-code-btn:hover { color: var(--button-primary-bg); }
+.coupon-code-display .copy-code-btn.bi-check-lg { color: #28a745; }
+.contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }

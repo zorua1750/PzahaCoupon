@@ -163,66 +163,60 @@ function sortCoupons(sortBy) {
 
 // ==== 初始化事件監聽 ====
 function initializeEventListeners() {
-    // 篩選按鈕
-    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const { filterType, filterValue } = button.dataset;
-            const value = filterValue.toLowerCase();
-            const isExclude = button.classList.contains('exclude-filter-btn');
+    // **最終修正**：使用最原始、最直接的 class 切換邏輯，並結合強制重繪
+    const handleFilterButtonClick = (button, isExclude = false) => {
+        button.classList.toggle('active');
+        if (isExclude) {
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+        } else {
+            button.classList.toggle('btn-outline-primary');
+            button.classList.toggle('btn-primary');
+        }
 
-            button.classList.toggle('active');
+        const { filterType, filterValue } = button.dataset;
+        const value = filterValue.toLowerCase();
+        
+        const sets = {
+            tags: selectedIncludeTags,
+            excludeTags: selectedExcludeTags,
+            orderType: selectedOrderTypes
+        };
 
-            // **修正核心**：直接切換 Bootstrap 的樣式 class
-            if (isExclude) {
-                button.classList.toggle('btn-outline-danger');
-                button.classList.toggle('btn-danger');
-            } else {
-                 // 這裡需要判斷是在哪個按鈕群組
-                const parentId = button.closest('div[id]').id;
-                if (parentId === 'orderTypeButtons') {
-                    // 點餐類型按鈕維持 secondary 外觀，但 JS 會根據 active class 控制
-                } else {
-                    button.classList.toggle('btn-outline-primary');
-                    button.classList.toggle('btn-primary');
-                }
-            }
-            
-            const sets = {
-                tags: selectedIncludeTags,
-                excludeTags: selectedExcludeTags,
-                orderType: selectedOrderTypes
-            };
+        if (button.classList.contains('active')) {
+            sets[filterType].add(value);
+        } else {
+            sets[filterType].delete(value);
+        }
+        
+        performSearchAndFilter();
+        button.blur(); // 確保失焦
 
-            if (button.classList.contains('active')) {
-                sets[filterType].add(value);
-            } else {
-                sets[filterType].delete(value);
-            }
-            
-            button.blur(); // 確保失焦
-            
-            // **修正核心**：強制重繪
-            button.style.display = 'none';
-            button.offsetHeight; // 讀取屬性觸發重排
-            button.style.display = ''; // 恢復顯示
+        // 強制重繪技巧
+        button.style.display = 'none';
+        button.offsetHeight; // 讀取屬性觸發重排
+        button.style.display = '';
+    };
 
-            performSearchAndFilter();
-        });
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, false));
+    });
+
+    document.querySelectorAll('.exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, true));
     });
 
     // 清除篩選
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
         document.getElementById('searchInput').value = '';
+        document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(b => {
+             b.classList.remove('active');
+            if (b.classList.contains('btn-primary')) b.classList.replace('btn-primary', 'btn-outline-primary');
+            if (b.classList.contains('btn-danger')) b.classList.replace('btn-danger', 'btn-outline-danger');
+        });
         selectedIncludeTags.clear();
         selectedExcludeTags.clear();
         selectedOrderTypes.clear();
-
-        document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(b => {
-            b.classList.remove('active');
-            if(b.classList.contains('btn-primary')) b.classList.replace('btn-primary', 'btn-outline-primary');
-            if(b.classList.contains('btn-danger')) b.classList.replace('btn-danger', 'btn-outline-danger');
-        });
-        
         document.getElementById('enableFlavorSearch').checked = false;
         document.getElementById('sortSelect').value = 'price-asc';
         performSearchAndFilter();
