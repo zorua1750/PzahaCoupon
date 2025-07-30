@@ -17,7 +17,7 @@ async function fetchCoupons() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const csvText = await response.text();
-        allCoupons = parseCSV(csvText); // 使用修正後的解析函數
+        allCoupons = parseCSV(csvText);
         filteredCoupons = [...allCoupons];
 
         initFilterButtons(); // 初始化按鈕事件
@@ -31,14 +31,10 @@ async function fetchCoupons() {
     }
 }
 
-// ==== **修正後的 CSV 解析函數** ====
-// 恢復到您提供的、可以處理複雜引號的健壯版本
+// ==== CSV 解析函數 (使用健壯版本) ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== '');
-    if (lines.length <= 1) {
-        console.warn("CSV 數據不足或只有標題行。");
-        return [];
-    }
+    if (lines.length <= 1) return [];
 
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, ''));
     const data = [];
@@ -78,9 +74,7 @@ function parseCSV(csv) {
         if (currentLine.length > expectedHeaderCount && currentLine[currentLine.length - 1].trim() === '') {
             currentLine.pop();
         }
-        if (currentLine.length !== expectedHeaderCount) {
-            continue;
-        }
+        if (currentLine.length !== expectedHeaderCount) continue;
 
         const row = {};
         for (let j = 0; j < headers.length; j++) {
@@ -92,7 +86,6 @@ function parseCSV(csv) {
     }
     return data;
 }
-
 
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
@@ -172,31 +165,20 @@ function performSearchAndFilter() {
     filteredCoupons = allCoupons.filter(coupon => {
         const couponTags = (coupon.tags || '').toLowerCase().split(',').map(t => t.trim());
         const couponOrderType = (coupon.orderType || '').toLowerCase();
-        
-        // 1. 「包含」標籤：如果選取了任何「包含」標籤，則優惠券必須至少包含其中一個。
-        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) {
-            return false;
-        }
-        
-        // 2. 「點餐類型」：**修正後的邏輯**
-        // 如果選取了任何「點餐類型」，則優惠券的類型必須**完全等於**其中一個。
-        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType === type)) {
-            return false;
-        }
 
-        // 3. 「排除」標籤：如果優惠券包含任何一個「排除」標籤，則將其過濾掉。
-        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) {
-            return false;
-        }
+        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) return false;
+        
+        // **修正後的點餐類型篩選邏輯**：使用嚴格等於 `===`
+        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType === type)) return false;
 
-        // 4. 「關鍵字」搜尋
+        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) return false;
+
         if (searchTerm) {
             const fields = [coupon.name, coupon.couponCode, coupon.price, couponOrderType, ...couponTags];
             if (enableFlavorSearch) fields.push(coupon.description);
             if (!fields.some(f => (f || '').toLowerCase().includes(searchTerm))) return false;
         }
-
-        return true; // 如果通過所有檢查，則保留該優惠券
+        return true;
     });
     sortCoupons(document.getElementById('sortSelect').value);
 }
@@ -215,47 +197,51 @@ function sortCoupons(sortBy) {
 
 // ==== **最終修正**：初始化所有事件監聽 ====
 function initFilterButtons() {
-    // 通用處理函數
-    const handleFilterButtonClick = (button, isExclude = false) => {
-        button.classList.toggle('active');
-        if (isExclude) {
-            button.classList.toggle('btn-outline-danger');
-            button.classList.toggle('btn-danger');
-        } else {
-            button.classList.toggle('btn-outline-primary');
-            button.classList.toggle('btn-primary');
-        }
+    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const wasActive = button.classList.contains('active');
+            const { filterType, filterValue } = button.dataset;
+            const value = filterValue.toLowerCase();
+            const isExclude = button.classList.contains('exclude-filter-btn');
 
-        const { filterType, filterValue } = button.dataset;
-        const value = filterValue.toLowerCase();
-        
-        const sets = {
-            tags: selectedIncludeTags,
-            excludeTags: selectedExcludeTags,
-            orderType: selectedOrderTypes
-        };
+            const sets = {
+                tags: selectedIncludeTags,
+                excludeTags: selectedExcludeTags,
+                orderType: selectedOrderTypes
+            };
+            const currentSet = sets[filterType];
 
-        if (button.classList.contains('active')) {
-            sets[filterType].add(value);
-        } else {
-            sets[filterType].delete(value);
-        }
-        
-        performSearchAndFilter();
-        button.blur(); // 確保失焦
+            // 1. 更新資料模型
+            if (wasActive) {
+                currentSet.delete(value);
+            } else {
+                currentSet.add(value);
+            }
 
-        // 強制重繪技巧
-        button.style.display = 'none';
-        button.offsetHeight; // 讀取屬性觸發重排
-        button.style.display = '';
-    };
-
-    document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', () => handleFilterButtonClick(button, false));
-    });
-
-    document.querySelectorAll('.exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => handleFilterButtonClick(button, true));
+            // 2. 根據新狀態明確更新 UI
+            if (currentSet.has(value)) { // 如果現在應該是啟用
+                button.classList.add('active');
+                if (isExclude) {
+                    button.classList.remove('btn-outline-danger');
+                    button.classList.add('btn-danger');
+                } else {
+                    button.classList.remove('btn-outline-primary');
+                    button.classList.add('btn-primary');
+                }
+            } else { // 如果現在應該是未啟用
+                button.classList.remove('active');
+                if (isExclude) {
+                    button.classList.remove('btn-danger');
+                    button.classList.add('btn-outline-danger');
+                } else {
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-outline-primary');
+                }
+            }
+            
+            button.blur(); // 確保失焦
+            performSearchAndFilter();
+        });
     });
 }
 
