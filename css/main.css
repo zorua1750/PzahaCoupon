@@ -15,8 +15,10 @@
     --hr-border-color: rgba(0, 0, 0, .1);
     --input-bg: #FFFFFF;
     --input-text: #212529;
-    --button-outline-primary-color: #007bff;
-    --button-primary-bg: #007bff;
+    --button-outline-primary-color: #007bff; /* 內容篩選按鈕邊框色 */
+    --button-primary-bg: #007bff; /* 內容篩選按鈕背景色 */
+    --button-outline-secondary-color: #6c757d; /* 新增：點餐類型按鈕邊框色 */
+    --button-secondary-bg: #6c757d; /* 新增：點餐類型按鈕背景色 */
     --button-outline-danger-color: #dc3545;
     --button-danger-bg: #dc3545;
     --popover-bg: #FFFFFF;
@@ -25,24 +27,28 @@
     --modal-text: #212529;
     --modal-header-bg: #E9ECEF;
     --modal-header-text: #212529;
+    --reminder-text-color: #664d03; /* 提醒文字顏色 */
+    --reminder-border-color: #ffc107; /* 提醒邊框顏色 */
 }
 
 /* 夜間模式 (Dark Mode) 顏色 */
 body[data-theme="dark"] {
     --body-bg: #1A1A1A;
     --text-color: #E0E0E0;
-    --header-bg: #C8102E; /* 橫幅背景色保持不變 */
-    --header-text: #FFFFFF; /* 橫幅文字色保持不變 */
+    --header-bg: #C8102E; 
+    --header-text: #FFFFFF; 
     --card-bg: #2C2C2C;
     --card-title-color: #FFFFFF;
     --card-text-color: #D0D0D0;
     --card-description-color: #A0A0A0;
-    --card-code-color: #FFD700; /* 優惠代碼金色 */
+    --card-code-color: #FFD700; 
     --hr-border-color: rgba(255, 255, 255, .1);
     --input-bg: #3A3A3A;
     --input-text: #E0E0E0;
-    --button-outline-primary-color: #7B68EE;
+    --button-outline-primary-color: #7B68EE; 
     --button-primary-bg: #6A5ACD;
+    --button-outline-secondary-color: #ADB5BD; /* 新增：夜間模式下點餐類型按鈕邊框色 */
+    --button-secondary-bg: #495057; /* 新增：夜間模式下點餐類型按鈕背景色 */
     --button-outline-danger-color: #FF6347;
     --button-danger-bg: #DC143C;
     --popover-bg: #333333;
@@ -51,6 +57,8 @@ body[data-theme="dark"] {
     --modal-text: #E0E0E0;
     --modal-header-bg: #333333;
     --modal-header-text: #E0E0E0;
+    --reminder-text-color: #FFD700; /* 提醒文字顏色 */
+    --reminder-border-color: #FFD700; /* 提醒邊框顏色 */
 }
 
 /* 應用 CSS 變數 */
@@ -62,11 +70,11 @@ body {
 
 /* Header styles */
 .navbar-dark {
-    background-color: var(--header-bg) !important; /* 強制覆蓋 Bootstrap 背景色 */
+    background-color: var(--header-bg) !important; 
 }
 
 .navbar-dark .navbar-brand {
-    color: var(--header-text) !important; /* 強制覆蓋 Bootstrap 文字色 */
+    color: var(--header-text) !important; 
     font-size: 1.5rem;
     font-weight: bold;
 }
@@ -74,7 +82,7 @@ body {
 .navbar-dark .info {
     display: flex;
     align-items: center;
-    color: var(--header-text); /* 資訊文字顏色 */
+    color: var(--header-text); 
     font-size: 0.9rem;
 }
 
@@ -83,12 +91,12 @@ body {
     font-size: 1.2rem;
     cursor: pointer;
     margin-left: 10px;
-    color: var(--header-text); /* 圖示顏色 */
+    color: var(--header-text); 
     transition: color 0.2s ease-in-out;
 }
 
 .navbar-dark .info .header-icon:hover {
-    color: rgba(255, 255, 255, 0.8); /* 懸停時稍微變暗 */
+    color: rgba(255, 255, 255, 0.8); 
 }
 
 .last-update-time {
@@ -101,17 +109,17 @@ body {
     bottom: 20px;
     right: 20px;
     font-size: 2.5rem;
-    color: var(--button-outline-primary-color); /* 使用主題色 */
+    color: var(--button-outline-primary-color); 
     cursor: pointer;
-    display: none; /* Hidden by default */
-    z-index: 1000; /* Ensure it's above other content */
+    display: none; 
+    z-index: 1000; 
     opacity: 0.8;
     transition: opacity 0.3s ease-in-out;
 }
 
 .top-btn:hover {
     opacity: 1;
-    color: var(--button-primary-bg); /* 懸停時使用主題色 */
+    color: var(--button-primary-bg); 
 }
 
 /* Main Content Area */
@@ -127,9 +135,9 @@ body {
     color: var(--input-text);
     border-color: var(--hr-border-color);
 }
-#searchInput::placeholder { /* Placeholder text color */
+#searchInput::placeholder { 
     color: var(--card-description-color);
-    opacity: 1; /* Firefox fix */
+    opacity: 1; 
 }
 
 /* 篩選按鈕組的間距 */
@@ -137,6 +145,53 @@ body {
     margin-bottom: 0.5rem; 
     white-space: nowrap; 
 }
+
+/* 內容篩選按鈕樣式 (primary) */
+.btn-outline-primary {
+    color: var(--button-outline-primary-color);
+    border-color: var(--button-outline-primary-color);
+}
+.btn-outline-primary:hover, .btn-primary.active {
+    background-color: var(--button-primary-bg);
+    border-color: var(--button-primary-bg);
+    color: #FFFFFF;
+}
+
+/* 點餐類型篩選按鈕樣式 (secondary) */
+/* 這裡使用更精確的選擇器來區分點餐類型按鈕 */
+#orderTypeButtons .btn-outline-primary {
+    color: var(--button-outline-secondary-color);
+    border-color: var(--button-outline-secondary-color);
+}
+#orderTypeButtons .btn-outline-primary:hover, #orderTypeButtons .btn-primary.active {
+    background-color: var(--button-secondary-bg);
+    border-color: var(--button-secondary-bg);
+    color: #FFFFFF;
+}
+
+
+/* 排除篩選按鈕樣式 (danger) */
+.btn-outline-danger {
+    color: var(--button-outline-danger-color);
+    border-color: var(--button-outline-danger-color);
+}
+.btn-outline-danger:hover, .btn-danger.active {
+    background-color: var(--button-danger-bg);
+    border-color: var(--button-danger-bg);
+    color: #FFFFFF;
+}
+
+/* 清除篩選按鈕 */
+.clear-all-filters-btn {
+    background-color: transparent; 
+    color: var(--button-outline-danger-color); 
+    border-color: var(--button-outline-danger-color);
+}
+.clear-all-filters-btn:hover {
+    background-color: var(--button-danger-bg);
+    color: #FFFFFF;
+}
+
 
 /* 工具列調整 */
 .tools-row {
@@ -147,27 +202,24 @@ body {
     padding-right: 15px;
 }
 
-/* Adjustments for search checkbox */
-#enableFlavorSearch {
-    margin-right: 5px;
-}
-.form-check-label strong {
-    font-size: 1.05rem;
+/* 優惠券計數文字顏色修正 */
+.coupon-count {
+    color: var(--text-color) !important; /* 確保在兩種模式下都清晰 */
 }
 
-/* Adjustments for sort select */
-#sortSelect {
-    min-width: 150px; 
+/* hr 分隔線顏色 */
+hr {
+    border-top: 1px solid var(--hr-border-color);
 }
 
 /* Coupon Card Styles */
 .card {
     position: relative; 
-    border: 1px solid var(--hr-border-color); /* 卡片邊框使用主題色 */
+    border: 1px solid var(--hr-border-color); 
     border-radius: 0.25rem;
     transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease;
-    background-color: var(--card-bg); /* 卡片背景色 */
-    color: var(--card-text-color); /* 卡片文字色 */
+    background-color: var(--card-bg); 
+    color: var(--card-text-color); 
     min-height: 250px; 
     display: flex;
     flex-direction: column;
@@ -189,24 +241,24 @@ body {
     font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 0.75rem;
-    color: var(--card-title-color); /* 卡片標題色 */
+    color: var(--card-title-color); 
 }
 
 .card-text {
     margin-bottom: 0.5rem; 
     font-size: 0.95rem;
-    color: var(--card-text-color); /* 卡片文字色 */
+    color: var(--card-text-color); 
 }
 
 .card-text strong {
-    color: var(--card-code-color); /* 優惠代碼顏色 */
+    color: var(--card-code-color); 
     font-size: 1.1em;
 }
 
 /* New: Description in card */
 .coupon-description {
     font-size: 0.85rem; 
-    color: var(--card-description-color); /* 描述文字色 */
+    color: var(--card-description-color); 
     max-height: 4.5em; 
     overflow: hidden;
     text-overflow: ellipsis;
@@ -222,7 +274,7 @@ body {
     position: absolute;
     top: 0; 
     right: 0; 
-    background-color: #28a745; /* 保持綠色，因為這是價格標籤 */
+    background-color: #28a745; 
     color: white;
     padding: 8px 15px; 
     border-bottom-left-radius: 10px; 
@@ -296,23 +348,31 @@ body {
     margin-left: 5px;
     font-size: 0.9em;
     vertical-align: middle;
-    color: var(--button-outline-primary-color); /* 使用主題色 */
+    color: var(--button-outline-primary-color); 
     transition: color 0.2s ease-in-out;
 }
 
 .coupon-code-display .copy-code-btn:hover {
-    color: var(--button-primary-bg); /* 懸停時使用主題色 */
+    color: var(--button-primary-bg); 
 }
 
 /* Optional: style for active copy button (e.g., when it shows a checkmark) */
 .coupon-code-display .copy-code-btn.bi-check-lg {
-    color: #28a745; /* Green for success */
+    color: #28a745; 
 }
 
-/* 修正：聯絡資訊的 Gmail 圖示大小，僅在小螢幕上調整 */
-@media (max-width: 767.98px) { /* Bootstrap's default for small devices */
-    .contact-body img {
-        width: 18px; /* 調整為適合手機版的大小 */
-        height: auto;
-    }
+/* 修正：聯絡資訊的 Gmail 圖示大小，適用於所有螢幕尺寸 */
+.contact-body img {
+    width: 20px; /* 預設大小 */
+    height: auto;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* 提醒區塊文字顏色修正 */
+.card.border-warning .card-text {
+    color: var(--reminder-text-color) !important; /* 確保在兩種模式下都清晰 */
+}
+.card.border-warning {
+    border-color: var(--reminder-border-color) !important; /* 確保邊框顏色也正確 */
 }
