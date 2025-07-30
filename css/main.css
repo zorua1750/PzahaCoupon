@@ -146,39 +146,56 @@ body {
     white-space: nowrap; 
 }
 
+/* ** 行動裝置按鈕顏色修正 **
+  使用 .active class 作為主要判斷，而不是依賴 :hover
+  這樣可以避免在觸控裝置上點擊後顏色殘留的問題
+*/
+
 /* 內容篩選按鈕樣式 (primary) */
 .btn-outline-primary {
     color: var(--button-outline-primary-color);
     border-color: var(--button-outline-primary-color);
 }
-.btn-outline-primary:hover, .btn-primary.active {
+.btn-outline-primary:hover, .btn-outline-primary.active {
     background-color: var(--button-primary-bg);
     border-color: var(--button-primary-bg);
-    color: #FFFFFF !important; /* 強制文字為白色 */
+    color: #FFFFFF !important;
+}
+.btn-outline-primary:not(.active) { /* 確保未啟用時恢復原狀 */
+    background-color: transparent;
+    color: var(--button-outline-primary-color);
 }
 
+
 /* 點餐類型篩選按鈕樣式 (secondary) */
-/* 這裡使用更精確的選擇器來區分點餐類型按鈕 */
 #orderTypeButtons .btn-outline-primary {
     color: var(--button-outline-secondary-color);
     border-color: var(--button-outline-secondary-color);
 }
-#orderTypeButtons .btn-outline-primary:hover, #orderTypeButtons .btn-primary.active {
+#orderTypeButtons .btn-outline-primary:hover, 
+#orderTypeButtons .btn-outline-primary.active {
     background-color: var(--button-secondary-bg);
     border-color: var(--button-secondary-bg);
-    color: #FFFFFF !important; /* 強制文字為白色 */
+    color: #FFFFFF !important;
 }
-
+#orderTypeButtons .btn-outline-primary:not(.active) {
+    background-color: transparent;
+    color: var(--button-outline-secondary-color);
+}
 
 /* 排除篩選按鈕樣式 (danger) */
 .btn-outline-danger {
     color: var(--button-outline-danger-color);
     border-color: var(--button-outline-danger-color);
 }
-.btn-outline-danger:hover, .btn-danger.active {
+.btn-outline-danger:hover, .btn-outline-danger.active {
     background-color: var(--button-danger-bg);
     border-color: var(--button-danger-bg);
-    color: #FFFFFF !important; /* 強制文字為白色 */
+    color: #FFFFFF !important;
+}
+.btn-outline-danger:not(.active) {
+    background-color: transparent;
+    color: var(--button-outline-danger-color);
 }
 
 /* 清除篩選按鈕 */
@@ -259,7 +276,7 @@ hr {
 .coupon-description {
     font-size: 0.85rem; 
     color: var(--card-description-color); 
-    max-height: 4.5em; 
+    /* 多行文字省略效果 */
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -285,12 +302,9 @@ hr {
 }
 
 /* Buttons in card footer */
-.btn-group {
-    width: 100%; 
-}
-.view-detail-btn {
-    width: 100%; 
-    margin-top: 15px; 
+.card .btn-group, .card .view-detail-btn {
+    width: 100%;
+    margin-top: 15px;
 }
 
 /* Modal Content */
@@ -335,7 +349,6 @@ body {
     color: var(--popover-text);
 }
 
-
 /* General container padding to ensure content doesn't stick to edges */
 .container {
     padding-left: 15px;
@@ -356,12 +369,11 @@ body {
     color: var(--button-primary-bg); 
 }
 
-/* Optional: style for active copy button (e.g., when it shows a checkmark) */
 .coupon-code-display .copy-code-btn.bi-check-lg {
     color: #28a745; 
 }
 
-/* 修正：聯絡資訊的 Gmail 圖示大小，適用於所有螢幕尺寸 */
+/* 聯絡資訊的 Gmail 圖示大小 */
 .contact-body .bi-envelope-fill { 
     font-size: 20px; 
     vertical-align: middle;
