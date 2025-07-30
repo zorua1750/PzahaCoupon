@@ -201,49 +201,47 @@ function sortCoupons(sortBy) {
 
 // ==== **最終修正**：初始化所有事件監聽 ====
 function initFilterButtons() {
-    const handleFilterButtonClick = (button) => {
+    // 通用處理函數
+    const handleFilterButtonClick = (button, isExclude = false) => {
+        button.classList.toggle('active');
+        if (isExclude) {
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+        } else {
+            button.classList.toggle('btn-outline-primary');
+            button.classList.toggle('btn-primary');
+        }
+
         const { filterType, filterValue } = button.dataset;
         const value = filterValue.toLowerCase();
-        const isExclude = button.classList.contains('exclude-filter-btn');
-
+        
         const sets = {
             tags: selectedIncludeTags,
             excludeTags: selectedExcludeTags,
             orderType: selectedOrderTypes
         };
-        const currentSet = sets[filterType];
 
-        // 檢查目前狀態來決定是新增還是移除
-        const wasActive = button.classList.contains('active');
-        
-        if (wasActive) {
-            currentSet.delete(value);
-            button.classList.remove('active');
-            if (isExclude) {
-                button.classList.remove('btn-danger');
-                button.classList.add('btn-outline-danger');
-            } else {
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-outline-primary');
-            }
+        if (button.classList.contains('active')) {
+            sets[filterType].add(value);
         } else {
-            currentSet.add(value);
-            button.classList.add('active');
-            if (isExclude) {
-                button.classList.remove('btn-outline-danger');
-                button.classList.add('btn-danger');
-            } else {
-                button.classList.remove('btn-outline-primary');
-                button.classList.add('btn-primary');
-            }
+            sets[filterType].delete(value);
         }
         
-        button.blur(); // 確保失焦
         performSearchAndFilter();
+        button.blur(); // 確保失焦
+
+        // 強制重繪技巧
+        button.style.display = 'none';
+        button.offsetHeight; // 讀取屬性觸發重排
+        button.style.display = '';
     };
 
-    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => handleFilterButtonClick(button));
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, false));
+    });
+
+    document.querySelectorAll('.exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, true));
     });
 }
 
