@@ -99,17 +99,17 @@ body {
 /* 內容篩選按鈕 (Primary) */
 .btn-outline-primary { color: var(--button-outline-primary-color); border-color: var(--button-outline-primary-color); background-color: transparent; }
 .btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-primary-bg); border-color: var(--button-primary-bg); }
-.btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-primary-bg) !important; border-color: var(--button-primary-bg) !important; }
+.btn-primary, .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-primary-bg) !important; border-color: var(--button-primary-bg) !important; }
 
 /* 點餐類型篩選按鈕 (Secondary) */
 #orderTypeButtons .btn-outline-primary { color: var(--button-outline-secondary-color); border-color: var(--button-outline-secondary-color); background-color: transparent; }
 #orderTypeButtons .btn-outline-primary:not(.active):hover { color: #FFFFFF; background-color: var(--button-secondary-bg); border-color: var(--button-secondary-bg); }
-#orderTypeButtons .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-secondary-bg) !important; border-color: var(--button-secondary-bg) !important; }
+#orderTypeButtons .btn-primary, #orderTypeButtons .btn-outline-primary.active { color: #FFFFFF !important; background-color: var(--button-secondary-bg) !important; border-color: var(--button-secondary-bg) !important; }
 
 /* 排除篩選按鈕 (Danger) */
 .btn-outline-danger { color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); background-color: transparent; }
 .btn-outline-danger:not(.active):hover { color: #FFFFFF; background-color: var(--button-danger-bg); border-color: var(--button-danger-bg); }
-.btn-outline-danger.active { color: #FFFFFF !important; background-color: var(--button-danger-bg) !important; border-color: var(--button-danger-bg) !important; }
+.btn-danger, .btn-outline-danger.active { color: #FFFFFF !important; background-color: var(--button-danger-bg) !important; border-color: var(--button-danger-bg) !important; }
 /* === 最終按鈕狀態修正 END === */
 
 .clear-all-filters-btn { background-color: transparent; color: var(--button-outline-danger-color); border-color: var(--button-outline-danger-color); }
