@@ -17,8 +17,8 @@
     --input-text: #212529;
     --button-outline-primary-color: #007bff; /* 內容篩選按鈕邊框色 */
     --button-primary-bg: #007bff; /* 內容篩選按鈕背景色 */
-    --button-outline-secondary-color: #6c757d; /* 新增：點餐類型按鈕邊框色 */
-    --button-secondary-bg: #6c757d; /* 新增：點餐類型按鈕背景色 */
+    --button-outline-secondary-color: #6c757d; /* 點餐類型按鈕邊框色 */
+    --button-secondary-bg: #6c757d; /* 點餐類型按鈕背景色 */
     --button-outline-danger-color: #dc3545;
     --button-danger-bg: #dc3545;
     --popover-bg: #FFFFFF;
@@ -57,8 +57,8 @@ body[data-theme="dark"] {
     --modal-text: #E0E0E0;
     --modal-header-bg: #333333;
     --modal-header-text: #E0E0E0;
-    --reminder-text-color: #FFD700; /* 提醒文字顏色 */
-    --reminder-border-color: #FFD700; /* 提醒邊框顏色 */
+    --reminder-text-color: #FFD700; 
+    --reminder-border-color: #FFD700; 
 }
 
 /* 應用 CSS 變數 */
@@ -204,7 +204,7 @@ body {
 
 /* 優惠券計數文字顏色修正 */
 .coupon-count {
-    color: var(--text-color) !important; /* 確保在兩種模式下都清晰 */
+    color: var(--text-color) !important; 
 }
 
 /* hr 分隔線顏色 */
@@ -362,17 +362,9 @@ body {
 }
 
 /* 修正：聯絡資訊的 Gmail 圖示大小，適用於所有螢幕尺寸 */
-.contact-body img {
-    width: 20px; 
-    height: auto;
+.contact-body .bi-envelope-fill { /* 針對 Bootstrap Icons 的信封圖示 */
+    font-size: 20px; /* 調整為適合的大小 */
     vertical-align: middle;
     margin-right: 5px;
-}
-
-/* 提醒區塊文字顏色修正 */
-.card.border-warning .card-text {
-    color: var(--reminder-text-color) !important; 
-}
-.card.border-warning {
-    border-color: var(--reminder-border-color) !important; 
+    color: var(--text-color); /* 確保在兩種模式下都清晰 */
 }

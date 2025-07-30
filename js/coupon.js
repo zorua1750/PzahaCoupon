@@ -1,4 +1,4 @@
-// PzahaCoupon/js/coupon.js
+// PzahaCoupon.github.io/js/coupon.js
 
 // ==== Google Sheet 資料來源 URL ====
 const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
@@ -274,6 +274,7 @@ function initFilterButtons() {
             }
         }
         performSearchAndFilter(); // 每次點擊按鈕後重新篩選
+        button.blur(); // 修正：點擊後移除按鈕的焦點，解決手機版顏色切換問題
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
@@ -349,16 +350,32 @@ function performSearchAndFilter() {
     sortCoupons(document.getElementById('sortSelect').value);
 }
 
-// ==== 排序邏輯 (不變) ====
+// ==== 排序邏輯 (修正 N/A 價格排序) ====
 function sortCoupons(sortBy) {
     let sortedCoupons = [...filteredCoupons];
 
     switch (sortBy) {
         case 'price-asc':
-            sortedCoupons.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            sortedCoupons.sort((a, b) => {
+                const priceA = parseFloat(a.price);
+                const priceB = parseFloat(b.price);
+                // 將 NaN (N/A) 價格排在最後
+                if (isNaN(priceA) && isNaN(priceB)) return 0;
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面
+                return priceA - priceB;
+            });
             break;
         case 'price-desc':
-            sortedCoupons.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            sortedCoupons.sort((a, b) => {
+                const priceA = parseFloat(a.price);
+                const priceB = parseFloat(b.price);
+                // 將 NaN (N/A) 價格排在最後
+                if (isNaN(priceA) && isNaN(priceB)) return 0;
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面
+                return priceB - priceA;
+            });
             break;
         case 'coupon_code-asc': 
             sortedCoupons.sort((a, b) => (a.couponCode || '').localeCompare(b.couponCode || ''));
