@@ -5,6 +5,7 @@
     /* 淺色模式 (Light Mode) 顏色 */
     --body-bg: #F8F9FA;
     --text-color: #212529;
+    --text-muted-color: #6c757d; /* 新增：Muted 文字顏色 */
     --header-bg: #C8102E; /* 橫幅背景色 */
     --header-text: #FFFFFF; /* 橫幅文字色 */
     --card-bg: #FFFFFF;
@@ -35,6 +36,7 @@
 body[data-theme="dark"] {
     --body-bg: #1A1A1A;
     --text-color: #E0E0E0;
+    --text-muted-color: #A0A0A0; /* 新增：夜間 Muted 文字顏色 */
     --header-bg: #C8102E; 
     --header-text: #FFFFFF; 
     --card-bg: #2C2C2C;
@@ -68,25 +70,26 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* 新增：修正 Muted 文字顏色 */
+.text-muted {
+    color: var(--text-muted-color) !important;
+}
+
 /* Header styles */
 .navbar-dark {
     background-color: var(--header-bg) !important; 
 }
-
 .navbar-dark .navbar-brand {
     color: var(--header-text) !important; 
     font-size: 1.5rem;
     font-weight: bold;
 }
-
 .navbar-dark .info {
     display: flex;
     align-items: center;
     color: var(--header-text); 
     font-size: 0.9rem;
 }
-
-/* 橫幅圖示的通用樣式 */
 .navbar-dark .info .header-icon { 
     font-size: 1.2rem;
     cursor: pointer;
@@ -94,11 +97,9 @@ body {
     color: var(--header-text); 
     transition: color 0.2s ease-in-out;
 }
-
 .navbar-dark .info .header-icon:hover {
     color: rgba(255, 255, 255, 0.8); 
 }
-
 .last-update-time {
     margin-right: 15px;
 }
@@ -116,7 +117,6 @@ body {
     opacity: 0.8;
     transition: opacity 0.3s ease-in-out;
 }
-
 .top-btn:hover {
     opacity: 1;
     color: var(--button-primary-bg); 
@@ -146,7 +146,6 @@ body {
     white-space: nowrap; 
 }
 
-
 /* === 按鈕狀態修正 START === */
 /* 內容篩選按鈕 (Primary) */
 .btn-outline-primary {
@@ -154,14 +153,12 @@ body {
     border-color: var(--button-outline-primary-color);
     background-color: transparent;
 }
-/* 僅在「未啟用」時套用 hover 效果 */
 .btn-outline-primary:not(.active):hover {
     color: #FFFFFF;
     background-color: var(--button-primary-bg);
     border-color: var(--button-primary-bg);
 }
-/* 「啟用」狀態的樣式 */
-.btn-outline-primary.active {
+.btn-primary, .btn-outline-primary.active {
     color: #FFFFFF !important;
     background-color: var(--button-primary-bg) !important;
     border-color: var(--button-primary-bg) !important;
@@ -178,7 +175,7 @@ body {
     background-color: var(--button-secondary-bg);
     border-color: var(--button-secondary-bg);
 }
-#orderTypeButtons .btn-outline-primary.active {
+#orderTypeButtons .btn-primary, #orderTypeButtons .btn-outline-primary.active {
     color: #FFFFFF !important;
     background-color: var(--button-secondary-bg) !important;
     border-color: var(--button-secondary-bg) !important;
@@ -195,13 +192,12 @@ body {
     background-color: var(--button-danger-bg);
     border-color: var(--button-danger-bg);
 }
-.btn-outline-danger.active {
+.btn-danger, .btn-outline-danger.active {
     color: #FFFFFF !important;
     background-color: var(--button-danger-bg) !important;
     border-color: var(--button-danger-bg) !important;
 }
 /* === 按鈕狀態修正 END === */
-
 
 /* 清除篩選按鈕 */
 .clear-all-filters-btn {
@@ -214,7 +210,6 @@ body {
     color: #FFFFFF;
 }
 
-
 /* 工具列調整 */
 .tools-row {
     align-items: flex-end; 
@@ -224,12 +219,10 @@ body {
     padding-right: 15px;
 }
 
-/* 優惠券計數文字顏色修正 */
 .coupon-count {
     color: var(--text-color) !important; 
 }
 
-/* hr 分隔線顏色 */
 hr {
     border-top: 1px solid var(--hr-border-color);
 }
@@ -248,40 +241,32 @@ hr {
     justify-content: space-between; 
     overflow: hidden; 
 }
-
 .card:hover {
     transform: translateY(-5px); 
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
 }
-
 .card-body {
     padding: 1.25rem;
     flex-grow: 1; 
 }
-
 .card-title {
     font-size: 1.3rem;
     font-weight: bold;
     margin-bottom: 0.75rem;
     color: var(--card-title-color); 
 }
-
 .card-text {
     margin-bottom: 0.5rem; 
     font-size: 0.95rem;
     color: var(--card-text-color); 
 }
-
 .card-text strong {
     color: var(--card-code-color); 
     font-size: 1.1em;
 }
-
-/* New: Description in card */
 .coupon-description {
     font-size: 0.85rem; 
     color: var(--card-description-color); 
-    /* 多行文字省略效果 */
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
@@ -289,9 +274,6 @@ hr {
     -webkit-box-orient: vertical;
     line-height: 1.5em; 
 }
-
-
-/* Price Badge on top right */
 .coupon-price-badge {
     position: absolute;
     top: 0; 
@@ -305,8 +287,6 @@ hr {
     z-index: 10; 
     box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
 }
-
-/* Buttons in card footer */
 .card .btn-group, .card .view-detail-btn {
     width: 100%;
     margin-top: 15px;
@@ -332,7 +312,6 @@ hr {
     border-top-color: var(--hr-border-color);
 }
 
-
 /* General text readability */
 body {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
@@ -354,7 +333,6 @@ body {
     color: var(--popover-text);
 }
 
-/* General container padding to ensure content doesn't stick to edges */
 .container {
     padding-left: 15px;
     padding-right: 15px;
@@ -369,16 +347,13 @@ body {
     color: var(--button-outline-primary-color); 
     transition: color 0.2s ease-in-out;
 }
-
 .coupon-code-display .copy-code-btn:hover {
     color: var(--button-primary-bg); 
 }
-
 .coupon-code-display .copy-code-btn.bi-check-lg {
     color: #28a745; 
 }
 
-/* 聯絡資訊的 Gmail 圖示大小 */
 .contact-body .bi-envelope-fill { 
     font-size: 20px; 
     vertical-align: middle;
