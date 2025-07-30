@@ -45,7 +45,7 @@
 
     <main role="main">
       <i class="bi bi-arrow-up-circle-fill top-btn"></i>
-      <div class="album py-2 bg-light">
+      <div class="album py-2"> <!-- 已移除 bg-light 類別 -->
         <div class="container mb-3" id="container">
           <!-- 搜尋欄位 -->
           <div class="row mb-3">
@@ -57,7 +57,7 @@
           <!-- 內容標籤篩選按鈕組 -->
           <div class="row mb-3">
               <div class="col-md-12">
-                  <label class="form-label d-block">依餐點內容篩選:</label> <!-- 文字已修改 -->
+                  <label class="form-label d-block">依餐點內容篩選:</label>
                   <div id="contentTagButtons" class="d-flex flex-wrap gap-2">
                       <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="比薩">比薩</button>
                       <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="麵">麵</button>
@@ -75,7 +75,7 @@
           <!-- 「不要」內容標籤篩選按鈕組 -->
           <div class="row mb-3">
             <div class="col-md-12">
-                <label class="form-label d-block text-danger">排除以下餐點:</label> <!-- 文字已修改 -->
+                <label class="form-label d-block text-danger">排除以下餐點:</label>
                 <div id="excludeContentTagButtons" class="d-flex flex-wrap gap-2">
                     <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="比薩">不要比薩</button>
                     <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="麵">不要麵</button>
@@ -95,9 +95,9 @@
               <div class="col-md-12">
                   <label class="form-label d-block">依點餐類型篩選:</label>
                   <div id="orderTypeButtons" class="d-flex flex-wrap gap-2">
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">可外送或外帶</button> <!-- 文字已修改 -->
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">僅可外帶</button> <!-- 文字已修改 -->
-                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送">僅可外送</button> <!-- 文字已修改 -->
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">可外送或外帶</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">僅可外帶</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送">僅可外送</button>
                   </div>
               </div>
           </div>
@@ -128,7 +128,7 @@
             </div>
           </div>
           
-          <!-- Google AdSense 廣告單元程式碼 (如果您使用廣告單元，請貼在這裡) -->
+          <!-- Google AdSense 廣告單元程式碼 -->
           <!-- 範例：
           <div class="my-4 text-center">
             <ins class="adsbygoogle"
