@@ -146,57 +146,62 @@ body {
     white-space: nowrap; 
 }
 
-/* ** 行動裝置按鈕顏色修正 **
-  使用 .active class 作為主要判斷，而不是依賴 :hover
-  這樣可以避免在觸控裝置上點擊後顏色殘留的問題
-*/
 
-/* 內容篩選按鈕樣式 (primary) */
+/* === 按鈕狀態修正 START === */
+/* 內容篩選按鈕 (Primary) */
 .btn-outline-primary {
     color: var(--button-outline-primary-color);
     border-color: var(--button-outline-primary-color);
+    background-color: transparent;
 }
-.btn-outline-primary:hover, .btn-outline-primary.active {
+/* 僅在「未啟用」時套用 hover 效果 */
+.btn-outline-primary:not(.active):hover {
+    color: #FFFFFF;
     background-color: var(--button-primary-bg);
     border-color: var(--button-primary-bg);
+}
+/* 「啟用」狀態的樣式 */
+.btn-outline-primary.active {
     color: #FFFFFF !important;
-}
-.btn-outline-primary:not(.active) { /* 確保未啟用時恢復原狀 */
-    background-color: transparent;
-    color: var(--button-outline-primary-color);
+    background-color: var(--button-primary-bg) !important;
+    border-color: var(--button-primary-bg) !important;
 }
 
-
-/* 點餐類型篩選按鈕樣式 (secondary) */
+/* 點餐類型篩選按鈕 (Secondary) */
 #orderTypeButtons .btn-outline-primary {
     color: var(--button-outline-secondary-color);
     border-color: var(--button-outline-secondary-color);
+    background-color: transparent;
 }
-#orderTypeButtons .btn-outline-primary:hover, 
-#orderTypeButtons .btn-outline-primary.active {
+#orderTypeButtons .btn-outline-primary:not(.active):hover {
+    color: #FFFFFF;
     background-color: var(--button-secondary-bg);
     border-color: var(--button-secondary-bg);
-    color: #FFFFFF !important;
 }
-#orderTypeButtons .btn-outline-primary:not(.active) {
-    background-color: transparent;
-    color: var(--button-outline-secondary-color);
+#orderTypeButtons .btn-outline-primary.active {
+    color: #FFFFFF !important;
+    background-color: var(--button-secondary-bg) !important;
+    border-color: var(--button-secondary-bg) !important;
 }
 
-/* 排除篩選按鈕樣式 (danger) */
+/* 排除篩選按鈕 (Danger) */
 .btn-outline-danger {
     color: var(--button-outline-danger-color);
     border-color: var(--button-outline-danger-color);
+    background-color: transparent;
 }
-.btn-outline-danger:hover, .btn-outline-danger.active {
+.btn-outline-danger:not(.active):hover {
+    color: #FFFFFF;
     background-color: var(--button-danger-bg);
     border-color: var(--button-danger-bg);
+}
+.btn-outline-danger.active {
     color: #FFFFFF !important;
+    background-color: var(--button-danger-bg) !important;
+    border-color: var(--button-danger-bg) !important;
 }
-.btn-outline-danger:not(.active) {
-    background-color: transparent;
-    color: var(--button-outline-danger-color);
-}
+/* === 按鈕狀態修正 END === */
+
 
 /* 清除篩選按鈕 */
 .clear-all-filters-btn {

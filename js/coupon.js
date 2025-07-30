@@ -26,7 +26,6 @@ async function fetchCoupons() {
         console.error('載入 PzahaCoupon 資料失敗:', error);
         document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>';
     } finally {
-        // 確保無論成功或失敗，都隱藏載入提示
         if (spinner) {
             spinner.style.display = 'none';
         }
@@ -45,15 +44,33 @@ function parseCSV(csv) {
         "標籤": "tags", "點餐類型": "orderType", "開始日期": "startDate", "結束日期": "endDate",
         "爬取時間": "crawlTime", "備註": "note"
     };
-
+    
+    // 簡易的 CSV 行解析，處理引號內的逗號
     for (let i = 1; i < lines.length; i++) {
-        const values = lines[i].split(',').map(v => v.trim().replace(/\r/g, ''));
-        const row = {};
-        headers.forEach((header, j) => {
-            const newKey = headerMap[header] || header;
-            row[newKey] = values[j] || '';
-        });
-        data.push(row);
+        const line = lines[i];
+        const values = [];
+        let currentField = '';
+        let inQuotes = false;
+        for (let char of line) {
+            if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                values.push(currentField.trim());
+                currentField = '';
+            } else {
+                currentField += char;
+            }
+        }
+        values.push(currentField.trim());
+        
+        if (values.length >= headers.length) {
+            const row = {};
+            headers.forEach((header, j) => {
+                const newKey = headerMap[header] || header;
+                row[newKey] = values[j] ? values[j].replace(/\r/g, '') : '';
+            });
+            data.push(row);
+        }
     }
     return data;
 }
@@ -196,8 +213,8 @@ function sortCoupons(sortBy) {
     const dateSort = (a, b, desc = false) => {
         const dateA = new Date(a.endDate);
         const dateB = new Date(b.endDate);
-        if (isNaN(dateA)) return 1;
-        if (isNaN(dateB)) return -1;
+        if (isNaN(dateA.getTime())) return 1;
+        if (isNaN(dateB.getTime())) return -1;
         return desc ? dateB - dateA : dateA - dateB;
     };
 
@@ -217,8 +234,10 @@ function initializeEventListeners() {
     // 篩選按鈕
     document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
         button.addEventListener('click', () => {
+            // **修正核心**：只切換 .active class
             button.classList.toggle('active');
-            button.blur(); // 關鍵：點擊後立即讓按鈕失焦，解決手機版顏色殘留問題
+            // **修正核心**：點擊後立即讓按鈕失焦
+            button.blur();
 
             const { filterType, filterValue } = button.dataset;
             const value = filterValue.toLowerCase();
@@ -264,7 +283,7 @@ function initializeEventListeners() {
     });
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
     
-    // **事件委派**：處理卡片內的點擊事件
+    // 事件委派：處理卡片內的點擊事件
     document.getElementById('row').addEventListener('click', (event) => {
         const detailButton = event.target.closest('.view-detail-btn');
         if (detailButton) {
