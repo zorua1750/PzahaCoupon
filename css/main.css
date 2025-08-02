@@ -195,13 +195,13 @@ body {
 .tools-row .col-md-6 {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* 讓內容靠左對齊 */
+    justify-content: flex-start; 
 }
 .tools-row .col-md-6.text-md-end {
-    justify-content: flex-end; /* 在電腦版上靠右對齊 */
+    justify-content: flex-end; 
 }
 .tools-row .coupon-count {
-    margin-left: auto !important; /* 讓優惠券計數自動推到右邊 */
+    margin-left: auto !important; 
 }
 
 /* hr 分隔線顏色 */
