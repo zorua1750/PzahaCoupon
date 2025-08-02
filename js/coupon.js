@@ -251,8 +251,8 @@ function initFilterButtons() {
                 selectedOrderTypes.delete(filterValue);
             }
         }
-        performSearchAndFilter(); 
-        button.blur(); 
+        performSearchAndFilter(); // 每次點擊按鈕後重新篩選
+        button.blur(); // 修正：點擊後移除按鈕的焦點，解決手機版顏色切換問題
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
