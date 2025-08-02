@@ -94,16 +94,20 @@
           </div>
           
           <div class="row tools-row mb-3 align-items-center">
-            <div class="col-sm-12 col-md-6 d-flex align-items-center"> <div class="form-check form-switch me-3"> <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
+            <div class="col-sm-12 col-md-6 d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
                 <label class="form-check-label" for="enableFlavorSearch">
-                  <strong>同時搜尋詳細內容</strong>
+                  <strong>同時搜尋詳細內容中的關鍵字</strong>
                 </label>
               </div>
               <a class="bi bi-info-circle-fill" id="flavorSearchInfo" data-bs-toggle="popover" style="color: dodgerblue"
-                role="button" data-bs-content="開啟此項，您的關鍵字搜尋將同時搜尋優惠券的詳細內容。"
+                role="button" data-bs-content="勾選此項，您的關鍵字搜尋將同時搜尋優惠券的詳細內容，而不僅限於標籤或主要欄位。"
                 data-bs-trigger="focus" tabindex="0"></a>
-              <div class="coupon-count text-muted ms-3">優惠券: <span id="searchResultCount">0</span></div> </div>
-            <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0"> <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
+              <div class="coupon-count text-muted ms-3">優惠券: <span id="searchResultCount">0</span></div>
+            </div>
+            <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0">
+              <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
               <select id="sortSelect" class="form-select form-select-sm d-inline-block w-auto" style="min-width:120px;">
                 <option value="price-asc" selected>價格：低→高</option>
                 <option value="price-desc">價格：高→低</option>
@@ -112,7 +116,8 @@
                 <option value="end_date-asc">到期日：近→遠</option>
                 <option value="end_date-desc">到期日：遠→近</option>
               </select>
-              <button type="button" class="btn btn-outline-danger clear-all-filters-btn ms-2 mt-2 mt-md-0"> <i class="bi bi-trash-fill me-1"></i>清除所有篩選
+              <button type="button" class="btn btn-outline-danger clear-all-filters-btn ms-2 mt-2 mt-md-0">
+                <i class="bi bi-trash-fill me-1"></i>清除所有篩選
               </button>
             </div>
           </div>
@@ -120,12 +125,24 @@
           <div id="buttons" class="btn-area"></div>
           <hr>
 
-          <div class="row" id="row">
-            <div class="col-12 text-center mt-5" id="loading-spinner">
-                <div class="spinner-border text-danger" role="status">
-                    <span class="visually-hidden">Loading...</span>
+          <div class="row" id="row"></div>
+
+          <div class="row mt-5">
+            <div class="col-md-12">
+              <div class="card shadow-sm">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="bi bi-star-fill me-2"></i>必勝客優惠券使用組合技</h5>
+                  <p class="card-text">
+                    必勝客的優惠代碼有時可以組合使用，獲得更划算的價格！
+                  </p>
+                  <p class="card-text">
+                    舉例來說，在您生日當月，可以先使用「生日優惠碼」享受套餐優惠，然後再點選官方的「天天省」或「買一送一」優惠，讓您的餐點更加豐富。
+                  </p>
+                  <p class="card-text">
+                    **提醒您：** 優惠碼是否能組合使用，最終以官方結帳頁面顯示為主。請務必在結帳前確認優惠是否生效。
+                  </p>
                 </div>
-                <p class="mt-2">正在載入 PzahaCoupon 優惠資訊...</p>
+              </div>
             </div>
           </div>
 
@@ -134,7 +151,7 @@
               <div class="card shadow-sm">
                 <div class="card-body">
                   <h5 class="card-title"><i class="bi bi-info-circle-fill me-2"></i>關於我們</h5>
-                  <p class="card-text">PzahaCoupon 旨在提供最新的必勝客優惠資訊。網站內容不定時更新，若有任何問題、想新增優惠碼或回報失效優惠碼，歡迎透過 <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">E-mail <i class="bi bi-envelope-fill"></i></a> 與我聯繫。</p>
+                  <p class="card-text">PzahaCoupon 旨在提供最新的必勝客優惠資訊。網站內容不定時更新，若有任何問題、想新增優惠碼或回報失效優惠碼，歡迎透過 <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%B1%8B%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">E-mail <i class="bi bi-envelope-fill"></i></a> 與我聯繫。</p> 
                 </div>
               </div>
             </div>
@@ -171,7 +188,7 @@
         </div>
       </div>
     </div>
-    
+
     <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -180,27 +197,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body text-center contact-body">
-            <div><i class="bi bi-github"></i> : <a href="https://github.com/PzahaCoupon" target="_blank">https://github.com/PzahaCoupon</a></div>
-            <div><i class="bi bi-envelope-fill me-1"></i> : <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%A0%B1%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">zorua6518570@gmail.com</a></div>
+            <div><i class="bi bi-github"></i> : <a href="https://github.com/PzahaCoupon" target="_blank">https://github.com/PzahaCoupon</a></div> <div><i class="bi bi-envelope-fill me-1"></i> : <a href="mailto:zorua6518570@gmail.com?subject=%5BPzahaCoupon%5D%20%E5%95%8F%E9%A1%8C%E5%9B%9E%E5%B1%8B%2F%E6%96%B0%E5%A2%9E%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%9B%9E%E5%A0%B1%E5%A4%B1%E6%95%88%E5%84%AA%E6%83%A0%E7%A2%BC%2F%E5%85%B6%E4%BB%96%28%E8%AB%8B%E7%B0%A1%E8%BF%B0%29&body=">zorua6518570@gmail.com</a></div>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="modal fade" id="detailModel" tabindex="-1" aria-labelledby="detailModelLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="detail-title">優惠詳情</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="detail-body">
-                    </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
-                </div>
-            </div>
-        </div>
     </div>
 
     <script src="./js/jquery-3.3.1.min.js"></script> 
@@ -208,5 +208,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
     <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> 
     <script src="./js/coupon.js"></script> 
+    <script src="./js/main.js"></script> 
   </body>
 </html>

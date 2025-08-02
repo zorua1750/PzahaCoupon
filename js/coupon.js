@@ -5,48 +5,70 @@ const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKger
 
 let allCoupons = []; // 儲存所有優惠券資料
 let filteredCoupons = []; // 儲存篩選後的優惠券資料
-let selectedIncludeTags = new Set();
-let selectedExcludeTags = new Set();
-let selectedOrderTypes = new Set();
+let selectedIncludeTags = new Set(); // 儲存選中的「包含」標籤
+let selectedExcludeTags = new Set(); // 儲存選中的「排除」標籤
+let selectedOrderTypes = new Set(); // 儲存選中的點餐類型
 
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
-    const spinner = document.getElementById('loading-spinner');
     try {
         const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const csvText = await response.text();
-        allCoupons = parseCSV(csvText);
-        filteredCoupons = [...allCoupons];
 
-        initFilterButtons(); // 初始化按鈕事件
-        performSearchAndFilter(); // 初始渲染
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const csvText = await response.text();
+        allCoupons = parseCSV(csvText); 
+        filteredCoupons = [...allCoupons]; 
+
+        initFilterButtons(); 
+        
+        performSearchAndFilter(); 
+
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
+
     } catch (error) {
-        console.error('載入 PzahaCoupon 資料失敗:', error);
-        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入資料失敗，請稍後再試。</div>';
-    } finally {
-        if (spinner) spinner.style.display = 'none';
+        console.error('載入 PzahaCoupon 資料失敗:', error); 
+        console.error('詳細錯誤訊息:', error.message); 
+        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; 
     }
 }
 
-// ==== CSV 解析函數 (使用健壯版本) ====
+// ==== CSV 解析函數 ====
 function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== '');
-    if (lines.length <= 1) return [];
+    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
+    if (lines.length <= 1) { 
+        console.warn("CSV 數據不足或只有標題行。");
+        return [];
+    }
 
-    const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, ''));
+    const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
     const data = [];
 
     const headerMap = {
-        "優惠代碼": "couponCode", "名稱": "name", "套餐價格": "price", "套餐內容": "description",
-        "標籤": "tags", "點餐類型": "orderType", "開始日期": "startDate", "結束日期": "endDate",
-        "爬取時間": "crawlTime", "備註": "note"
+        "優惠代碼": "couponCode",
+        "名稱": "name",
+        "套餐價格": "price",
+        "套餐內容": "description",
+        "標籤": "tags",
+        "點餐類型": "orderType",
+        "開始日期": "startDate",
+        "結束日期": "endDate",
+        "爬取時間": "crawlTime", 
+        "備註": "note" 
     };
-
-    const expectedHeaderCount = Object.keys(headerMap).length;
     
+    const expectedHeaderCount = Object.keys(headerMap).length;
+    if (headers.length !== expectedHeaderCount) {
+        console.warn(`警告: CSV標題行實際列數 (${headers.length}) 與程式碼期望列數 (${expectedHeaderCount}) 不符。`);
+        if (headers.length < expectedHeaderCount) {
+            for (let k = headers.length; k < expectedHeaderCount; k++) {
+                headers.push(Object.keys(headerMap)[k]); 
+            }
+        }
+    }
+
     for (let i = 1; i < lines.length; i++) {
         const line = lines[i];
         let currentLine = [];
@@ -56,259 +78,392 @@ function parseCSV(csv) {
         for (let k = 0; k < line.length; k++) {
             const char = line[k];
             if (char === '"') {
-                if (inQuote && k + 1 < line.length && line[k+1] === '"') {
+                if (inQuote && k + 1 < line.length && line[k+1] === '"') { 
                     currentField += '"';
-                    k++;
+                    k++; 
                 } else {
                     inQuote = !inQuote;
                 }
             } else if (char === ',' && !inQuote) {
-                currentLine.push(currentField);
+                currentLine.push(currentField); 
                 currentField = '';
             } else {
                 currentField += char;
             }
         }
-        currentLine.push(currentField);
+        currentLine.push(currentField); 
 
         if (currentLine.length > expectedHeaderCount && currentLine[currentLine.length - 1].trim() === '') {
-            currentLine.pop();
+            currentLine.pop(); 
         }
-        if (currentLine.length !== expectedHeaderCount) continue;
-
+        if (currentLine.length !== expectedHeaderCount) {
+            continue; 
+        } 
+        
         const row = {};
         for (let j = 0; j < headers.length; j++) {
             const originalHeader = headers[j];
-            const newKey = headerMap[originalHeader] || originalHeader;
-            row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, '');
+            const newKey = headerMap[originalHeader] || originalHeader; 
+            row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, ''); 
         }
         data.push(row);
     }
     return data;
 }
 
-// ==== 渲染優惠券到頁面 ====
+// ==== 渲染優惠券到頁面 (更新以顯示複製按鈕) ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
-    rowContainer.innerHTML = '';
+    rowContainer.innerHTML = ''; 
 
     if (couponsToRender.length === 0) {
         rowContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5">沒有找到符合條件的優惠券。</div>';
-        updateSearchResultCount(0);
+        updateSearchResultCount(0); 
         return;
     }
 
-    const fragment = document.createDocumentFragment();
     couponsToRender.forEach(coupon => {
         const priceValue = parseFloat(coupon.price);
-        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`;
-        const descriptionHtml = coupon.description ? `<p class="card-text coupon-description mt-2">${coupon.description.replace(/\n/g, '<br>')}</p>` : '';
+        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
 
-        const cardDiv = document.createElement('div');
-        cardDiv.className = 'col-md-4 mb-4';
-        cardDiv.innerHTML = `
-            <div class="card shadow-sm h-100">
-                <div class="card-body d-flex flex-column">
-                    <div class="coupon-price-badge">${formattedPrice}</div>
-                    <h5 class="card-title">${coupon.name}</h5>
-                    <p class="card-text coupon-code-display">
-                        代碼: <strong class="coupon-code-text">${coupon.couponCode}</strong>
-                        <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i>
-                    </p>
-                    ${descriptionHtml}
-                    <div class="mt-auto">
-                        <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
-                        <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}'>
-                            查看更多
-                        </button>
+        const fullDescription = coupon.description || '';
+        const displayDescription = fullDescription.length > 100 ? 
+                                   fullDescription.substring(0, 100) + '...' : 
+                                   fullDescription;
+        const descriptionHtml = coupon.description ? 
+            `<p class="card-text coupon-description mt-2">${displayDescription.replace(/\n/g, '<br>')}</p>` : '';
+
+        const couponCard = `
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100"> 
+                    <div class="card-body d-flex flex-column"> 
+                        <div class="coupon-price-badge">${formattedPrice}</div> 
+                        <h5 class="card-title">${coupon.name}</h5>
+                        <p class="card-text coupon-code-display">
+                            代碼: <strong class="coupon-code-text" data-coupon-code="${coupon.couponCode}">${coupon.couponCode}</strong> 
+                            <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i>
+                        </p>
+                        ${descriptionHtml} 
+                        <div class="mt-auto"> 
+                            <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="btn-group w-100"> 
+                                    <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
+                                        查看更多
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>`;
-        fragment.appendChild(cardDiv);
+            </div>
+        `;
+        rowContainer.insertAdjacentHTML('beforeend', couponCard);
     });
-    rowContainer.appendChild(fragment);
-    updateSearchResultCount(couponsToRender.length);
+
+    document.querySelectorAll('.view-detail-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
+            showCouponDetailModal(couponData);
+        });
+    });
+
+    document.querySelectorAll('.copy-code-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const couponCode = event.currentTarget.dataset.couponCode;
+            copyToClipboard(couponCode, event.currentTarget);
+        });
+    });
+
+    updateSearchResultCount(couponsToRender.length); 
 }
 
-// ==== 輔助函數 ====
+// ==== 複製代碼到剪貼簿功能 (不變) ====
 function copyToClipboard(text, element) {
     navigator.clipboard.writeText(text).then(() => {
+        const originalTitle = element.title;
         element.title = '已複製!';
-        element.classList.replace('bi-files', 'bi-check-lg');
+        element.classList.remove('bi-files');
+        element.classList.add('bi-check-lg'); 
+        
         setTimeout(() => {
-            element.title = '點擊複製代碼';
-            element.classList.replace('bi-check-lg', 'bi-files');
+            element.title = originalTitle;
+            element.classList.remove('bi-check-lg');
+            element.classList.add('bi-files');
         }, 1500);
-    }).catch(() => alert('複製失敗: ' + text));
+    }).catch(err => {
+        console.error('無法複製:', err);
+        alert('複製失敗，請手動複製: ' + text);
+    });
 }
 
+
+// ==== 更新搜尋結果數量的函數 (不變) ====
 function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
+// ==== 顯示優惠券詳情 Modal 的函數 (移除標籤顯示) ====
 function showCouponDetailModal(coupon) {
     document.getElementById('detail-title').textContent = coupon.name;
-    document.getElementById('detail-body').innerHTML = `
+    const detailBody = document.getElementById('detail-body');
+    detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`;
-    new bootstrap.Modal(document.getElementById('detailModel')).show();
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
+    `;
+    const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
+    detailModal.show();
 }
 
-// ==== 篩選、排序、事件處理 ====
+// ==== 初始化篩選按鈕的事件監聽 (更新篩選邏輯和清除按鈕) ====
+function initFilterButtons() {
+    // 通用處理函數
+    const handleFilterButtonClick = (button, isExclude = false) => {
+        button.classList.toggle('active');
+        if (isExclude) {
+            button.classList.toggle('btn-outline-danger');
+            button.classList.toggle('btn-danger');
+        } else {
+            button.classList.toggle('btn-outline-primary');
+            button.classList.toggle('btn-primary');
+        }
+
+        const filterType = button.dataset.filterType;
+        const filterValue = button.dataset.filterValue.toLowerCase();
+
+        if (button.classList.contains('active')) {
+            if (filterType === 'tags') {
+                selectedIncludeTags.add(filterValue);
+            } else if (filterType === 'excludeTags') {
+                selectedExcludeTags.add(filterValue);
+            } else if (filterType === 'orderType') {
+                selectedOrderTypes.add(filterValue);
+            }
+        } else {
+            if (filterType === 'tags') {
+                selectedIncludeTags.delete(filterValue);
+            } else if (filterType === 'excludeTags') {
+                selectedExcludeTags.delete(filterValue);
+            } else if (filterType === 'orderType') {
+                selectedOrderTypes.delete(filterValue);
+            }
+        }
+        performSearchAndFilter(); // 每次點擊按鈕後重新篩選
+        button.blur(); // 修正：點擊後移除按鈕的焦點，解決手機版顏色切換問題
+    };
+
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, false));
+    });
+
+    document.querySelectorAll('.exclude-filter-btn').forEach(button => {
+        button.addEventListener('click', () => handleFilterButtonClick(button, true));
+    });
+}
+
+// ==== 主要搜尋與篩選邏輯 (更新精確篩選和排除邏輯) ====
 function performSearchAndFilter() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim(); 
+    const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked; 
 
     filteredCoupons = allCoupons.filter(coupon => {
-        const couponTags = (coupon.tags || '').toLowerCase().split(',').map(t => t.trim());
-        const couponOrderType = (coupon.orderType || '').toLowerCase();
+        const couponName = String(coupon.name || '').toLowerCase();
+        const couponCode = String(coupon.couponCode || '').toLowerCase();
+        const couponDescription = String(coupon.description || '').toLowerCase();
+        const couponTags = String(coupon.tags || '').toLowerCase().split(',').map(tag => tag.trim());
+        const couponOrderType = String(coupon.orderType || '').toLowerCase();
 
-        if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) return false;
-        
-        // **修正後的點餐類型篩選邏輯**：使用嚴格等於 `===`
-        if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType === type)) return false;
 
-        if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) return false;
-
-        if (searchTerm) {
-            const fields = [coupon.name, coupon.couponCode, coupon.price, couponOrderType, ...couponTags];
-            if (enableFlavorSearch) fields.push(coupon.description);
-            if (!fields.some(f => (f || '').toLowerCase().includes(searchTerm))) return false;
+        // 1. 「包含」篩選邏輯 (來自按鈕)
+        let includeTagsPass = true; 
+        if (selectedIncludeTags.size > 0) {
+            includeTagsPass = Array.from(selectedIncludeTags).some(filterTag => couponTags.includes(filterTag));
         }
-        return true;
+
+        let orderTypeFilterPass = true; 
+        if (selectedOrderTypes.size > 0) {
+            let foundOrderTypeMatch = false; 
+            Array.from(selectedOrderTypes).forEach(filterValue => {
+                if (couponOrderType === filterValue) { 
+                    foundOrderTypeMatch = true;
+                }
+            });
+            orderTypeFilterPass = foundOrderTypeMatch; 
+        }
+        
+        let finalIncludeFilterPass = includeTagsPass && orderTypeFilterPass;
+
+
+        // 2. 「排除」篩選邏輯 (來自按鈕)
+        let excludeFilterPass = true; 
+        if (selectedExcludeTags.size > 0) {
+            excludeFilterPass = !Array.from(selectedExcludeTags).some(filterTag => couponTags.includes(filterTag));
+        }
+
+        // 3. 通用關鍵字搜尋邏輯 (來自搜尋框)
+        let generalSearchPass = true; 
+        if (searchTerm) {
+            const searchableFields = [
+                couponName,
+                couponCode,
+                String(coupon.price || '').toLowerCase(), 
+                couponOrderType,
+                String(coupon.tags || '').toLowerCase()
+            ]; 
+
+            if (enableFlavorSearch) {
+                searchableFields.push(couponDescription); 
+            }
+
+            generalSearchPass = searchableFields.some(field => field.includes(searchTerm));
+        }
+
+        // 組合所有篩選條件
+        return finalIncludeFilterPass && excludeFilterPass && generalSearchPass;
     });
+
     sortCoupons(document.getElementById('sortSelect').value);
 }
 
+// ==== 排序邏輯 (修正 N/A 價格排序) ====
 function sortCoupons(sortBy) {
-    const sorters = {
-        'price-asc': (a, b) => (parseFloat(a.price) || Infinity) - (parseFloat(b.price) || Infinity),
-        'price-desc': (a, b) => (parseFloat(b.price) || -Infinity) - (parseFloat(a.price) || -Infinity),
-        'coupon_code-asc': (a, b) => (a.couponCode || '').localeCompare(b.couponCode || ''),
-        'coupon_code-desc': (a, b) => (b.couponCode || '').localeCompare(a.couponCode || ''),
-        'end_date-asc': (a, b) => new Date(a.endDate) - new Date(b.endDate),
-        'end_date-desc': (a, b) => new Date(b.endDate) - new Date(a.endDate)
-    };
-    renderCoupons([...filteredCoupons].sort(sorters[sortBy]));
+    let sortedCoupons = [...filteredCoupons];
+
+    switch (sortBy) {
+        case 'price-asc':
+            sortedCoupons.sort((a, b) => {
+                const priceA = parseFloat(a.price);
+                const priceB = parseFloat(b.price);
+                // 將 NaN (N/A) 價格排在最後
+                if (isNaN(priceA) && isNaN(priceB)) return 0;
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面 (升序)
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面 (升序)
+                return priceA - priceB;
+            });
+            break;
+        case 'price-desc':
+            sortedCoupons.sort((a, b) => {
+                const priceA = parseFloat(a.price);
+                const priceB = parseFloat(b.price);
+                // 將 NaN (N/A) 價格排在最後
+                if (isNaN(priceA) && isNaN(priceB)) return 0;
+                if (isNaN(priceA)) return 1; // A 是 NaN，排在 B 後面 (降序)
+                if (isNaN(priceB)) return -1; // B 是 NaN，排在 A 後面 (降序)
+                return priceB - priceA;
+            });
+            break;
+        case 'coupon_code-asc': 
+            sortedCoupons.sort((a, b) => (a.couponCode || '').localeCompare(b.couponCode || ''));
+            break;
+        case 'coupon_code-desc': 
+            sortedCoupons.sort((a, b) => (b.couponCode || '').localeCompare(a.couponCode || ''));
+            break;
+        case 'end_date-asc': 
+            sortedCoupons.sort((a, b) => {
+                const dateA = new Date(a.endDate);
+                const dateB = new Date(b.endDate);
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; 
+                if (isNaN(dateB.getTime())) return -1;
+                return dateA.getTime() - dateB.getTime();
+            });
+            break;
+        case 'end_date-desc': 
+            sortedCoupons.sort((a, b) => {
+                const dateA = new Date(a.endDate);
+                const dateB = new Date(b.endDate);
+                if (isNaN(dateA.getTime())) return isNaN(dateB.getTime()) ? 0 : 1; 
+                if (isNaN(dateB.getTime())) return -1;
+                return dateB.getTime() - dateA.getTime();
+            });
+            break;
+    }
+    renderCoupons(sortedCoupons);
 }
 
-// ==== **最終修正**：初始化所有事件監聽 ====
-function initFilterButtons() {
-    document.querySelectorAll('.filter-btn, .exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => {
-            const wasActive = button.classList.contains('active');
-            const { filterType, filterValue } = button.dataset;
-            const value = filterValue.toLowerCase();
-            const isExclude = button.classList.contains('exclude-filter-btn');
 
-            const sets = {
-                tags: selectedIncludeTags,
-                excludeTags: selectedExcludeTags,
-                orderType: selectedOrderTypes
-            };
-            const currentSet = sets[filterType];
+// ==== DOMContentLoaded 事件監聽器 (頁面載入完成後執行) ====
+document.addEventListener('DOMContentLoaded', () => {
+    fetchCoupons(); // 啟動數據載入
 
-            // 1. 更新資料模型
-            if (wasActive) {
-                currentSet.delete(value);
-            } else {
-                currentSet.add(value);
-            }
+    // 初始化 Bootstrap Popover
+    const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+    popoverTriggerList.map(function (popoverTriggerEl) {
+        return new bootstrap.Popover(popoverTriggerEl);
+    });
 
-            // 2. 根據新狀態明確更新 UI
-            if (currentSet.has(value)) { // 如果現在應該是啟用
-                button.classList.add('active');
-                if (isExclude) {
-                    button.classList.remove('btn-outline-danger');
-                    button.classList.add('btn-danger');
-                } else {
-                    button.classList.remove('btn-outline-primary');
-                    button.classList.add('btn-primary');
-                }
-            } else { // 如果現在應該是未啟用
-                button.classList.remove('active');
-                if (isExclude) {
-                    button.classList.remove('btn-danger');
-                    button.classList.add('btn-outline-danger');
-                } else {
-                    button.classList.remove('btn-primary');
-                    button.classList.add('btn-outline-primary');
-                }
-            }
-            
-            button.blur(); // 確保失焦
-            performSearchAndFilter();
+    const topBtn = document.querySelector('.top-btn');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 200) {
+            topBtn.style.display = 'block';
+        } else {
+            topBtn.style.display = 'none';
+        }
+    });
+    topBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
     });
-}
 
-document.addEventListener('DOMContentLoaded', () => {
-    fetchCoupons();
-
-    // 清除篩選
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
-        document.getElementById('searchInput').value = '';
+        document.getElementById('searchInput').value = ''; 
         
         document.querySelectorAll('.filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-primary');
             button.classList.add('btn-outline-primary');
         });
-        selectedIncludeTags.clear();
-        selectedOrderTypes.clear();
+        selectedIncludeTags.clear(); 
+        selectedOrderTypes.clear(); 
 
         document.querySelectorAll('.exclude-filter-btn.active').forEach(button => {
             button.classList.remove('active', 'btn-danger');
             button.classList.add('btn-outline-danger');
         });
         selectedExcludeTags.clear();
-        
-        document.getElementById('enableFlavorSearch').checked = false;
-        document.getElementById('sortSelect').value = 'price-asc';
-        performSearchAndFilter();
+
+        document.getElementById('enableFlavorSearch').checked = false; 
+        document.getElementById('sortSelect').value = 'price-asc'; 
+        performSearchAndFilter(); 
     });
 
-    // 其他控制項
-    document.getElementById('sortSelect').addEventListener('change', e => sortCoupons(e.target.value));
-    document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
+    document.getElementById('sortSelect').addEventListener('change', (event) => {
+        sortCoupons(event.target.value);
+    });
+
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // 回到頂部
-    const topBtn = document.querySelector('.top-btn');
-    window.addEventListener('scroll', () => {
-        topBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
-    });
-    topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
 
-    // 事件委派
-    document.getElementById('row').addEventListener('click', e => {
-        const detailBtn = e.target.closest('.view-detail-btn');
-        if (detailBtn) showCouponDetailModal(JSON.parse(detailBtn.dataset.coupon.replace(/&apos;/g, "'")));
-
-        const copyBtn = e.target.closest('.copy-code-btn');
-        if (copyBtn) copyToClipboard(copyBtn.dataset.couponCode, copyBtn);
-    });
-
-    // 夜間模式
+    // 夜間模式切換邏輯
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('theme') || (prefersDark ? 'dark' : 'light');
 
-    body.setAttribute('data-theme', savedTheme);
-    if (savedTheme === 'dark') {
+    // 載入用戶偏好主題
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        body.setAttribute('data-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+        }
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // 如果沒有保存偏好，但系統偏好是暗色模式
+        body.setAttribute('data-theme', 'dark');
         themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
     }
 
     themeToggle.addEventListener('click', () => {
-        const newTheme = body.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        body.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.querySelector('i').classList.toggle('bi-moon-fill', newTheme === 'light');
-        themeToggle.querySelector('i').classList.toggle('bi-sun-fill', newTheme === 'dark');
+        if (body.getAttribute('data-theme') === 'dark') {
+            body.setAttribute('data-theme', 'light');
+            themeToggle.querySelector('i').classList.replace('bi-sun-fill', 'bi-moon-fill');
+            localStorage.setItem('theme', 'light');
+        } else {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.querySelector('i').classList.replace('bi-moon-fill', 'bi-sun-fill');
+            localStorage.setItem('theme', 'dark');
+        }
     });
-
-    new bootstrap.Popover(document.getElementById('flavorSearchInfo'));
 });
