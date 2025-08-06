@@ -148,7 +148,9 @@ function renderCoupons(couponsToRender) {
                             <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group w-100"> 
-                                    <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" 
+                                            data-bs-toggle="modal" data-bs-target="#detailModel" 
+                                            data-coupon-json='${JSON.stringify(coupon).replace(/'/g, "&apos;")}' style="width:100%;">
                                         查看更多
                                     </button>
                                 </div>
@@ -161,12 +163,13 @@ function renderCoupons(couponsToRender) {
         rowContainer.insertAdjacentHTML('beforeend', couponCard);
     });
 
-    document.querySelectorAll('.view-detail-btn').forEach(button => {
-        button.addEventListener('click', (event) => {
-            const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
-            showCouponDetailModal(couponData);
-        });
-    });
+    // 移除這裡的事件監聽器，改為監聽 Modal 的 show 事件
+    // document.querySelectorAll('.view-detail-btn').forEach(button => {
+    //     button.addEventListener('click', (event) => {
+    //         const couponData = JSON.parse(event.currentTarget.dataset.coupon.replace(/&apos;/g, "'"));
+    //         showCouponDetailModal(couponData);
+    //     });
+    // });
 
     document.querySelectorAll('.copy-code-btn').forEach(button => {
         button.addEventListener('click', (event) => {
@@ -203,29 +206,8 @@ function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
-// ==== 顯示優惠券詳情 Modal 的函數 (移除標籤顯示) ====
-function showCouponDetailModal(coupon) {
-    const detailTitle = document.getElementById('detail-title');
-    const detailBody = document.getElementById('detail-body');
-
-    // 修正: 檢查元素是否存在，避免 TypeError
-    if (detailTitle) {
-        detailTitle.textContent = coupon.name;
-    }
-    
-    if (detailBody) {
-        detailBody.innerHTML = `
-            <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
-            <p><strong>價格:</strong> ${coupon.price}</p>
-            <p><strong>到期日:</strong> ${coupon.endDate}</p>
-            <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-            <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
-        `;
-    }
-
-    const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
-    detailModal.show();
-}
+// ==== 顯示優惠券詳情 Modal 的函數 (現在由 Modal 事件觸發) ====
+// 這個函數現在將被移除，其邏輯將移到 Modal 的 'show.bs.modal' 事件監聽器中
 
 // ==== 初始化篩選按鈕的事件監聽 (更新篩選邏輯和清除按鈕) ====
 function initFilterButtons() {
@@ -260,16 +242,16 @@ function initFilterButtons() {
                 selectedOrderTypes.delete(filterValue);
             }
         }
-        performSearchAndFilter(); // 每次點擊按鈕後重新篩選
-        button.blur(); // 修正：點擊後移除按鈕的焦點，解決手機版顏色切換問題
+        performSearchAndFilter(); 
+        button.blur(); 
     };
 
     document.querySelectorAll('.filter-btn').forEach(button => {
-        button.addEventListener('click', () => handleFilterButtonClick(button, false));
+        button.addEventListener('click', (event) => handleFilterButtonClick(event.currentTarget, false));
     });
 
     document.querySelectorAll('.exclude-filter-btn').forEach(button => {
-        button.addEventListener('click', () => handleFilterButtonClick(button, true));
+        button.addEventListener('click', (event) => handleFilterButtonClick(event.currentTarget, true));
     });
 }
 
@@ -475,4 +457,33 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', 'dark');
         }
     });
+
+    // 監聽 Modal 的 show 事件來填充內容
+    const detailModalElement = document.getElementById('detailModel');
+    if (detailModalElement) {
+        detailModalElement.addEventListener('show.bs.modal', function (event) {
+            // 觸發 Modal 的按鈕
+            const button = event.relatedTarget; 
+            // 從 data-coupon-json 屬性中提取優惠券資料
+            const couponJson = button.getAttribute('data-coupon-json');
+            const couponData = JSON.parse(couponJson.replace(/&apos;/g, "'")); 
+
+            const detailTitle = detailModalElement.querySelector('#detail-title');
+            const detailBody = detailModalElement.querySelector('#detail-body');
+
+            if (detailTitle) {
+                detailTitle.textContent = couponData.name;
+            }
+            
+            if (detailBody) {
+                detailBody.innerHTML = `
+                    <p><strong>優惠券代碼:</strong> ${couponData.couponCode}</p>
+                    <p><strong>價格:</strong> ${couponData.price}</p>
+                    <p><strong>到期日:</strong> ${couponData.endDate}</p>
+                    <p><strong>點餐類型:</strong> ${couponData.orderType || '不限'}</p>
+                    <p><strong>詳細內容:</strong><br>${(couponData.description || '').replace(/\n/g, '<br>')}</p>
+                `;
+            }
+        });
+    }
 });

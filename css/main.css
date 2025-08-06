@@ -206,7 +206,7 @@ body {
 
 /* hr 分隔線樣式修正 */
 hr {
-    border-top: 3px solid var(--hr-border-color); /* 加粗分隔線 */
+    border-top: 3px solid var(--hr-border-color) !important; /* 加粗分隔線 */
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
 }
