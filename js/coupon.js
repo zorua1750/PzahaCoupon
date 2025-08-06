@@ -205,15 +205,24 @@ function updateSearchResultCount(count) {
 
 // ==== 顯示優惠券詳情 Modal 的函數 (移除標籤顯示) ====
 function showCouponDetailModal(coupon) {
-    document.getElementById('detail-title').textContent = coupon.name;
+    const detailTitle = document.getElementById('detail-title');
     const detailBody = document.getElementById('detail-body');
-    detailBody.innerHTML = `
-        <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
-        <p><strong>價格:</strong> ${coupon.price}</p>
-        <p><strong>到期日:</strong> ${coupon.endDate}</p>
-        <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
-    `;
+
+    // 修正: 檢查元素是否存在，避免 TypeError
+    if (detailTitle) {
+        detailTitle.textContent = coupon.name;
+    }
+    
+    if (detailBody) {
+        detailBody.innerHTML = `
+            <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
+            <p><strong>價格:</strong> ${coupon.price}</p>
+            <p><strong>到期日:</strong> ${coupon.endDate}</p>
+            <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
+            <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>
+        `;
+    }
+
     const detailModal = new bootstrap.Modal(document.getElementById('detailModel'));
     detailModal.show();
 }
