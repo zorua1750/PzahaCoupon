@@ -52,8 +52,8 @@ function parseCSV(csv) {
         "開始日期": "startDate",
         "結束日期": "endDate",
         "爬取時間": "crawlTime", 
-        "備註": "note"
-        "精簡版內容": "simplifiedDescription", // 新增的欄位
+        "備註": "note",
+        "精簡版內容": "simplifiedDescription" // 新增的欄位
     };
     
     const expectedHeaderCount = Object.keys(headerMap).length;
