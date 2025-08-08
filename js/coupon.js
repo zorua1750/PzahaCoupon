@@ -33,7 +33,7 @@ async function fetchCoupons() {
     }
 }
 
-// ==== CSV 解析函數 (修正欄位數量) ====
+// ==== CSV 解析函數 ====
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
     if (lines.length <= 1) return [];
@@ -41,7 +41,6 @@ function parseCSV(csv) {
     const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
     const data = [];
 
-    // **修正：增加 "精簡版內容" 欄位以匹配您的試算表**
     const headerMap = {
         "優惠代碼": "couponCode",
         "名稱": "name",
@@ -53,7 +52,7 @@ function parseCSV(csv) {
         "結束日期": "endDate",
         "爬取時間": "crawlTime", 
         "備註": "note",
-        "精簡版內容": "simplifiedDescription" // 新增的欄位
+        "精簡版內容": "simplifiedDescription"
     };
     
     const expectedHeaderCount = Object.keys(headerMap).length;
@@ -84,13 +83,12 @@ function parseCSV(csv) {
 
         if (currentLine.length >= expectedHeaderCount) {
              const row = {};
-            // 使用 headerMap 的鍵順序來確保對應正確
             const headerKeysInOrder = ["優惠代碼", "名稱", "套餐價格", "套餐內容", "標籤", "點餐類型", "開始日期", "結束日期", "爬取時間", "備註", "精簡版內容"];
             
             for (let j = 0; j < expectedHeaderCount; j++) {
                 const key = headerKeysInOrder[j];
                 const newKey = headerMap[key];
-                if (newKey) { // 確保 newKey 存在
+                if (newKey) {
                     row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, '');
                 }
             }
@@ -99,7 +97,6 @@ function parseCSV(csv) {
     }
     return data;
 }
-
 
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
@@ -117,8 +114,8 @@ function renderCoupons(couponsToRender) {
         const priceValue = parseFloat(coupon.price);
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
         
-        // **修正：使用精簡版內容，如果不存在則不顯示描述**
         const descriptionToDisplay = coupon.simplifiedDescription || '';
+        // **修正：將 \n 轉換為 <br> 以正確顯示換行**
         const descriptionHtml = descriptionToDisplay ? `<p class="card-text coupon-description mt-2">${descriptionToDisplay.replace(/\n/g, '<br>')}</p>` : '';
 
         const cardDiv = document.createElement('div');
@@ -163,19 +160,21 @@ function updateSearchResultCount(count) {
     document.getElementById('searchResultCount').textContent = count;
 }
 
-// ==== 顯示優惠券詳情 Modal ====
-// **修正：確保這裡顯示的是完整的 "套餐內容"**
 function showCouponDetailModal(coupon) {
-    document.getElementById('detail-title').textContent = coupon.name;
-    document.getElementById('detail-body').innerHTML = `
+    const detailTitle = document.getElementById('detail-title');
+    const detailBody = document.getElementById('detail-body');
+    
+    detailTitle.textContent = coupon.name;
+    detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`; // 確保這裡是 description
-    new bootstrap.Modal(document.getElementById('detailModel')).show();
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`;
+    
+    const detailModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('detailModel'));
+    detailModal.show();
 }
-
 
 // ==== 篩選、排序、事件處理 ====
 function performSearchAndFilter() {
@@ -187,9 +186,7 @@ function performSearchAndFilter() {
         const couponOrderType = (coupon.orderType || '').toLowerCase();
 
         if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) return false;
-        
         if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType === type)) return false;
-
         if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) return false;
 
         if (searchTerm) {
@@ -214,7 +211,6 @@ function sortCoupons(sortBy) {
     renderCoupons([...filteredCoupons].sort(sorters[sortBy]));
 }
 
-// ==== **最終修正**：初始化所有事件監聽 ====
 function initFilterButtons() {
     const handleFilterButtonClick = (button) => {
         const wasActive = button.classList.contains('active');
@@ -263,7 +259,6 @@ function initFilterButtons() {
 document.addEventListener('DOMContentLoaded', () => {
     fetchCoupons();
 
-    // 清除篩選
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
         document.getElementById('searchInput').value = '';
         
@@ -285,23 +280,20 @@ document.addEventListener('DOMContentLoaded', () => {
         performSearchAndFilter();
     });
 
-    // 其他控制項
     document.getElementById('sortSelect').addEventListener('change', e => sortCoupons(e.target.value));
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // 回到頂部
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         topBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
     });
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // 事件委派：綁定到父層容器，提高效率
     document.getElementById('row').addEventListener('click', e => {
         const detailBtn = e.target.closest('.view-detail-btn');
         if (detailBtn) {
-            const couponData = JSON.parse(detailBtn.dataset.couponJson.replace(/&apos;/g, "'"));
+             const couponData = JSON.parse(detailBtn.dataset.couponJson.replace(/&apos;/g, "'"));
             showCouponDetailModal(couponData);
         }
 
@@ -311,7 +303,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 夜間模式
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
