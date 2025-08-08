@@ -47,13 +47,13 @@ function parseCSV(csv) {
         "名稱": "name",
         "套餐價格": "price",
         "套餐內容": "description",
-        "精簡版內容": "simplifiedDescription", // 新增的欄位
         "標籤": "tags",
         "點餐類型": "orderType",
         "開始日期": "startDate",
         "結束日期": "endDate",
         "爬取時間": "crawlTime", 
         "備註": "note"
+        "精簡版內容": "simplifiedDescription", // 新增的欄位
     };
     
     const expectedHeaderCount = Object.keys(headerMap).length;
@@ -85,7 +85,7 @@ function parseCSV(csv) {
         if (currentLine.length >= expectedHeaderCount) {
              const row = {};
             // 使用 headerMap 的鍵順序來確保對應正確
-            const headerKeysInOrder = ["優惠代碼", "名稱", "套餐價格", "套餐內容", "精簡版內容", "標籤", "點餐類型", "開始日期", "結束日期", "爬取時間", "備註"];
+            const headerKeysInOrder = ["優惠代碼", "名稱", "套餐價格", "套餐內容", "標籤", "點餐類型", "開始日期", "結束日期", "爬取時間", "備註", "精簡版內容"];
             
             for (let j = 0; j < expectedHeaderCount; j++) {
                 const key = headerKeysInOrder[j];
