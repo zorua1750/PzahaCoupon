@@ -117,13 +117,9 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
 .card:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
 .card-body { padding: 1.25rem; flex-grow: 1; }
-.card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); } /* MODIFIED: font-size from 1.3rem to 1.15rem */
+.card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
 .card-text { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--card-text-color); }
 .card-text strong { color: var(--card-code-color); font-size: 1.1em; }
-.coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-.share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
-.share-btn:hover { color: var(--button-primary-bg); }
-
 
 /* **修正：移除行數限制，讓內容自適應高度** */
 .coupon-description {
@@ -132,13 +128,18 @@ hr { border-top: 1px solid var(--hr-border-color); }
     line-height: 1.5em; 
     /* 移除了 max-height 和 -webkit-line-clamp 等限制 */
 }
-
 .coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #28a745; color: white; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-.card .view-detail-btn { width: 100%; margin-top: 15px; }
+.coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
+.share-btn:hover { color: var(--button-primary-bg); }
+.card .view-detail-btn { width: auto; margin-top: 0; }
+
 
 /* Modal & Popover */
 .modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
 .modal-header { background-color: var(--modal-header-bg); color: var(--modal-header-text); border-bottom-color: var(--hr-border-color); }
+.modal-header .modal-title { margin-right: auto; } /* Push other items to the right */
+.modal-header .share-btn { margin-left: 1rem; font-size: 1.25rem; }
 .modal-title { color: var(--modal-header-text); }
 .modal-body { color: var(--modal-text); }
 .modal-footer { border-top-color: var(--hr-border-color); }
@@ -149,7 +150,7 @@ hr { border-top: 1px solid var(--hr-border-color); }
 /* General Styles */
 body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; line-height: 1.6; }
 .container { padding-left: 15px; padding-right: 15px; }
-.coupon-code-display .copy-code-btn { cursor: pointer; margin-left: 5px; font-size: 0.9em; vertical-align: middle; color: var(--button-outline-primary-color); transition: color 0.2s ease-in-out; }
-.coupon-code-display .copy-code-btn:hover { color: var(--button-primary-bg); }
-.coupon-code-display .copy-code-btn.bi-check-lg { color: #28a745; }
+.coupon-code-display .copy-code-btn, .modal-body .copy-code-btn { cursor: pointer; margin-left: 5px; font-size: 0.9em; vertical-align: middle; color: var(--button-outline-primary-color); transition: color 0.2s ease-in-out; }
+.coupon-code-display .copy-code-btn:hover, .modal-body .copy-code-btn:hover { color: var(--button-primary-bg); }
+.copy-code-btn.text-success, .share-btn.text-success { color: #28a745 !important; }
 .contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }

@@ -117,9 +117,10 @@ function renderCoupons(couponsToRender) {
         const priceValue = parseFloat(coupon.price);
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
         
-        // **修正：使用精簡版內容，如果不存在則不顯示描述**
         const descriptionToDisplay = coupon.simplifiedDescription || '';
-        const descriptionHtml = descriptionToDisplay ? `<p class="card-text coupon-description mt-2">${descriptionToDisplay.replace(/\n/g, '<br>')}</p>` : '';
+        const descriptionHtml = descriptionToDisplay 
+            ? `<p class="card-text coupon-description mt-2">${descriptionToDisplay.split('\n').map(line => line.trim() ? `▶ ${line}` : '').filter(line => line).join('<br>')}</p>` 
+            : '';
 
         const cardDiv = document.createElement('div');
         cardDiv.className = 'col-md-4 mb-4';
@@ -156,7 +157,7 @@ function copyToClipboard(text, element) {
         const originalTitle = element.title;
         element.title = '已複製!';
         const originalIcon = element.className;
-        element.className = 'bi bi-check-lg text-success';
+        element.className = originalIcon.includes('bi-share-fill') ? 'bi bi-check-lg share-btn text-success' : 'bi bi-check-lg copy-code-btn text-success';
         setTimeout(() => {
             element.title = originalTitle;
             element.className = originalIcon;
@@ -169,21 +170,36 @@ function updateSearchResultCount(count) {
 }
 
 // ==== 顯示優惠券詳情 Modal ====
-// **修正：確保這裡顯示的是完整的 "套餐內容"**
 function showCouponDetailModal(coupon) {
-    const detailTitle = document.getElementById('detail-title');
-    const detailBody = document.getElementById('detail-body');
+    const detailModal = document.getElementById('detailModel');
+    const detailTitle = detailModal.querySelector('#detail-title');
+    const detailBody = detailModal.querySelector('#detail-body');
+    const detailHeader = detailModal.querySelector('.modal-header');
+
+    // 清理舊的分享按鈕
+    const oldShareBtn = detailHeader.querySelector('.share-btn');
+    if (oldShareBtn) {
+        oldShareBtn.remove();
+    }
     
+    // 建立新的分享按鈕並加入
+    const shareBtn = document.createElement('i');
+    shareBtn.className = 'bi bi-share-fill share-btn';
+    shareBtn.title = '分享優惠';
+    shareBtn.dataset.couponCode = coupon.couponCode;
+    shareBtn.dataset.description = coupon.description;
+    shareBtn.dataset.endDate = coupon.endDate;
+    detailHeader.insertBefore(shareBtn, detailHeader.querySelector('.btn-close'));
+
     detailTitle.textContent = coupon.name;
     detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> <strong class="coupon-code-text">${coupon.couponCode}</strong> <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i></p>
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`; // 確保這裡是 description
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`;
     
-    const detailModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('detailModel'));
-    detailModal.show();
+    bootstrap.Modal.getOrCreateInstance(detailModal).show();
 }
 
 // ==== 篩選、排序、事件處理 ====
@@ -288,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // 事件委派
+    // 事件委派 (主頁面)
     document.getElementById('row').addEventListener('click', e => {
         const detailBtn = e.target.closest('.view-detail-btn');
         if (detailBtn) {
@@ -304,15 +320,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareBtn = e.target.closest('.share-btn');
         if (shareBtn) {
             const { couponCode, description, endDate } = shareBtn.dataset;
-            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}，優惠只到${endDate}！`;
+            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！`;
             copyToClipboard(shareText, shareBtn);
         }
     });
     
+    // 事件委派 (彈出視窗)
     document.getElementById('detailModel').addEventListener('click', e => {
         const copyBtn = e.target.closest('.copy-code-btn');
         if (copyBtn) {
             copyToClipboard(copyBtn.dataset.couponCode, copyBtn);
+        }
+
+        const shareBtn = e.target.closest('.share-btn');
+        if (shareBtn) {
+            const { couponCode, description, endDate } = shareBtn.dataset;
+            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！`;
+            copyToClipboard(shareText, shareBtn);
         }
     });
 
