@@ -118,7 +118,6 @@ function renderCoupons(couponsToRender) {
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
         
         const descriptionToDisplay = coupon.simplifiedDescription || '';
-        // *** MODIFIED: Changed from <p> with <br> to a <ul> list for perfect alignment ***
         const descriptionHtml = descriptionToDisplay 
             ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
@@ -139,7 +138,7 @@ function renderCoupons(couponsToRender) {
                         <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
                          <div class="coupon-actions">
                             <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon-json='${JSON.stringify(coupon).replace(/'/g, "&apos;")}'>
-                                查看更多
+                                查看詳情
                             </button>
                             <i class="bi bi-share-fill share-btn" title="分享優惠" data-coupon-code="${coupon.couponCode}" data-description="${coupon.description}" data-end-date="${coupon.endDate}"></i>
                         </div>
@@ -177,12 +176,12 @@ function showCouponDetailModal(coupon) {
     const detailBody = detailModal.querySelector('#detail-body');
     const detailHeader = detailModal.querySelector('.modal-header');
 
-    // 清理舊的分享按鈕
+    // 清理舊的分享按鈕和關閉按鈕
     const oldShareBtn = detailHeader.querySelector('.share-btn');
-    if (oldShareBtn) {
-        oldShareBtn.remove();
-    }
-    
+    if (oldShareBtn) oldShareBtn.remove();
+    const oldCloseBtn = detailHeader.querySelector('.btn-close');
+    if (oldCloseBtn) oldCloseBtn.remove();
+
     // 建立新的分享按鈕並加入
     const shareBtn = document.createElement('i');
     shareBtn.className = 'bi bi-share-fill share-btn';
@@ -190,8 +189,8 @@ function showCouponDetailModal(coupon) {
     shareBtn.dataset.couponCode = coupon.couponCode;
     shareBtn.dataset.description = coupon.description;
     shareBtn.dataset.endDate = coupon.endDate;
-    detailHeader.insertBefore(shareBtn, detailHeader.querySelector('.btn-close'));
-
+    detailHeader.appendChild(shareBtn);
+    
     detailTitle.textContent = coupon.name;
     detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> <strong class="coupon-code-text">${coupon.couponCode}</strong> <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i></p>
