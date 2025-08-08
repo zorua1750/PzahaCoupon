@@ -120,15 +120,32 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
 .card-text { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--card-text-color); }
 .card-text strong { color: var(--card-code-color); font-size: 1.1em; }
-
-/* **修正：移除行數限制，讓內容自適應高度** */
-.coupon-description {
-    font-size: 0.85rem; 
-    color: var(--card-description-color); 
-    line-height: 1.5em; 
-    /* 移除了 max-height 和 -webkit-line-clamp 等限制 */
-}
 .coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #28a745; color: white; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+/* === NEW/MODIFIED STYLES FOR DESCRIPTION LIST === */
+.coupon-description-list {
+    font-size: 0.85rem;
+    color: var(--card-description-color);
+    line-height: 1.6em;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 0.75rem;
+    margin-bottom: 0;
+}
+.coupon-description-list li {
+    position: relative;
+    padding-left: 1.4em; /* 給 "▶" 符號留出空間 */
+    margin-bottom: 0.25em; /* 項目間的微小間距 */
+}
+.coupon-description-list li::before {
+    content: '▶';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--card-description-color);
+}
+/* === END NEW STYLES === */
+
 .coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
 .share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
 .share-btn:hover { color: var(--button-primary-bg); }
