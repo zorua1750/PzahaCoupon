@@ -137,9 +137,12 @@ function renderCoupons(couponsToRender) {
                     ${descriptionHtml}
                     <div class="mt-auto">
                         <p class="card-text mt-2"><small class="text-muted">到期日: ${coupon.endDate}</small></p>
-                        <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon-json='${JSON.stringify(coupon).replace(/'/g, "&apos;")}'>
-                            查看更多
-                        </button>
+                         <div class="coupon-actions">
+                            <button type="button" class="btn btn-sm btn-outline-secondary view-detail-btn" data-coupon-json='${JSON.stringify(coupon).replace(/'/g, "&apos;")}'>
+                                查看更多
+                            </button>
+                            <i class="bi bi-share-fill share-btn" title="分享優惠" data-coupon-code="${coupon.couponCode}" data-description="${coupon.description}" data-end-date="${coupon.endDate}"></i>
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -153,10 +156,11 @@ function renderCoupons(couponsToRender) {
 function copyToClipboard(text, element) {
     navigator.clipboard.writeText(text).then(() => {
         element.title = '已複製!';
-        element.classList.replace('bi-files', 'bi-check-lg');
+        const originalIcon = element.className;
+        element.className = 'bi bi-check-lg';
         setTimeout(() => {
             element.title = '點擊複製代碼';
-            element.classList.replace('bi-check-lg', 'bi-files');
+            element.className = originalIcon;
         }, 1500);
     }).catch(() => alert('複製失敗: ' + text));
 }
@@ -173,7 +177,7 @@ function showCouponDetailModal(coupon) {
     
     detailTitle.textContent = coupon.name;
     detailBody.innerHTML = `
-        <p><strong>優惠券代碼:</strong> ${coupon.couponCode}</p>
+        <p><strong>優惠券代碼:</strong> <strong class="coupon-code-text">${coupon.couponCode}</strong> <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i></p>
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
@@ -245,22 +249,8 @@ function initFilterButtons() {
         // 2. 根據新狀態明確更新 UI
         if (currentSet.has(value)) { // 如果現在應該是啟用
             button.classList.add('active');
-            if (isExclude) {
-                button.classList.remove('btn-outline-danger');
-                button.classList.add('btn-danger');
-            } else {
-                button.classList.remove('btn-outline-primary');
-                button.classList.add('btn-primary');
-            }
         } else { // 如果現在應該是未啟用
             button.classList.remove('active');
-            if (isExclude) {
-                button.classList.remove('btn-danger');
-                button.classList.add('btn-outline-danger');
-            } else {
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-outline-primary');
-            }
         }
         
         button.blur();
@@ -279,17 +269,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
         document.getElementById('searchInput').value = '';
         
-        document.querySelectorAll('.filter-btn.active').forEach(button => {
-            button.classList.remove('active', 'btn-primary');
-            button.classList.add('btn-outline-primary');
+        document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(button => {
+            button.classList.remove('active');
         });
+
         selectedIncludeTags.clear();
         selectedOrderTypes.clear();
-
-        document.querySelectorAll('.exclude-filter-btn.active').forEach(button => {
-            button.classList.remove('active', 'btn-danger');
-            button.classList.add('btn-outline-danger');
-        });
         selectedExcludeTags.clear();
         
         document.getElementById('enableFlavorSearch').checked = false;
@@ -317,6 +302,20 @@ document.addEventListener('DOMContentLoaded', () => {
             showCouponDetailModal(couponData);
         }
 
+        const copyBtn = e.target.closest('.copy-code-btn');
+        if (copyBtn) {
+            copyToClipboard(copyBtn.dataset.couponCode, copyBtn);
+        }
+        
+        const shareBtn = e.target.closest('.share-btn');
+        if (shareBtn) {
+            const { couponCode, description, endDate } = shareBtn.dataset;
+            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}，優惠只到${endDate}！`;
+            copyToClipboard(shareText, shareBtn);
+        }
+    });
+    
+    document.getElementById('detailModel').addEventListener('click', e => {
         const copyBtn = e.target.closest('.copy-code-btn');
         if (copyBtn) {
             copyToClipboard(copyBtn.dataset.couponCode, copyBtn);
