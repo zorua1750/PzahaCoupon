@@ -33,15 +33,15 @@ async function fetchCoupons() {
 }
 
 // ==== **修正後的 CSV 解析函數** ====
-// 恢復到您提供的、可以處理複雜引號的健壯版本
+// 這個新版本可以正確處理包含換行符 (Alt+Enter) 的欄位
 function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/).filter(line => line.trim() !== ''); 
+    const lines = csv.split(/\r?\n/);
     if (lines.length <= 1) {
         console.warn("CSV 數據不足或只有標題行。");
         return [];
     }
 
-    const headers = lines[0].split(',').map(header => header.trim().replace(/\r/g, '')); 
+    const headers = lines[0].split(',').map(header => header.trim());
     const data = [];
 
     const headerMap = {
@@ -58,47 +58,45 @@ function parseCSV(csv) {
         "精簡版內容": "simplifiedDescription"
     };
     
-    const expectedHeaderCount = Object.keys(headerMap).length;
-    
+    // 將 CSV 標頭轉換為我們需要的 key
+    const mappedHeaders = headers.map(h => headerMap[h] || h);
+
+    let currentLine = '';
     for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        let currentLine = [];
-        let inQuote = false;
-        let currentField = '';
+        currentLine += lines[i];
+        
+        // 檢查引號數量是否為偶數，如果是，表示這是一行完整的資料
+        if ((currentLine.match(/"/g) || []).length % 2 === 0) {
+            if (currentLine.trim() === '') continue;
 
-        for (let k = 0; k < line.length; k++) {
-            const char = line[k];
-            if (char === '"') {
-                if (inQuote && k + 1 < line.length && line[k+1] === '"') { 
-                    currentField += '"';
-                    k++; 
-                } else {
+            const values = [];
+            let inQuote = false;
+            let currentField = '';
+
+            for (let char of currentLine) {
+                if (char === '"') {
                     inQuote = !inQuote;
+                } else if (char === ',' && !inQuote) {
+                    values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
+                    currentField = '';
+                } else {
+                    currentField += char;
                 }
-            } else if (char === ',' && !inQuote) {
-                currentLine.push(currentField); 
-                currentField = '';
-            } else {
-                currentField += char;
             }
-        }
-        currentLine.push(currentField); 
+            values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
 
-        if (currentLine.length >= expectedHeaderCount) {
-             const row = {};
-            // 使用 headerMap 的鍵順序來確保對應正確
-            const headerKeysInOrder = ["優惠代碼", "名稱", "套餐價格", "套餐內容", "標籤", "點餐類型", "開始日期", "結束日期", "爬取時間", "備註", "精簡版內容"];
-            
-            for (let j = 0; j < expectedHeaderCount; j++) {
-                const key = headerKeysInOrder[j];
-                const newKey = headerMap[key];
-                if (newKey) { // 確保 newKey 存在
-                    row[newKey] = String(currentLine[j] || '').trim().replace(/\r/g, '');
-                }
+            const row = {};
+            for (let j = 0; j < mappedHeaders.length; j++) {
+                row[mappedHeaders[j]] = values[j] || '';
             }
             data.push(row);
+            currentLine = ''; // 重置 currentLine
+        } else {
+            // 如果引號是奇數，表示這是一個跨行的欄位，加上換行符並繼續讀取下一行
+            currentLine += '\n';
         }
     }
+
     return data;
 }
 
@@ -155,11 +153,12 @@ function renderCoupons(couponsToRender) {
 // ==== 輔助函數 ====
 function copyToClipboard(text, element) {
     navigator.clipboard.writeText(text).then(() => {
+        const originalTitle = element.title;
         element.title = '已複製!';
         const originalIcon = element.className;
-        element.className = 'bi bi-check-lg';
+        element.className = 'bi bi-check-lg text-success';
         setTimeout(() => {
-            element.title = '點擊複製代碼';
+            element.title = originalTitle;
             element.className = originalIcon;
         }, 1500);
     }).catch(() => alert('複製失敗: ' + text));
@@ -230,7 +229,6 @@ function initFilterButtons() {
         const wasActive = button.classList.contains('active');
         const { filterType, filterValue } = button.dataset;
         const value = filterValue.toLowerCase();
-        const isExclude = button.classList.contains('exclude-filter-btn');
 
         const sets = {
             tags: selectedIncludeTags,
@@ -247,11 +245,7 @@ function initFilterButtons() {
         }
 
         // 2. 根據新狀態明確更新 UI
-        if (currentSet.has(value)) { // 如果現在應該是啟用
-            button.classList.add('active');
-        } else { // 如果現在應該是未啟用
-            button.classList.remove('active');
-        }
+        button.classList.toggle('active', !wasActive);
         
         button.blur();
         performSearchAndFilter();
