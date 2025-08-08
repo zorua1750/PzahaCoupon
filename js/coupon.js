@@ -118,8 +118,9 @@ function renderCoupons(couponsToRender) {
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
         
         const descriptionToDisplay = coupon.simplifiedDescription || '';
+        // *** MODIFIED: Changed from <p> with <br> to a <ul> list for perfect alignment ***
         const descriptionHtml = descriptionToDisplay 
-            ? `<p class="card-text coupon-description mt-2">${descriptionToDisplay.split('\n').map(line => line.trim() ? `▶ ${line}` : '').filter(line => line).join('<br>')}</p>` 
+            ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
 
         const cardDiv = document.createElement('div');
