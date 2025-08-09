@@ -1,24 +1,19 @@
 // pizacoupon-website/js/main.js
 
-// NEW: Add a flag to ensure the tour only runs once per session
 let siteTourInitialized = false;
 
 /**
  * 功能導覽函式 (由 coupon.js 在資料載入後呼叫)
  */
 function startSiteTour() {
-    // 1. 檢查導覽是否已完成，或在本輪瀏覽中是否已啟動過
     if (localStorage.getItem('pzahaTourCompleted') || siteTourInitialized) {
         return;
     }
-
-    // 2. 確保頁面上至少有一張優惠券卡片，否則不啟動導覽
     if (!document.querySelector('#row .card')) {
         console.log("沒有優惠券可供導覽，跳過功能介紹。");
         return;
     }
     
-    // 3. 標記導覽已啟動
     siteTourInitialized = true;
 
     const tour = new Shepherd.Tour({
@@ -31,6 +26,16 @@ function startSiteTour() {
             },
         }
     });
+
+    // MODIFIED: Get header element and define functions to change its state
+    const header = document.querySelector('header');
+    const disableStickyHeader = () => header.classList.add('tour-active');
+    const enableStickyHeader = () => header.classList.remove('tour-active');
+
+    // MODIFIED: Add event listeners to the tour
+    tour.on('show', disableStickyHeader); // 導覽開始時，取消置頂
+    tour.on('complete', enableStickyHeader); // 導覽完成時，恢復置頂
+    tour.on('cancel', enableStickyHeader); // 導覽取消時，恢復置頂
 
     tour.addStep({
         title: '歡迎來到 PzahaCoupon！',
@@ -83,12 +88,8 @@ function startSiteTour() {
         ]
     });
 
-    // 當導覽完成或被取消時，標記為已完成
-    const markTourAsCompleted = () => {
-        localStorage.setItem('pzahaTourCompleted', 'true');
-    };
-    tour.on('complete', markTourAsCompleted);
-    tour.on('cancel', markTourAsCompleted);
+    tour.on('complete', () => localStorage.setItem('pzahaTourCompleted', 'true'));
+    tour.on('cancel', () => localStorage.setItem('pzahaTourCompleted', 'true'));
 
     tour.start();
 }
@@ -97,7 +98,6 @@ function startSiteTour() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js 載入成功！');
     
-    // Initialize all Bootstrap tooltips on the page
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
