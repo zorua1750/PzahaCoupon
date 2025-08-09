@@ -262,17 +262,20 @@ header.tour-active {
     background: #a80d26 !important;
     color: #FFFFFF !important;
 }
+
 /* MODIFIED: Force tour internal layout to be correct */
 .shepherd-content {
-    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
 }
 .shepherd-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 0.75rem;
-    margin-bottom: 0.75rem;
+    padding: 1rem 1rem 0.75rem 1rem;
     border-bottom: 1px solid var(--hr-border-color);
+    flex-shrink: 0;
 }
 .shepherd-title {
     margin: 0;
@@ -281,11 +284,21 @@ header.tour-active {
     flex-grow: 1;
 }
 .shepherd-text {
-    padding: 0;
+    padding: 0.75rem 1rem;
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
+    overflow-y: auto;
+    flex-grow: 1;
 }
+.shepherd-footer {
+    padding: 0 1rem 1rem 1rem;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
 
 /* Info Card Styles */
 .info-card {
