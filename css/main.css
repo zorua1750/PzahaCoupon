@@ -32,7 +32,7 @@
     --reminder-text-color: #664d03;
     --reminder-border-color: #ffc107;
     --info-color: #031D44; 
-    --switch-bg-color: #031D44; /* NEW */
+    --switch-bg-color: #031D44; 
 }
 
 /* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
@@ -66,7 +66,7 @@ body[data-theme="dark"] {
     --reminder-text-color: #FFD700; 
     --reminder-border-color: #FFD700; 
     --info-color: #6C91C2; 
-    --switch-bg-color: #6C91C2; /* NEW */
+    --switch-bg-color: #6C91C2; 
 }
 
 /* 應用 CSS 變數 */
@@ -87,6 +87,10 @@ body {
 .navbar-dark .info .header-icon { font-size: 1.2rem; cursor: pointer; margin-left: 10px; color: var(--header-text); transition: color 0.2s ease-in-out; }
 .navbar-dark .info .header-icon:hover { color: rgba(255, 255, 255, 0.8); }
 .last-update-time { margin-right: 15px; }
+/* NEW: Favorites button active state */
+#favoritesBtn.active {
+    color: #FFD700; /* Gold color when active */
+}
 
 /* Back to Top Button */
 .top-btn { position: fixed; bottom: 20px; right: 20px; font-size: 2.5rem; color: var(--button-outline-primary-color); cursor: pointer; display: none; z-index: 1000; opacity: 0.8; transition: opacity 0.3s ease-in-out; }
@@ -112,7 +116,6 @@ body {
 .btn-danger, .btn-outline-danger.active { color: #FFFFFF !important; background-color: var(--button-danger-bg) !important; border-color: var(--button-danger-bg) !important; }
 /* === 按鈕狀態修正 END === */
 
-/* MODIFIED: Clear all filters button color */
 .clear-all-filters-btn { background-color: transparent; color: var(--button-clear-color); border-color: var(--button-clear-color); }
 .clear-all-filters-btn:hover, .clear-all-filters-btn:active { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; }
 
@@ -122,7 +125,6 @@ body {
 hr { border-top: 1px solid var(--hr-border-color); }
 .form-label.text-danger { color: var(--text-color) !important; } 
 
-/* MODIFIED: Switch button color */
 .form-check-input:checked {
     background-color: var(--switch-bg-color);
     border-color: var(--switch-bg-color);
@@ -140,6 +142,24 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
 .share-btn:hover { color: var(--button-primary-bg); }
 .card .view-detail-btn { width: auto; margin-top: 0; }
+
+/* NEW: Bookmark button styles */
+.bookmark-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted-color);
+    transition: color 0.2s ease-in-out, transform 0.2s ease;
+    z-index: 10;
+}
+.bookmark-btn:hover {
+    transform: scale(1.2);
+}
+.bookmark-btn.favorited {
+    color: #FFD700; /* Gold color for favorited items */
+}
 
 /* === NEW/MODIFIED STYLES FOR DESCRIPTION LIST === */
 .coupon-description-list {

@@ -8,6 +8,33 @@ let filteredCoupons = []; // 儲存篩選後的優惠券資料
 let selectedIncludeTags = new Set();
 let selectedExcludeTags = new Set();
 let selectedOrderTypes = new Set();
+let favoriteCoupons = new Set(); // NEW: For storing favorite coupon codes
+let isViewingFavorites = false; // NEW: To toggle favorites view
+
+// ==== Favorites Logic ====
+function loadFavorites() {
+    const savedFavorites = localStorage.getItem('pzahaFavorites');
+    if (savedFavorites) {
+        favoriteCoupons = new Set(JSON.parse(savedFavorites));
+    }
+}
+
+function saveFavorites() {
+    localStorage.setItem('pzahaFavorites', JSON.stringify([...favoriteCoupons]));
+}
+
+function toggleFavorite(couponCode) {
+    if (favoriteCoupons.has(couponCode)) {
+        favoriteCoupons.delete(couponCode);
+    } else {
+        favoriteCoupons.add(couponCode);
+    }
+    saveFavorites();
+    // Re-render if currently viewing favorites to reflect the change
+    if (isViewingFavorites) {
+        performSearchAndFilter();
+    }
+}
 
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
@@ -17,11 +44,11 @@ async function fetchCoupons() {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const csvText = await response.text();
-        allCoupons = parseCSV(csvText); // 使用修正後的解析函數
+        allCoupons = parseCSV(csvText);
         filteredCoupons = [...allCoupons];
 
-        initFilterButtons(); // 初始化按鈕事件
-        performSearchAndFilter(); // 初始渲染
+        initFilterButtons();
+        performSearchAndFilter();
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
 
     } catch (error) {
@@ -32,40 +59,25 @@ async function fetchCoupons() {
     }
 }
 
-// ==== **修正後的 CSV 解析函數** ====
-// 這個新版本可以正確處理包含換行符 (Alt+Enter) 的欄位
 function parseCSV(csv) {
     const lines = csv.split(/\r?\n/);
-    if (lines.length <= 1) {
-        console.warn("CSV 數據不足或只有標題行。");
-        return [];
-    }
+    if (lines.length <= 1) return [];
 
     const headers = lines[0].split(',').map(header => header.trim());
     const data = [];
 
     const headerMap = {
-        "優惠代碼": "couponCode",
-        "名稱": "name",
-        "套餐價格": "price",
-        "套餐內容": "description",
-        "標籤": "tags",
-        "點餐類型": "orderType",
-        "開始日期": "startDate",
-        "結束日期": "endDate",
-        "爬取時間": "crawlTime", 
-        "備註": "note",
-        "精簡版內容": "simplifiedDescription"
+        "優惠代碼": "couponCode", "名稱": "name", "套餐價格": "price",
+        "套餐內容": "description", "標籤": "tags", "點餐類型": "orderType",
+        "開始日期": "startDate", "結束日期": "endDate", "爬取時間": "crawlTime", 
+        "備註": "note", "精簡版內容": "simplifiedDescription"
     };
     
-    // 將 CSV 標頭轉換為我們需要的 key
     const mappedHeaders = headers.map(h => headerMap[h] || h);
 
     let currentLine = '';
     for (let i = 1; i < lines.length; i++) {
         currentLine += lines[i];
-        
-        // 檢查引號數量是否為偶數，如果是，表示這是一行完整的資料
         if ((currentLine.match(/"/g) || []).length % 2 === 0) {
             if (currentLine.trim() === '') continue;
 
@@ -74,14 +86,11 @@ function parseCSV(csv) {
             let currentField = '';
 
             for (let char of currentLine) {
-                if (char === '"') {
-                    inQuote = !inQuote;
-                } else if (char === ',' && !inQuote) {
+                if (char === '"') inQuote = !inQuote;
+                else if (char === ',' && !inQuote) {
                     values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
                     currentField = '';
-                } else {
-                    currentField += char;
-                }
+                } else currentField += char;
             }
             values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
 
@@ -90,16 +99,13 @@ function parseCSV(csv) {
                 row[mappedHeaders[j]] = values[j] || '';
             }
             data.push(row);
-            currentLine = ''; // 重置 currentLine
+            currentLine = '';
         } else {
-            // 如果引號是奇數，表示這是一個跨行的欄位，加上換行符並繼續讀取下一行
             currentLine += '\n';
         }
     }
-
     return data;
 }
-
 
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
@@ -107,7 +113,8 @@ function renderCoupons(couponsToRender) {
     rowContainer.innerHTML = ''; 
 
     if (couponsToRender.length === 0) {
-        rowContainer.innerHTML = '<div class="col-12 text-center text-muted mt-5">沒有找到符合條件的優惠券。</div>';
+        const message = isViewingFavorites ? '您的收藏清單是空的。' : '沒有找到符合條件的優惠券。';
+        rowContainer.innerHTML = `<div class="col-12 text-center text-muted mt-5">${message}</div>`;
         updateSearchResultCount(0); 
         return;
     }
@@ -121,11 +128,14 @@ function renderCoupons(couponsToRender) {
         const descriptionHtml = descriptionToDisplay 
             ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
+        
+        const isFavorited = favoriteCoupons.has(coupon.couponCode);
 
         const cardDiv = document.createElement('div');
         cardDiv.className = 'col-md-4 mb-4';
         cardDiv.innerHTML = `
             <div class="card shadow-sm h-100">
+                <i class="bi ${isFavorited ? 'bi-bookmark-fill' : 'bi-bookmark'} bookmark-btn ${isFavorited ? 'favorited' : ''}" title="收藏此優惠券" data-coupon-code="${coupon.couponCode}"></i>
                 <div class="card-body d-flex flex-column">
                     <div class="coupon-price-badge">${formattedPrice}</div>
                     <h5 class="card-title">${coupon.name}</h5>
@@ -176,13 +186,11 @@ function showCouponDetailModal(coupon) {
     const detailBody = detailModal.querySelector('#detail-body');
     const detailHeader = detailModal.querySelector('.modal-header');
 
-    // 清理舊的分享按鈕和關閉按鈕
     const oldShareBtn = detailHeader.querySelector('.share-btn');
     if (oldShareBtn) oldShareBtn.remove();
     const oldCloseBtn = detailHeader.querySelector('.btn-close');
     if (oldCloseBtn) oldCloseBtn.remove();
 
-    // 建立新的分享按鈕並加入
     const shareBtn = document.createElement('i');
     shareBtn.className = 'bi bi-share-fill share-btn';
     shareBtn.title = '分享優惠';
@@ -207,14 +215,17 @@ function performSearchAndFilter() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
     const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
 
-    filteredCoupons = allCoupons.filter(coupon => {
+    let couponsToProcess = allCoupons;
+    if (isViewingFavorites) {
+        couponsToProcess = allCoupons.filter(c => favoriteCoupons.has(c.couponCode));
+    }
+
+    filteredCoupons = couponsToProcess.filter(coupon => {
         const couponTags = (coupon.tags || '').toLowerCase().split(',').map(t => t.trim());
         const couponOrderType = (coupon.orderType || '').toLowerCase();
         
         if (selectedIncludeTags.size > 0 && ![...selectedIncludeTags].some(tag => couponTags.includes(tag))) return false;
-        
         if (selectedOrderTypes.size > 0 && ![...selectedOrderTypes].some(type => couponOrderType === type)) return false;
-
         if (selectedExcludeTags.size > 0 && [...selectedExcludeTags].some(tag => couponTags.includes(tag))) return false;
 
         if (searchTerm) {
@@ -239,10 +250,8 @@ function sortCoupons(sortBy) {
     renderCoupons([...filteredCoupons].sort(sorters[sortBy]));
 }
 
-// ==== **最終修正**：初始化所有事件監聽 ====
 function initFilterButtons() {
     const handleFilterButtonClick = (button) => {
-        const wasActive = button.classList.contains('active');
         const { filterType, filterValue } = button.dataset;
         const value = filterValue.toLowerCase();
 
@@ -253,15 +262,7 @@ function initFilterButtons() {
         };
         const currentSet = sets[filterType];
 
-        // 1. 更新資料模型
-        if (wasActive) {
-            currentSet.delete(value);
-        } else {
-            currentSet.add(value);
-        }
-
-        // 2. 根據新狀態明確更新 UI
-        button.classList.toggle('active', !wasActive);
+        button.classList.toggle('active') ? currentSet.add(value) : currentSet.delete(value);
         
         button.blur();
         performSearchAndFilter();
@@ -273,10 +274,10 @@ function initFilterButtons() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    loadFavorites();
     fetchCoupons();
 
-    // 清除篩選
-    document.querySelector('.clear-all-filters-btn').addEventListener('click', () => {
+    function resetAllFilters() {
         document.getElementById('searchInput').value = '';
         
         document.querySelectorAll('.filter-btn.active, .exclude-filter-btn.active').forEach(button => {
@@ -289,22 +290,35 @@ document.addEventListener('DOMContentLoaded', () => {
         
         document.getElementById('enableFlavorSearch').checked = false;
         document.getElementById('sortSelect').value = 'price-asc';
+        
+        isViewingFavorites = false;
+        document.getElementById('favoritesBtn').classList.remove('active');
+
+        performSearchAndFilter();
+    }
+
+    document.querySelector('.clear-all-filters-btn').addEventListener('click', resetAllFilters);
+
+    // Favorites Button in Header
+    document.getElementById('favoritesBtn').addEventListener('click', (e) => {
+        isViewingFavorites = !isViewingFavorites;
+        e.currentTarget.classList.toggle('active', isViewingFavorites);
         performSearchAndFilter();
     });
 
-    // 其他控制項
+    // Other controls
     document.getElementById('sortSelect').addEventListener('change', e => sortCoupons(e.target.value));
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // 回到頂部
+    // Back to top
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         topBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
     });
     topBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // 事件委派 (主頁面)
+    // Event Delegation for main content
     document.getElementById('row').addEventListener('click', e => {
         const detailBtn = e.target.closest('.view-detail-btn');
         if (detailBtn) {
@@ -323,9 +337,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！`;
             copyToClipboard(shareText, shareBtn);
         }
+
+        const bookmarkBtn = e.target.closest('.bookmark-btn');
+        if (bookmarkBtn) {
+            const { couponCode } = bookmarkBtn.dataset;
+            toggleFavorite(couponCode);
+            bookmarkBtn.classList.toggle('favorited');
+            bookmarkBtn.classList.toggle('bi-bookmark');
+            bookmarkBtn.classList.toggle('bi-bookmark-fill');
+        }
     });
     
-    // 事件委派 (彈出視窗)
+    // Event Delegation for Modal
     document.getElementById('detailModel').addEventListener('click', e => {
         const copyBtn = e.target.closest('.copy-code-btn');
         if (copyBtn) {
@@ -340,7 +363,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 夜間模式
+    // Dark Mode
     const themeToggle = document.getElementById('themeToggle');
     const body = document.body;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -358,6 +381,4 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.querySelector('i').classList.toggle('bi-moon-fill', newTheme === 'light');
         themeToggle.querySelector('i').classList.toggle('bi-sun-fill', newTheme === 'dark');
     });
-
-    new bootstrap.Popover(document.getElementById('flavorSearchInfo'));
 });
