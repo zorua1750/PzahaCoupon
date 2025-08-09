@@ -114,10 +114,14 @@ body {
 /* === 按鈕狀態修正 END === */
 
 .clear-all-filters-btn { background-color: transparent; color: var(--button-clear-color); border-color: var(--button-clear-color); }
-/* MODIFIED: Added :active state for click color */
 .clear-all-filters-btn:hover, .clear-all-filters-btn:active, .clear-all-filters-btn:focus { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; box-shadow: none !important; }
 
-.tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
+/* MODIFIED: Removed padding to align with grid */
+.tools-row { 
+    align-items: center; 
+    margin-top: 1rem; 
+    margin-bottom: 1rem; 
+}
 hr { border-top: 1px solid var(--hr-border-color); }
 .form-label.text-danger { color: var(--text-color) !important; } 
 
