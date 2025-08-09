@@ -6,7 +6,8 @@ const SUPABASE_URL = 'https://klficsifsxcqxwqkpwav.supabase.co'; // 例如: 'htt
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZmljc2lmc3hjcXh3cWtwd2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTQ5NzksImV4cCI6MjA3MDMzMDk3OX0.X9fZuCL5h_XwZ9uC74zWevhcpmiiKvTCkDVA0xv-KrA';
 // ↑↑↑ 請將 'YOUR_SUPABASE_URL' 和 'YOUR_SUPABASE_ANON_KEY' 換成您自己的金鑰 ↑↑↑
 
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// 【修正點】將變數 supabase 改為 supabaseClient，避免與函式庫的預設名稱衝突
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =============================
 
@@ -65,8 +66,8 @@ function showCouponFromUrl() {
 // ==== 數據獲取和處理 (改為從 Supabase 獲取) ====
 async function fetchCoupons() {
     try {
-        // 使用 Supabase client 查詢 'coupons' 資料表中的所有資料
-        const { data, error } = await supabase
+        // 【修正點】使用新的變數名稱 supabaseClient
+        const { data, error } = await supabaseClient
             .from('coupons')
             .select('*');
 
