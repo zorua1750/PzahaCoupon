@@ -97,7 +97,7 @@ body {
 header {
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1020; 
 }
 .navbar-dark { background-color: var(--header-bg) !important; }
 .navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
@@ -233,7 +233,7 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 .copy-code-btn.text-success, .share-btn.text-success { color: #28a745 !important; }
 .contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }
 
-/* Shepherd Tour Button and Z-index Fix */
+/* Shepherd Tour Styles & Fixes */
 .shepherd-button {
     background: #e9e9e9;
     color: #333;
@@ -259,11 +259,9 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     background: #a80d26 !important;
     color: #FFFFFF !important;
 }
-.shepherd-modal-overlay {
-    z-index: 1080 !important;
-}
-.shepherd-element {
-    z-index: 1081 !important;
+/* NEW: Temporarily disable sticky header during tour */
+body.shepherd-active header {
+    position: static;
 }
 
 /* Info Card Styles */
