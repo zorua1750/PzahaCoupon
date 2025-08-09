@@ -32,7 +32,11 @@
     --reminder-text-color: #664d03;
     --reminder-border-color: #ffc107;
     --info-color: #031D44; 
-    --switch-bg-color: #031D44; 
+    --switch-bg-color: #031D44;
+    --footer-bg: #343a40; /* NEW */
+    --footer-text: #adb5bd; /* NEW */
+    --footer-link-color: #f8f9fa; /* NEW */
+    --legal-text-bg: #495057; /* NEW */
 }
 
 /* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
@@ -67,6 +71,10 @@ body[data-theme="dark"] {
     --reminder-border-color: #FFD700; 
     --info-color: #6C91C2; 
     --switch-bg-color: #6C91C2; 
+    --footer-bg: #1C1C1C; /* NEW */
+    --footer-text: #A0A0A0; /* NEW */
+    --footer-link-color: #E0E0E0; /* NEW */
+    --legal-text-bg: #2C2C2C; /* NEW */
 }
 
 /* 應用 CSS 變數 */
@@ -130,7 +138,7 @@ hr { border-top: 1px solid var(--hr-border-color); }
 }
 
 /* Coupon Card Styles */
-.card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: visible; } /* MODIFIED: overflow: visible */
+.card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: visible; }
 .card:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
 .card-body { padding: 1.25rem; flex-grow: 1; }
 .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
@@ -215,7 +223,7 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 .copy-code-btn.text-success, .share-btn.text-success { color: #28a745 !important; }
 .contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }
 
-/* === NEW: Shepherd Tour Button Styles === */
+/* Shepherd Tour Button Styles */
 .shepherd-button {
     background: #e9e9e9;
     color: #333;
@@ -240,4 +248,54 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 .shepherd-button:not(.shepherd-button-secondary):hover {
     background: #a80d26 !important;
     color: #FFFFFF !important;
+}
+
+/* === NEW: Footer Styles === */
+.site-footer {
+    background-color: var(--footer-bg);
+    color: var(--footer-text);
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+.footer-about h5 {
+    color: var(--footer-link-color);
+}
+.footer-about p, .footer-about a {
+    color: var(--footer-text);
+    font-size: 0.9rem;
+}
+.footer-about a:hover {
+    color: var(--header-text);
+}
+.footer-hr {
+    border-top: 1px solid var(--hr-border-color);
+    margin: 1.5rem 0;
+}
+.legal-links {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+.legal-links a {
+    color: var(--footer-link-color);
+    text-decoration: none;
+    margin: 0 10px;
+}
+.legal-links a:hover {
+    text-decoration: underline;
+}
+.legal-text-wrapper {
+    background-color: var(--legal-text-bg);
+    border-radius: 5px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+.legal-text-wrapper h6 {
+    color: var(--footer-link-color);
+}
+.footer-copyright {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.8rem;
 }
