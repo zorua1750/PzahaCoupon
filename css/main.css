@@ -37,6 +37,8 @@
     --footer-text: #adb5bd; 
     --footer-link-color: #f8f9fa; 
     --legal-text-bg: #495057; 
+    --info-accordion-bg: rgba(200, 22, 46, 0.1); 
+    --info-accordion-active-bg: rgba(200, 22, 46, 0.2); 
 }
 
 /* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
@@ -74,7 +76,10 @@ body[data-theme="dark"] {
     --footer-bg: #1C1C1C; 
     --footer-text: #A0A0A0; 
     --footer-link-color: #E0E0E0; 
-    --legal-text-bg: #2C2C2C; 
+    --legal-text-bg: #2C2C2C;
+    --info-accordion-bg: rgba(255, 255, 255, 0.05); 
+    --info-accordion-active-bg: rgba(255, 255, 255, 0.1);
+    --info-card-accent-color-dark: #d13d42; /* NEW */
 }
 
 /* 應用 CSS 變數 */
@@ -82,7 +87,6 @@ body {
     background-color: var(--body-bg);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* REMOVED: padding-top: 56px; was here, causing the issue */
 }
 
 .text-muted {
@@ -256,7 +260,59 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     color: #FFFFFF !important;
 }
 
-/* === NEW: Footer Styles === */
+/* === MODIFIED: Info Card Styles === */
+.info-card {
+    border: 2px solid var(--header-bg);
+    background-color: var(--card-bg); 
+}
+.info-card .card-title {
+    color: var(--header-bg);
+}
+.info-card .accordion-item {
+    background-color: transparent;
+    border-color: var(--hr-border-color);
+}
+.info-card .accordion-header .accordion-button {
+    background-color: var(--info-accordion-bg);
+    color: var(--text-color);
+}
+.info-card .accordion-header .accordion-button:not(.collapsed) {
+    background-color: var(--info-accordion-active-bg);
+    color: var(--header-bg);
+}
+.info-card .accordion-header .accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(200, 22, 46, 0.25);
+}
+.info-card .accordion-button::after {
+    filter: none;
+}
+.info-card .accordion-body {
+    color: var(--card-text-color);
+}
+.info-card .accordion-body a {
+    color: var(--button-outline-primary-color);
+    font-weight: bold;
+}
+
+/* Dark Mode Specific Overrides */
+body[data-theme="dark"] .info-card {
+    border-color: var(--info-card-accent-color-dark) !important;
+}
+body[data-theme="dark"] .info-card .card-title {
+    color: var(--info-card-accent-color-dark) !important;
+}
+body[data-theme="dark"] .info-card .accordion-header .accordion-button:not(.collapsed) {
+    color: var(--info-card-accent-color-dark);
+}
+body[data-theme="dark"] .info-card .accordion-button::after {
+    filter: invert(1) grayscale(1) brightness(1.5);
+}
+body[data-theme="dark"] .info-card .accordion-body a {
+    color: var(--info-color);
+}
+
+
+/* Footer Styles */
 .site-footer {
     background-color: var(--footer-bg);
     color: var(--footer-text);
