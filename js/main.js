@@ -100,8 +100,6 @@ function startSiteTour() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('main.js 載入成功！');
-    
     // 為我們自訂的關閉按鈕新增事件監聽器
     document.body.addEventListener('click', function(e) {
         if (e.target.matches('.tour-close-btn') && siteTour && siteTour.isActive()) {
