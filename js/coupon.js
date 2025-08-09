@@ -1,12 +1,9 @@
 // PzahaCoupon.github.io/js/coupon.js
 
 // ==== Supabase 初始化設定 ====
-// ↓↓↓ 請將 'YOUR_SUPABASE_URL' 和 'YOUR_SUPABASE_ANON_KEY' 換成您自己的金鑰 ↓↓↓
-const SUPABASE_URL = 'https://klficsifsxcqxwqkpwav.supabase.co'; // 例如: 'https://xyz.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZmljc2lmc3hjcXh3cWtwd2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTQ5NzksImV4cCI6MjA3MDMzMDk3OX0.X9fZuCL5h_XwZ9uC74zWevhcpmiiKvTCkDVA0xv-KrA';
-// ↑↑↑ 請將 'YOUR_SUPABASE_URL' 和 'YOUR_SUPABASE_ANON_KEY' 換成您自己的金鑰 ↑↑↑
+const SUPABASE_URL = 'https://klficsifsxcqxwqkpwav.supabase.co'; // << 請記得換成您自己的金鑰
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZmljc2lmc3hjcXh3cWtwd2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTQ5NzksImV4cCI6MjA3MDMzMDk3OX0.X9fZuCL5h_XwZ9uC74zWevhcpmiiKvTCkDVA0xv-KrA'; // << 請記得換成您自己的金鑰
 
-// 【修正點】將變數 supabase 改為 supabaseClient，避免與函式庫的預設名稱衝突
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // =============================
@@ -52,31 +49,27 @@ function handleUrlParameters() {
 
 function showCouponFromUrl() {
     if (couponCodeFromUrl && allCoupons.length > 0) {
-        // 在 Supabase 中，欄位名稱是 couponCode
         const couponToShow = allCoupons.find(c => c.couponCode === couponCodeFromUrl);
         if (couponToShow) {
             showCouponDetailModal(couponToShow);
         }
-        // Clean up URL to avoid re-triggering, but keep the history clean
         const newUrl = window.location.pathname;
         history.replaceState({}, '', newUrl);
     }
 }
 
-// ==== 數據獲取和處理 (改為從 Supabase 獲取) ====
+// ==== 數據獲取和處理 ====
 async function fetchCoupons() {
     try {
-        // 【修正點】使用新的變數名稱 supabaseClient
         const { data, error } = await supabaseClient
             .from('coupons')
             .select('*');
 
         if (error) {
-            // 如果有錯誤，將它拋出
             throw error;
         }
 
-        allCoupons = data; // Supabase 直接回傳 JSON 格式，不需要解析
+        allCoupons = data;
         filteredCoupons = [...allCoupons];
 
         initFilterButtons();
@@ -90,7 +83,6 @@ async function fetchCoupons() {
         document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>';
     }
 }
-
 
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
@@ -109,8 +101,9 @@ function renderCoupons(couponsToRender) {
         const priceValue = parseFloat(coupon.price);
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`;
         
-        // 在 Supabase 中，欄位名稱是 simplifiedDescription
         const descriptionToDisplay = coupon.simplifiedDescription || '';
+        
+        // 【修正點 1】將 .split('\n') 改為 .split('\\n') 來處理從資料庫來的換行符號
         const descriptionHtml = descriptionToDisplay
             ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
@@ -192,6 +185,8 @@ function showCouponDetailModal(coupon) {
     detailHeader.appendChild(shareBtn);
     
     detailTitle.textContent = coupon.name;
+    
+    // 【修正點 2】將 .replace(/\n/g, '<br>') 改為 .replace(/\\n/g, '<br>')
     detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> <strong class="coupon-code-text">${coupon.couponCode}</strong> <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i></p>
         <p><strong>價格:</strong> ${coupon.price}</p>
