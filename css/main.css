@@ -234,6 +234,9 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 .contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }
 
 /* Shepherd Tour Styles & Fixes */
+header.tour-active {
+    position: static !important;
+}
 .shepherd-button {
     background: #e9e9e9;
     color: #333;
@@ -259,10 +262,18 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     background: #a80d26 !important;
     color: #FFFFFF !important;
 }
-/* MODIFIED: New robust fix for tour overlay issue */
-header.tour-active {
-    position: static !important;
+/* NEW: Force tour internal layout to be correct */
+.shepherd-header {
+    padding-bottom: 1em;
 }
+.shepherd-text {
+    padding-top: 1em;
+    border-top: 1px solid var(--hr-border-color);
+}
+.shepherd-title {
+    font-weight: bold;
+}
+
 
 /* Info Card Styles */
 .info-card {
