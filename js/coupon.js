@@ -8,8 +8,9 @@ let filteredCoupons = []; // 儲存篩選後的優惠券資料
 let selectedIncludeTags = new Set();
 let selectedExcludeTags = new Set();
 let selectedOrderTypes = new Set();
-let favoriteCoupons = new Set(); // NEW: For storing favorite coupon codes
-let isViewingFavorites = false; // NEW: To toggle favorites view
+let favoriteCoupons = new Set(); 
+let isViewingFavorites = false; 
+let couponCodeFromUrl = null; // NEW: To store coupon code from URL
 
 // ==== Favorites Logic ====
 function loadFavorites() {
@@ -30,9 +31,27 @@ function toggleFavorite(couponCode) {
         favoriteCoupons.add(couponCode);
     }
     saveFavorites();
-    // Re-render if currently viewing favorites to reflect the change
     if (isViewingFavorites) {
         performSearchAndFilter();
+    }
+}
+
+// ==== NEW: URL Handling Logic ====
+function handleUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    couponCodeFromUrl = urlParams.get('coupon');
+}
+
+function showCouponFromUrl() {
+    if (couponCodeFromUrl && allCoupons.length > 0) {
+        const couponToShow = allCoupons.find(c => c.couponCode === couponCodeFromUrl);
+        if (couponToShow) {
+            showCouponDetailModal(couponToShow);
+        }
+        // Clean up URL to avoid re-triggering
+        const newUrl = window.location.pathname;
+        history.pushState({}, '', newUrl);
+        couponCodeFromUrl = null;
     }
 }
 
@@ -50,6 +69,9 @@ async function fetchCoupons() {
         initFilterButtons();
         performSearchAndFilter();
         document.getElementById('lastUpdate').textContent = new Date().toLocaleDateString('zh-TW');
+
+        // NEW: Check if we need to show a coupon from the URL
+        showCouponFromUrl();
 
     } catch (error) {
         console.error('載入 PzahaCoupon 資料失敗:', error); 
@@ -277,6 +299,7 @@ function initFilterButtons() {
 
 document.addEventListener('DOMContentLoaded', () => {
     loadFavorites();
+    handleUrlParameters(); // NEW: Handle URL on load
     fetchCoupons();
 
     function resetAllFilters() {
@@ -301,19 +324,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('.clear-all-filters-btn').addEventListener('click', resetAllFilters);
 
-    // Favorites Button in Header
     document.getElementById('favoritesBtn').addEventListener('click', (e) => {
         isViewingFavorites = !isViewingFavorites;
         e.currentTarget.classList.toggle('active', isViewingFavorites);
         performSearchAndFilter();
     });
 
-    // Other controls
     document.getElementById('sortSelect').addEventListener('change', e => sortCoupons(e.target.value));
     document.getElementById('searchInput').addEventListener('input', performSearchAndFilter);
     document.getElementById('enableFlavorSearch').addEventListener('change', performSearchAndFilter);
 
-    // Back to top
     const topBtn = document.querySelector('.top-btn');
     window.addEventListener('scroll', () => {
         topBtn.style.display = window.scrollY > 200 ? 'block' : 'none';
@@ -336,7 +356,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareBtn = e.target.closest('.share-btn');
         if (shareBtn) {
             const { couponCode, description, endDate } = shareBtn.dataset;
-            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！`;
+            // MODIFIED: Share text now includes URL
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${baseUrl}?coupon=${couponCode}`;
+            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！\n\n快來看看：${shareUrl}`;
             copyToClipboard(shareText, shareBtn);
         }
 
@@ -360,7 +383,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareBtn = e.target.closest('.share-btn');
         if (shareBtn) {
             const { couponCode, description, endDate } = shareBtn.dataset;
-            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！`;
+            // MODIFIED: Share text now includes URL
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = `${baseUrl}?coupon=${couponCode}`;
+            const shareText = `我在PzahaCoupon發現了一張必勝客優惠代碼:${couponCode}，${description}優惠只到${endDate}！\n\n快來看看：${shareUrl}`;
             copyToClipboard(shareText, shareBtn);
         }
     });
