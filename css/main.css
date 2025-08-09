@@ -269,48 +269,43 @@ header.tour-active {
     color: #FFFFFF !important;
 }
 
-/* FINAL SIMPLIFIED LAYOUT with new adjustments */
+/* FINAL SIMPLIFIED LAYOUT with custom cancel icon */
 .shepherd-element {
     max-height: 90vh;
-    position: relative; /* 最終修正：將此設為定位基準 */
 }
 
 .shepherd-content {
+    position: relative; /* 定位基準 */
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
 .shepherd-header {
-    /* 保留 header 但讓它不佔空間，僅作為關閉按鈕的容器 */
-    padding: 0;
-    border: 0;
-    background: none;
+    display: none; /* 完全隱藏預設 header */
 }
 
-.shepherd-title {
-    display: none; /* 隱藏原本的標題文字 */
-}
-
-.shepherd-cancel-icon {
-    position: absolute; /* 相對於 .shepherd-element 定位 */
-    top: 0.75rem;
-    right: 0.75rem;
-    font-size: 1.5rem;
+.tour-close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.75rem;
+    font-weight: bold;
     line-height: 1;
-    cursor: pointer;
-    background: none;
-    border: none;
     color: #bbb;
+    background: transparent;
+    border: 0;
+    padding: 0.25rem 0.5rem;
+    cursor: pointer;
+    z-index: 10;
     transition: color 0.2s ease;
-    z-index: 10; /* 確保在最上層 */
 }
-.shepherd-cancel-icon:hover {
+.tour-close-btn:hover {
     color: #888;
 }
 
 .shepherd-text {
-    padding: 1rem;
+    padding: 1.5rem 1rem 1rem 1rem; /* 增加頂部空間給關閉按鈕 */
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
