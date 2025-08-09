@@ -8,9 +8,9 @@ let filteredCoupons = []; // 儲存篩選後的優惠券資料
 let selectedIncludeTags = new Set();
 let selectedExcludeTags = new Set();
 let selectedOrderTypes = new Set();
-let favoriteCoupons = new Set(); 
-let isViewingFavorites = false; 
-let couponCodeFromUrl = null; 
+let favoriteCoupons = new Set();
+let isViewingFavorites = false;
+let couponCodeFromUrl = null;
 
 // ==== Favorites Logic ====
 function loadFavorites() {
@@ -50,13 +50,12 @@ function showCouponFromUrl() {
         }
         // Clean up URL to avoid re-triggering, but keep the history clean
         const newUrl = window.location.pathname;
-        history.replaceState({}, '', newUrl); 
+        history.replaceState({}, '', newUrl);
     }
 }
 
 // ==== 數據獲取和處理 ====
 async function fetchCoupons() {
-    const spinner = document.getElementById('loading-spinner');
     try {
         const response = await fetch(GOOGLE_SHEET_URL);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -72,10 +71,8 @@ async function fetchCoupons() {
         showCouponFromUrl();
 
     } catch (error) {
-        console.error('載入 PzahaCoupon 資料失敗:', error); 
-        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>'; 
-    } finally {
-        if(spinner) spinner.style.display = 'none';
+        console.error('載入 PzahaCoupon 資料失敗:', error);
+        document.getElementById('row').innerHTML = '<div class="col-12 text-center text-danger mt-5">載入 PzahaCoupon 資料失敗，請稍後再試。</div>';
     }
 }
 
@@ -89,7 +86,7 @@ function parseCSV(csv) {
     const headerMap = {
         "優惠代碼": "couponCode", "名稱": "name", "套餐價格": "price",
         "套餐內容": "description", "標籤": "tags", "點餐類型": "orderType",
-        "開始日期": "startDate", "結束日期": "endDate", "爬取時間": "crawlTime", 
+        "開始日期": "startDate", "結束日期": "endDate", "爬取時間": "crawlTime",
         "備註": "note", "精簡版內容": "simplifiedDescription"
     };
     
@@ -130,22 +127,22 @@ function parseCSV(csv) {
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
     const rowContainer = document.getElementById('row');
-    rowContainer.innerHTML = ''; 
+    rowContainer.innerHTML = '';
 
     if (couponsToRender.length === 0) {
         const message = isViewingFavorites ? '您的收藏清單是空的。' : '沒有找到符合條件的優惠券。';
         rowContainer.innerHTML = `<div class="col-12 text-center text-muted mt-5">${message}</div>`;
-        updateSearchResultCount(0); 
+        updateSearchResultCount(0);
         return;
     }
 
     const fragment = document.createDocumentFragment();
     couponsToRender.forEach(coupon => {
         const priceValue = parseFloat(coupon.price);
-        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`; 
+        const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`;
         
         const descriptionToDisplay = coupon.simplifiedDescription || '';
-        const descriptionHtml = descriptionToDisplay 
+        const descriptionHtml = descriptionToDisplay
             ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
         
