@@ -79,7 +79,7 @@ body[data-theme="dark"] {
     --legal-text-bg: #2C2C2C;
     --info-accordion-bg: rgba(255, 255, 255, 0.05); 
     --info-accordion-active-bg: rgba(255, 255, 255, 0.1);
-    --info-card-accent-color-dark: #d13d42; /* NEW */
+    --info-card-accent-color-dark: #d13d42; 
 }
 
 /* 應用 CSS 變數 */
@@ -97,8 +97,13 @@ body {
 header {
     position: sticky;
     top: 0;
-    z-index: 1071; 
+    z-index: 1020; /* MODIFIED: Default z-index for sticky header */
 }
+/* NEW: Rule to handle header when tour is active */
+body.shepherd-active header {
+    z-index: 9998; /* Lower than Shepherd's overlay (9999) */
+}
+
 .navbar-dark { background-color: var(--header-bg) !important; }
 .navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
 .navbar-dark .info { display: flex; align-items: center; color: var(--header-text); font-size: 0.9rem; }
@@ -260,13 +265,13 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     color: #FFFFFF !important;
 }
 
-/* === MODIFIED: Info Card Styles === */
+/* Info Card Styles */
 .info-card {
-    border: 2px solid var(--header-bg);
+    border: 2px solid var(--header-bg) !important;
     background-color: var(--card-bg); 
 }
 .info-card .card-title {
-    color: var(--header-bg);
+    color: var(--header-bg) !important;
 }
 .info-card .accordion-item {
     background-color: transparent;
