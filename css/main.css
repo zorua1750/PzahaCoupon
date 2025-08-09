@@ -269,7 +269,7 @@ header.tour-active {
     color: #FFFFFF !important;
 }
 
-/* FINAL SIMPLIFIED LAYOUT */
+/* FINAL SIMPLIFIED LAYOUT with new adjustments */
 .shepherd-element {
     max-height: 90vh; /* 限制整個彈窗的最大高度 */
 }
@@ -281,8 +281,24 @@ header.tour-active {
     height: 100%;
 }
 
+.shepherd-cancel-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #bbb;
+    transition: color 0.2s ease;
+}
+.shepherd-cancel-icon:hover {
+    color: #888;
+}
+
 .shepherd-text {
-    padding: 1rem;
+    padding: 1rem 2rem 1rem 1rem; /* 增加右邊 padding，避免關閉按鈕蓋到文字 */
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -294,8 +310,9 @@ header.tour-active {
 .shepherd-text strong {
     font-size: 1.1rem;
     font-weight: bold;
-    display: block; /* 讓它獨佔一行 */
-    margin-bottom: 0.5rem; /* 與下方文字的間距 */
+    display: block; 
+    margin-bottom: 0.25rem; /* 縮小與下方文字的間距 */
+    color: #C8102E; /* 設定標題顏色 */
 }
 
 .shepherd-footer {
