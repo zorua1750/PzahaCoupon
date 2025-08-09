@@ -48,9 +48,9 @@ function showCouponFromUrl() {
         if (couponToShow) {
             showCouponDetailModal(couponToShow);
         }
+        // Clean up URL to avoid re-triggering, but keep the history clean
         const newUrl = window.location.pathname;
-        history.pushState({}, '', newUrl);
-        couponCodeFromUrl = null;
+        history.replaceState({}, '', newUrl); 
     }
 }
 
@@ -182,8 +182,8 @@ function renderCoupons(couponsToRender) {
     rowContainer.appendChild(fragment);
     updateSearchResultCount(couponsToRender.length);
 
-    // NEW: Call the site tour after coupons are rendered
-    if (typeof startSiteTour === 'function') {
+    // MODIFIED: Only start the tour if a coupon from a URL is NOT being displayed.
+    if (typeof startSiteTour === 'function' && !couponCodeFromUrl) {
         startSiteTour();
     }
 }
@@ -376,7 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Event Delegation for Modal
-    document.getElementById('detailModel').addEventListener('click', e => {
+    const detailModalEl = document.getElementById('detailModel');
+    detailModalEl.addEventListener('click', e => {
         const copyBtn = e.target.closest('.copy-code-btn');
         if (copyBtn) {
             copyToClipboard(copyBtn.dataset.couponCode, copyBtn);
@@ -391,6 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
             copyToClipboard(shareText, shareBtn);
         }
     });
+
+    // NEW: Add listener for when the modal is closed to trigger the tour
+    detailModalEl.addEventListener('hidden.bs.modal', () => {
+        // If the tour was deferred because a coupon was shown from the URL, start it now.
+        if (couponCodeFromUrl && typeof startSiteTour === 'function') {
+            startSiteTour();
+            couponCodeFromUrl = null; // Prevent re-triggering
+        }
+    });
+
 
     // Dark Mode
     const themeToggle = document.getElementById('themeToggle');
