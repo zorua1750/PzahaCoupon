@@ -82,7 +82,7 @@ body {
     background-color: var(--body-bg);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
-    padding-top: 56px; /* NEW: Add padding to prevent content from hiding behind sticky header */
+    /* REMOVED: padding-top: 56px; was here, causing the issue */
 }
 
 .text-muted {
@@ -90,11 +90,10 @@ body {
 }
 
 /* Header styles */
-/* MODIFIED: Make header sticky */
 header {
     position: sticky;
     top: 0;
-    z-index: 1071; /* Higher than most elements */
+    z-index: 1071; 
 }
 .navbar-dark { background-color: var(--header-bg) !important; }
 .navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
