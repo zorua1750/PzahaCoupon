@@ -6,20 +6,24 @@ let siteTourInitialized = false;
  * 功能導覽函式 (由 coupon.js 在資料載入後呼叫)
  */
 function startSiteTour() {
+    // 1. 檢查導覽是否已完成，或在本輪瀏覽中是否已啟動過
     if (localStorage.getItem('pzahaTourCompleted') || siteTourInitialized) {
         return;
     }
+
+    // 2. 確保頁面上至少有一張優惠券卡片，否則不啟動導覽
     if (!document.querySelector('#row .card')) {
         console.log("沒有優惠券可供導覽，跳過功能介紹。");
         return;
     }
     
+    // 3. 標記導覽已啟動
     siteTourInitialized = true;
 
     const tour = new Shepherd.Tour({
         useModalOverlay: true,
         defaultStepOptions: {
-            classes: 'shadow-md bg-purple-dark',
+            // MODIFIED: Removed the problematic 'classes' line
             scrollTo: true,
             cancelIcon: {
                 enabled: true
@@ -88,8 +92,12 @@ function startSiteTour() {
         ]
     });
 
-    tour.on('complete', () => localStorage.setItem('pzahaTourCompleted', 'true'));
-    tour.on('cancel', () => localStorage.setItem('pzahaTourCompleted', 'true'));
+    // 當導覽完成或被取消時，標記為已完成
+    const markTourAsCompleted = () => {
+        localStorage.setItem('pzahaTourCompleted', 'true');
+    };
+    tour.on('complete', markTourAsCompleted);
+    tour.on('cancel', markTourAsCompleted);
 
     tour.start();
 }
@@ -98,6 +106,7 @@ function startSiteTour() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js 載入成功！');
     
+    // Initialize all Bootstrap tooltips on the page
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
