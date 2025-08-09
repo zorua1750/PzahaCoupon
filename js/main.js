@@ -60,7 +60,8 @@ function startSiteTour() {
     tour.addStep({
         title: '收藏優惠',
         text: '點擊卡片右上角的書籤圖示，就可以收藏您喜歡的優惠券！',
-        attachTo: { element: '#row .card:first-child .bookmark-btn', on: 'right' },
+        // MODIFIED: Changed 'on' from 'right' to 'bottom' for better mobile compatibility
+        attachTo: { element: '#row .card:first-child .bookmark-btn', on: 'bottom' },
         buttons: [
              { action() { return this.back(); }, secondary: true, text: '上一步' },
              { action() { return this.next(); }, text: '下一步' }

@@ -116,7 +116,6 @@ body {
 .clear-all-filters-btn { background-color: transparent; color: var(--button-clear-color); border-color: var(--button-clear-color); }
 .clear-all-filters-btn:hover, .clear-all-filters-btn:active, .clear-all-filters-btn:focus { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; box-shadow: none !important; }
 
-/* MODIFIED: Removed padding to align with grid */
 .tools-row { 
     align-items: center; 
     margin-top: 1rem; 
@@ -131,7 +130,7 @@ hr { border-top: 1px solid var(--hr-border-color); }
 }
 
 /* Coupon Card Styles */
-.card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
+.card { position: relative; border: 1px solid var(--hr-border-color); border-radius: 0.25rem; transition: transform 0.2s ease-in-out, background-color 0.3s ease, color 0.3s ease; background-color: var(--card-bg); color: var(--card-text-color); min-height: 250px; display: flex; flex-direction: column; justify-content: space-between; overflow: visible; } /* MODIFIED: overflow: visible */
 .card:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
 .card-body { padding: 1.25rem; flex-grow: 1; }
 .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
@@ -215,3 +214,30 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 .coupon-code-display .copy-code-btn:hover, .modal-body .copy-code-btn:hover { color: var(--button-primary-bg); }
 .copy-code-btn.text-success, .share-btn.text-success { color: #28a745 !important; }
 .contact-body .bi-envelope-fill { font-size: 20px; vertical-align: middle; margin-right: 5px; color: var(--text-color); }
+
+/* === NEW: Shepherd Tour Button Styles === */
+.shepherd-button {
+    background: #e9e9e9;
+    color: #333;
+    border-radius: 3px;
+    padding: .5rem 1.5rem;
+}
+.shepherd-button:not(.shepherd-button-secondary):hover {
+    background: #d4d4d4;
+    color: #333;
+}
+.shepherd-button.shepherd-button-secondary {
+    background: transparent;
+    color: #555;
+}
+.shepherd-button.shepherd-button-secondary:hover {
+    color: #333;
+}
+.shepherd-button:not(.shepherd-button-secondary) {
+    background: #C8102E !important;
+    color: #FFFFFF !important;
+}
+.shepherd-button:not(.shepherd-button-secondary):hover {
+    background: #a80d26 !important;
+    color: #FFFFFF !important;
+}
