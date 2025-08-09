@@ -69,7 +69,8 @@ function startSiteTour() {
 
     tour.addStep({
         title: '查看我的收藏',
-        text: '點擊這裡，就可以只看您收藏過的優惠券。再點一次即可返回所有列表。',
+        // MODIFIED: Added warning text
+        text: '點擊這裡，就可以只看您收藏過的優惠券。再點一次即可返回所有列表。<br><br><small>請注意：收藏紀錄只會儲存在您的瀏覽器上，清除Cookie或快取可能會導致紀錄遺失。</small>',
         attachTo: { element: '#favoritesBtn', on: 'bottom' },
         buttons: [
             { action() { return this.back(); }, secondary: true, text: '上一步' },
@@ -91,7 +92,7 @@ function startSiteTour() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js 載入成功！');
     
-    // NEW: Initialize all Bootstrap tooltips on the page
+    // Initialize all Bootstrap tooltips on the page
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
