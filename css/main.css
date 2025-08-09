@@ -33,10 +33,10 @@
     --reminder-border-color: #ffc107;
     --info-color: #031D44; 
     --switch-bg-color: #031D44;
-    --footer-bg: #343a40; /* NEW */
-    --footer-text: #adb5bd; /* NEW */
-    --footer-link-color: #f8f9fa; /* NEW */
-    --legal-text-bg: #495057; /* NEW */
+    --footer-bg: #343a40; 
+    --footer-text: #adb5bd; 
+    --footer-link-color: #f8f9fa; 
+    --legal-text-bg: #495057; 
 }
 
 /* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
@@ -71,10 +71,10 @@ body[data-theme="dark"] {
     --reminder-border-color: #FFD700; 
     --info-color: #6C91C2; 
     --switch-bg-color: #6C91C2; 
-    --footer-bg: #1C1C1C; /* NEW */
-    --footer-text: #A0A0A0; /* NEW */
-    --footer-link-color: #E0E0E0; /* NEW */
-    --legal-text-bg: #2C2C2C; /* NEW */
+    --footer-bg: #1C1C1C; 
+    --footer-text: #A0A0A0; 
+    --footer-link-color: #E0E0E0; 
+    --legal-text-bg: #2C2C2C; 
 }
 
 /* 應用 CSS 變數 */
@@ -82,6 +82,7 @@ body {
     background-color: var(--body-bg);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
+    padding-top: 56px; /* NEW: Add padding to prevent content from hiding behind sticky header */
 }
 
 .text-muted {
@@ -89,6 +90,12 @@ body {
 }
 
 /* Header styles */
+/* MODIFIED: Make header sticky */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1071; /* Higher than most elements */
+}
 .navbar-dark { background-color: var(--header-bg) !important; }
 .navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
 .navbar-dark .info { display: flex; align-items: center; color: var(--header-text); font-size: 0.9rem; }
@@ -257,20 +264,6 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     padding: 2rem 0;
     margin-top: 3rem;
 }
-.footer-about h5 {
-    color: var(--footer-link-color);
-}
-.footer-about p, .footer-about a {
-    color: var(--footer-text);
-    font-size: 0.9rem;
-}
-.footer-about a:hover {
-    color: var(--header-text);
-}
-.footer-hr {
-    border-top: 1px solid var(--hr-border-color);
-    margin: 1.5rem 0;
-}
 .legal-links {
     text-align: center;
     margin-bottom: 1rem;
@@ -279,6 +272,7 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
     color: var(--footer-link-color);
     text-decoration: none;
     margin: 0 10px;
+    cursor: pointer;
 }
 .legal-links a:hover {
     text-decoration: underline;
