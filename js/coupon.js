@@ -1,7 +1,14 @@
 // PzahaCoupon.github.io/js/coupon.js
 
-// ==== Google Sheet 資料來源 URL ====
-const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTKgerM5MjHdI30iz8bVxdHZW3eXnjlqQTDAOJL-HrrthyZUf2shN7FYKkjEbezPAAbUtb2uqjNVede/pub?gid=779545197&single=true&output=csv';
+// ==== Supabase 初始化設定 ====
+// ↓↓↓ 請將 'YOUR_SUPABASE_URL' 和 'YOUR_SUPABASE_ANON_KEY' 換成您自己的金鑰 ↓↓↓
+const SUPABASE_URL = 'https://klficsifsxcqxwqkpwav.supabase.co'; // 例如: 'https://xyz.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsZmljc2lmc3hjcXh3cWtwd2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NTQ5NzksImV4cCI6MjA3MDMzMDk3OX0.X9fZuCL5h_XwZ9uC74zWevhcpmiiKvTCkDVA0xv-KrA';
+// ↑↑↑ 請將 'YOUR_SUPABASE_URL' 和 'YOUR_SUPABASE_ANON_KEY' 換成您自己的金鑰 ↑↑↑
+
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// =============================
 
 let allCoupons = []; // 儲存所有優惠券資料
 let filteredCoupons = []; // 儲存篩選後的優惠券資料
@@ -44,6 +51,7 @@ function handleUrlParameters() {
 
 function showCouponFromUrl() {
     if (couponCodeFromUrl && allCoupons.length > 0) {
+        // 在 Supabase 中，欄位名稱是 couponCode
         const couponToShow = allCoupons.find(c => c.couponCode === couponCodeFromUrl);
         if (couponToShow) {
             showCouponDetailModal(couponToShow);
@@ -54,14 +62,20 @@ function showCouponFromUrl() {
     }
 }
 
-// ==== 數據獲取和處理 ====
+// ==== 數據獲取和處理 (改為從 Supabase 獲取) ====
 async function fetchCoupons() {
     try {
-        const response = await fetch(GOOGLE_SHEET_URL);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        const csvText = await response.text();
-        allCoupons = parseCSV(csvText);
+        // 使用 Supabase client 查詢 'coupons' 資料表中的所有資料
+        const { data, error } = await supabase
+            .from('coupons')
+            .select('*');
+
+        if (error) {
+            // 如果有錯誤，將它拋出
+            throw error;
+        }
+
+        allCoupons = data; // Supabase 直接回傳 JSON 格式，不需要解析
         filteredCoupons = [...allCoupons];
 
         initFilterButtons();
@@ -76,53 +90,6 @@ async function fetchCoupons() {
     }
 }
 
-function parseCSV(csv) {
-    const lines = csv.split(/\r?\n/);
-    if (lines.length <= 1) return [];
-
-    const headers = lines[0].split(',').map(header => header.trim());
-    const data = [];
-
-    const headerMap = {
-        "優惠代碼": "couponCode", "名稱": "name", "套餐價格": "price",
-        "套餐內容": "description", "標籤": "tags", "點餐類型": "orderType",
-        "開始日期": "startDate", "結束日期": "endDate", "爬取時間": "crawlTime",
-        "備註": "note", "精簡版內容": "simplifiedDescription"
-    };
-    
-    const mappedHeaders = headers.map(h => headerMap[h] || h);
-
-    let currentLine = '';
-    for (let i = 1; i < lines.length; i++) {
-        currentLine += lines[i];
-        if ((currentLine.match(/"/g) || []).length % 2 === 0) {
-            if (currentLine.trim() === '') continue;
-
-            const values = [];
-            let inQuote = false;
-            let currentField = '';
-
-            for (let char of currentLine) {
-                if (char === '"') inQuote = !inQuote;
-                else if (char === ',' && !inQuote) {
-                    values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
-                    currentField = '';
-                } else currentField += char;
-            }
-            values.push(currentField.replace(/^"|"$/g, '').replace(/""/g, '"'));
-
-            const row = {};
-            for (let j = 0; j < mappedHeaders.length; j++) {
-                row[mappedHeaders[j]] = values[j] || '';
-            }
-            data.push(row);
-            currentLine = '';
-        } else {
-            currentLine += '\n';
-        }
-    }
-    return data;
-}
 
 // ==== 渲染優惠券到頁面 ====
 function renderCoupons(couponsToRender) {
@@ -141,9 +108,10 @@ function renderCoupons(couponsToRender) {
         const priceValue = parseFloat(coupon.price);
         const formattedPrice = isNaN(priceValue) ? 'N/A' : `$${priceValue}`;
         
+        // 在 Supabase 中，欄位名稱是 simplifiedDescription
         const descriptionToDisplay = coupon.simplifiedDescription || '';
         const descriptionHtml = descriptionToDisplay
-            ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
+            ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
         
         const isFavorited = favoriteCoupons.has(coupon.couponCode);
@@ -179,7 +147,6 @@ function renderCoupons(couponsToRender) {
     rowContainer.appendChild(fragment);
     updateSearchResultCount(couponsToRender.length);
 
-    // MODIFIED: Only start the tour if a coupon from a URL is NOT being displayed.
     if (typeof startSiteTour === 'function' && !couponCodeFromUrl) {
         startSiteTour();
     }
@@ -229,7 +196,7 @@ function showCouponDetailModal(coupon) {
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n/g, '<br>')}</p>`;
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\\n/g, '<br>')}</p>`;
     
     bootstrap.Modal.getOrCreateInstance(detailModal).show();
 }
@@ -390,12 +357,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NEW: Add listener for when the modal is closed to trigger the tour
     detailModalEl.addEventListener('hidden.bs.modal', () => {
-        // If the tour was deferred because a coupon was shown from the URL, start it now.
         if (couponCodeFromUrl && typeof startSiteTour === 'function') {
             startSiteTour();
-            couponCodeFromUrl = null; // Prevent re-triggering
+            couponCodeFromUrl = null; 
         }
     });
 
