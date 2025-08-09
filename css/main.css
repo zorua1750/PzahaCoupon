@@ -271,34 +271,48 @@ header.tour-active {
 
 /* FINAL SIMPLIFIED LAYOUT with new adjustments */
 .shepherd-element {
-    max-height: 90vh; /* 限制整個彈窗的最大高度 */
+    max-height: 90vh;
 }
 
 .shepherd-content {
-    position: relative; /* 為了關閉按鈕的絕對定位 */
+    position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
 
+.shepherd-header {
+    /* Keep the header container for the cancel icon, but make it visually empty */
+    padding: 0;
+    border: 0;
+    background: none;
+    height: 0; /* Let it take no vertical space */
+    min-height: 0; /* Override Shepherd defaults if any */
+}
+
+.shepherd-title {
+    display: none; /* Hide the title text, as it's now in shepherd-text */
+}
+
 .shepherd-cancel-icon {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    font-size: 1.5rem;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-size: 1.5rem; /* Make it more clickable */
     line-height: 1;
     cursor: pointer;
     background: none;
     border: none;
     color: #bbb;
     transition: color 0.2s ease;
+    z-index: 10;
 }
 .shepherd-cancel-icon:hover {
     color: #888;
 }
 
 .shepherd-text {
-    padding: 1rem 2rem 1rem 1rem; /* 增加右邊 padding，避免關閉按鈕蓋到文字 */
+    padding: 1rem;
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
@@ -306,13 +320,12 @@ header.tour-active {
     flex-grow: 1;
 }
 
-/* 將標題樣式直接應用到內文中的 strong 標籤 */
 .shepherd-text strong {
     font-size: 1.1rem;
     font-weight: bold;
-    display: block; 
-    margin-bottom: 0.25rem; /* 縮小與下方文字的間距 */
-    color: #C8102E; /* 設定標題顏色 */
+    display: block;
+    margin-bottom: 0.25rem; /* Adjust spacing between title and text */
+    color: #C8102E; /* Set title color */
 }
 
 .shepherd-footer {
@@ -322,12 +335,6 @@ header.tour-active {
     justify-content: flex-end;
     gap: 0.5rem;
 }
-
-/* 移除 header 相關樣式，因為 header 已被合併 */
-.shepherd-header, .shepherd-title {
-    display: none;
-}
-
 
 /* Info Card Styles */
 .info-card {
