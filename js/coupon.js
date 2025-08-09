@@ -135,9 +135,11 @@ function renderCoupons(couponsToRender) {
         cardDiv.className = 'col-md-4 mb-4';
         cardDiv.innerHTML = `
             <div class="card shadow-sm h-100">
-                <i class="bi ${isFavorited ? 'bi-bookmark-fill' : 'bi-bookmark'} bookmark-btn ${isFavorited ? 'favorited' : ''}" title="收藏此優惠券" data-coupon-code="${coupon.couponCode}"></i>
-                <div class="card-body d-flex flex-column">
+                <div class="card-top-right-actions">
+                    <i class="bi ${isFavorited ? 'bi-bookmark-fill' : 'bi-bookmark'} bookmark-btn ${isFavorited ? 'favorited' : ''}" title="收藏此優惠券" data-coupon-code="${coupon.couponCode}"></i>
                     <div class="coupon-price-badge">${formattedPrice}</div>
+                </div>
+                <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${coupon.name}</h5>
                     <p class="card-text coupon-code-display">
                         代碼: <strong class="coupon-code-text">${coupon.couponCode}</strong>

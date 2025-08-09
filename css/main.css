@@ -87,10 +87,7 @@ body {
 .navbar-dark .info .header-icon { font-size: 1.2rem; cursor: pointer; margin-left: 10px; color: var(--header-text); transition: color 0.2s ease-in-out; }
 .navbar-dark .info .header-icon:hover { color: rgba(255, 255, 255, 0.8); }
 .last-update-time { margin-right: 15px; }
-/* NEW: Favorites button active state */
-#favoritesBtn.active {
-    color: #FFD700; /* Gold color when active */
-}
+#favoritesBtn.active { color: #FFD700; }
 
 /* Back to Top Button */
 .top-btn { position: fixed; bottom: 20px; right: 20px; font-size: 2.5rem; color: var(--button-outline-primary-color); cursor: pointer; display: none; z-index: 1000; opacity: 0.8; transition: opacity 0.3s ease-in-out; }
@@ -120,8 +117,6 @@ body {
 .clear-all-filters-btn:hover, .clear-all-filters-btn:active { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; }
 
 .tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
-#flavorSearchInfo { color: var(--info-color); } 
-.coupon-count { color: var(--text-color) !important; }
 hr { border-top: 1px solid var(--hr-border-color); }
 .form-label.text-danger { color: var(--text-color) !important; } 
 
@@ -137,31 +132,45 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
 .card-text { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--card-text-color); }
 .card-text strong { color: var(--card-code-color); font-size: 1.1em; }
-.coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #DAB785; color: #333; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 .coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
 .share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
 .share-btn:hover { color: var(--button-primary-bg); }
 .card .view-detail-btn { width: auto; margin-top: 0; }
 
-/* NEW: Bookmark button styles */
-.bookmark-btn {
+/* === NEW/MODIFIED: Styles for top-right actions === */
+.card-top-right-actions {
     position: absolute;
     top: 10px;
-    left: 10px;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+.bookmark-btn {
     font-size: 1.5rem;
     cursor: pointer;
     color: var(--text-muted-color);
     transition: color 0.2s ease-in-out, transform 0.2s ease;
-    z-index: 10;
+    margin-right: 8px; /* Space between bookmark and price */
 }
 .bookmark-btn:hover {
     transform: scale(1.2);
 }
 .bookmark-btn.favorited {
-    color: #FFD700; /* Gold color for favorited items */
+    color: #FFD700; /* Gold color */
 }
+.coupon-price-badge {
+    color: #333;
+    background-color: #DAB785;
+    padding: 8px 15px;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px; /* To make it look contained */
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+/* === END NEW STYLES === */
 
-/* === NEW/MODIFIED STYLES FOR DESCRIPTION LIST === */
 .coupon-description-list {
     font-size: 0.95rem; 
     color: var(--card-description-color);
@@ -183,7 +192,6 @@ hr { border-top: 1px solid var(--hr-border-color); }
     top: 0;
     color: var(--card-description-color);
 }
-/* === END NEW STYLES === */
 
 /* Modal & Popover */
 .modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
