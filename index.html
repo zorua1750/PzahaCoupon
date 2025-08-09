@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5422367827215301"
+         crossorigin="anonymous"></script>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="PzahaCoupon 提供最新必勝客優惠代碼、優惠券，快速查詢 Pizza Hut 優惠資訊。">
+    <meta name="keywords" content="pizza hut, pizzahut, 必勝客, 優惠碼, 優惠代碼, 優惠券, PzahaCoupon">
+    <meta name="author" content="Zoura">
+    <title>PzahaCoupon - 必勝客優惠碼、優惠券查詢</title> 
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/css/shepherd.css"/>
+    <link href="./css/main.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <header>
+      <div class="navbar navbar-dark bg-dark box-shadow">
+        <div class="hander container d-flex justify-content-between">
+          <strong class="navbar-brand">PzahaCoupon</strong>
+
+          <div class="info">
+            <div class="last-update-time">最後更新: <span id="lastUpdate"></span></div>
+            <div type="button" id="favoritesBtn" class="bi bi-bookmarks-fill header-icon" 
+                 data-bs-toggle="tooltip" data-bs-placement="bottom" 
+                 title="您的收藏將儲存在此瀏覽器中。清除瀏覽器快取或Cookie可能會導致收藏遺失。"></div>
+            <a href="https://www.pizzahut.com.tw/promotions/?mode=cpSch&type=plu" target="_blank" class="bi bi-cart-fill header-icon" title="前往點餐"></a>
+            <div type="button" class="bi bi-info-circle header-icon" title="聯絡資訊" data-bs-toggle="modal" data-bs-target="#contactModal"></div>
+            <div type="button" class="bi bi-journal-text header-icon" title="更新日誌" data-bs-toggle="modal" data-bs-target="#updateLogModal"></div>
+            <button id="themeToggle" class="btn btn-link p-0 ms-2 header-icon" title="切換夜間模式">
+              <i class="bi bi-moon-fill"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main role="main">
+      <i class="bi bi-arrow-up-circle-fill top-btn"></i>
+      <div class="album py-2">
+        <div class="container mb-3" id="container">
+          <div class="row mb-3">
+            <div class="col-md-12">
+                <input type="text" id="searchInput" class="form-control" placeholder="輸入關鍵字搜尋 (例如: 比薩, 飲料, 玉山銀行, 25999)" aria-label="搜尋優惠券">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12 d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
+                <label class="form-check-label" for="enableFlavorSearch">
+                  <strong>同時搜尋詳細內容</strong>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+              <div class="col-md-12">
+                  <label class="form-label d-block">依餐點內容篩選:</label>
+                  <div id="contentTagButtons" class="d-flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="比薩">比薩</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="麵">麵</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="飯">飯</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="咔滋餅">咔滋餅</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="薯金幣">薯金幣</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="雞球">雞球</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="甜不辣">甜不辣</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="QQ球">QQ球</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="tags" data-filter-value="飲料">飲料</button>
+                  </div>
+              </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+                <label class="form-label d-block text-danger">排除以下餐點:</label>
+                <div id="excludeContentTagButtons" class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="比薩">不要比薩</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="麵">不要麵</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="飯">不要飯</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="咔滋餅">不要咔滋餅</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="薯金幣">不要薯金幣</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="雞球">不要雞球</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="甜不辣">不要甜不辣</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="QQ球">不要QQ球</button>
+                    <button type="button" class="btn btn-outline-danger exclude-filter-btn" data-filter-type="excludeTags" data-filter-value="飲料">不要飲料</button>
+                </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+              <div class="col-md-12">
+                  <label class="form-label d-block">依點餐類型篩選:</label>
+                  <div id="orderTypeButtons" class="d-flex flex-wrap gap-2">
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送/外帶">可外送或外帶</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外帶">僅可外帶</button>
+                      <button type="button" class="btn btn-outline-primary filter-btn" data-filter-type="orderType" data-filter-value="外送">僅可外送</button>
+                  </div>
+              </div>
+          </div>
+          
+          <div class="row tools-row mb-3 align-items-center">
+            <div class="col-sm-12 col-md-6 d-flex align-items-center">
+              <div class="coupon-count text-muted">優惠券數量: <span id="searchResultCount">0</span></div>
+            </div>
+            <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0">
+              <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
+              <select id="sortSelect" class="form-select form-select-sm d-inline-block w-auto" style="min-width:120px;">
+                <option value="price-asc" selected>價格：低→高</option>
+                <option value="price-desc">價格：高→低</option>
+                <option value="coupon_code-asc">代碼：遞增</option>
+                <option value="coupon_code-desc">代碼：遞減</option>
+                <option value="end_date-asc">到期日：近→遠</option>
+                <option value="end_date-desc">到期日：遠→近</option>
+              </select>
+              <button type="button" class="btn btn-outline-danger clear-all-filters-btn ms-2 mt-2 mt-md-0">
+                <i class="bi bi-trash-fill me-1"></i>清除所有篩選
+              </button>
+            </div>
+          </div>
+          
+          <div id="buttons" class="btn-area"></div>
+          <hr>
+
+          <div class="row" id="row"></div>
+
+          <div class="row mt-5">
+            <div class="col-md-12">
+              <div class="card shadow-sm info-card">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="bi bi-star-fill me-2"></i>必勝客優惠券使用組合技</h5>
+                  <p class="card-text">
+                    必勝客的優惠代碼有時可以組合使用，獲得更划算的價格！
+                  </p>
+                  
+                  <div class="accordion mt-4" id="comboAccordion">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                          <i class="bi bi-gift-fill me-2"></i>PK雙饗卡生日禮及入會禮
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne">
+                        <div class="accordion-body">
+                          <ul>
+                            <li><strong>生日禮金:</strong> PK雙饗卡會員在生日當月會收到滿79元折扣50元的必勝客以及肯德基生日禮金，總共100元。</li>
+                            <li><strong>入會禮:</strong> 新會員在註冊PK雙饗卡App時，可以獲得滿300元折扣30元必勝客優惠券和滿200元折扣20元肯德基優惠券，共50元。</li>
+                          </ul>
+                          <p class="card-text">如何領取優惠:</p>
+                          <ul>
+                            <li>下載 <a href="https://www.pkcard.com.tw/downloadApp" target="_blank"><strong>PK雙饗卡App</strong></a> (<a href="https://apps.apple.com/tw/app/pk%E9%9B%99%E9%A5%97%E5%8D%A1-%E5%BF%85%E5%8B%9D%E5%AE%A2x%E8%82%AF%E5%BE%B7%E5%9F%BA%E8%A1%8C%E5%8B%95%E6%9C%83%E5%93%A1%E5%8D%A1/id1277406216" target="_blank"><i class="bi bi-apple me-1"></i>iOS</a> / <a href="https://play.google.com/store/apps/details?id=tw.com.pkcard&hl=zh_TW&gl=US" target="_blank"><i class="bi bi-android me-1"></i>Android</a>)。</li>
+                            <li>在生日前七天註冊完成PK雙饗卡，才能領取生日禮金。</li>
+                            <li>生日當月，禮金會發送到您的優惠券匣中。</li>
+                            <li>在訂購時，可使用生日禮金和其他優惠券。</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          <i class="bi bi-line me-2"></i>LINE 導購
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo">
+                        <div class="accordion-body">
+                           <p class="card-text">
+                                透過 <a href="https://buy.line.me/u/partner/880048986442" target="_blank">LINE 導購</a> 前往必勝客官網點餐，可獲得 2% LINE POINTS 回饋 (隨活動浮動%數)。
+                           </p>
+                           <p class="card-text">
+                            導購說明:
+                            <ul>
+                                <li>本頁面之相關優惠資訊僅供參考，請依必勝客網站顯示之條件為準。</li>
+                                <li>請確認您的瀏覽器已設定開啟cookie功能，並取消廣告阻擋程式（adblock）。點擊進入合作網路商家後，請於24小時內並以同一瀏覽器完成商品訂購，並於各網路店家規範之付款期間內完成付款。</li>
+                                <li>請注意以下行為將可能導致無法取得 LINE POINTS 點數回饋資格：使用無痕視窗 / 私密瀏覽功能、進入合作網路商家頁面瀏覽時中途點選其他廣告、或使用其他非line 導購指定之途徑及方式完成交易者。</li>
+                            </ul>
+                           </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-5 mb-5">
+            <div class="col-md-12">
+              <div class="card shadow-sm info-card">
+                <div class="card-body">
+                  <h5 class="card-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>提醒</h5>
+                  <p class="card-text">大部分必勝客優惠代碼遇到特殊節慶，如農曆新年、母親節、父親節、中秋節等假期暫停使用。</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <div class="modal fade" id="updateLogModal" tabindex="-1" aria-labelledby="updateLogModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="updateLogModalLabel"><strong>更新日誌</strong></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h6>2025-08-09</h6>
+            <ul>
+              <li>卡片呈現調整</li>
+            </ul>
+            <h6>2025-07-28</h6>
+            <ul>
+              <li>測試資料</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="detailModel" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detail-title">優惠券詳情</h5>
+                </div>
+                <div class="modal-body" id="detail-body">
+                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="contactModal" tabindex="-1" aria-labelledby="contactModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="contactModalLabel"><strong>聯絡資訊</strong></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body contact-body">
+            <p>若有任何問題、想新增優惠碼或回報失效優惠碼，歡迎<a href="https://forms.gle/4nAuQN6NffdJqmNNA" target="_blank">填寫表單</a>與我聯繫。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-legal">
+                <div class="legal-links">
+                    <a data-bs-toggle="collapse" href="#about-content" role="button" aria-expanded="false" aria-controls="about-content">關於 PzahaCoupon</a> |
+                    <a data-bs-toggle="collapse" href="#privacy-policy-content" role="button" aria-expanded="false" aria-controls="privacy-policy-content">隱私權條款</a> |
+                    <a data-bs-toggle="collapse" href="#terms-content" role="button" aria-expanded="false" aria-controls="terms-content">免責聲明與使用條款</a> |
+                    <a data-bs-toggle="collapse" href="#copyright-content" role="button" aria-expanded="false" aria-controls="copyright-content">著作權聲明</a>
+                </div>
+                <div id="footerAccordion">
+                    <div class="collapse" id="about-content" data-bs-parent="#footerAccordion">
+                        <div class="legal-text-wrapper">
+                            <h6>關於 PzahaCoupon</h6>
+                            <p>PzahaCoupon 旨在提供最新的必勝客優惠資訊。網站內容不定時更新，若有任何問題、想新增優惠碼或回報失效優惠碼，歡迎<a href="https://forms.gle/4nAuQN6NffdJqmNNA" target="_blank">填寫表單</a>與我聯繫。</p>
+                        </div>
+                    </div>
+                    <div class="collapse" id="privacy-policy-content" data-bs-parent="#footerAccordion">
+                        <div class="legal-text-wrapper">
+                            <h6>隱私權條款</h6>
+                            <p>非常歡迎您光臨「PzahaCoupon」（以下簡稱本網站），為了讓您能夠安心使用本網站的各項服務與資訊，特此向您說明本網站的隱私權保護政策，以保障您的權益，請您詳閱下列內容：</p>
+                            <p><strong>一、隱私權保護政策的適用範圍</strong><br>隱私權保護政策內容，包括本網站如何處理在您使用網站服務時收集到的個人識別資料。隱私權保護政策不適用於本網站以外的相關連結網站（例如：必勝客官網、PK雙饗卡App下載頁），也不適用於非本網站所委託或參與管理的人員。</p>
+                            <p><strong>二、個人資料的蒐集、處理及利用方式</strong><br>1. 當您造訪本網站或使用本網站所提供之功能服務時，我們將視該服務功能性質，請您提供必要的個人資料，並在該特定目的範圍内處理及利用您的個人資料；非經您書面同意，本網站不會將個人資料用於其他用途。<br>2. 本網站在您使用問題反饋表單等互動性功能時，會保留您所提供的暱稱、電子郵件地址、反饋類型、建議內容及使用時間等。<br>3. 於一般瀏覽時，伺服器會自行記錄相關行徑，包括您使用連線設備的IP位址、使用時間、使用的瀏覽器、瀏覽及點選資料記錄等，做為我們增進網站服務的參考依據，此記錄為內部應用，決不對外公佈。<br>4. 為提供精確的服務，我們會將收集的反饋表單內容進行統計與分析，分析結果之統計數據或說明文字呈現，僅供內部研究，我們絕不會公佈涉及特定個人之資料。<br>5. 您可以隨時向我們提出請求，以更正或刪除本網站所蒐集的您的個人資料。聯繫方式請見最下方聯繫管道。</p>
+                            <p><strong>三、資料之保護</strong><br>1. 本網站主機均設有防火牆、防毒系統等相關的各項資訊安全設備及必要的安全防護措施，加以保護網站及您的個人資料採用嚴格的保護措施。<br>2. 如因業務需要有必要委託其他單位提供服務時，本網站亦會嚴格要求其遵守保密義務，並且采取必要檢查程序以確定其將確實遵守。</p>
+                            <p><strong>四、網站對外的相關連結</strong><br>本網站的網頁提供其他網站的網路連結，您也可經由本網站所提供的連結，點選進入其他網站。但該連結網站不適用本網站的隱私權保護政策，您必須參考該連結網站中的隱私權保護政策。</p>
+                            <p><strong>五、與第三人共用個人資料之政策</strong><br>本網站絕不會提供、交換、出租或出售任何您的個人資料給其他個人、團體、私人企業或公務機關，但有法律依據或合約義務者，不在此限。前項但書之情形包括不限於：經由您書面同意。法律明文規定。為免除您生命、身體、自由或財產上之危險。與公務機關或學術研究機構合作，基於公共利益為統計或學術研究而有必要，且資料經過處理後無從識別特定之當事人。當您在網站的行為，違反服務條款或可能損害或妨礙網站與其他使用者權益或導致任何人遭受損害時，經網站管理單位研析揭露您的個人資料是為了辨識、聯絡或採取法律行動所必要者。有利於您的權益。</p>
+                            <p><strong>六、Cookie 與本機儲存（LocalStorage）之使用</strong><br>為了提供您最佳的服務，本網站會在您的電腦（或行動裝置）中放置並取用我們的 Cookie 及本機儲存（LocalStorage）。本機儲存主要用於記錄您的偏好設定，例如您收藏的優惠券以及是否已完成功能導覽。這些資訊只會儲存在您的裝置上，不會上傳至伺服器。若您不願接受 Cookie 或本機儲存的寫入，您可在您使用的瀏覽器功能項中設定隱私權等級為高，即可拒絕寫入，但可能會導致網站收藏功能等部分功能無法正常執行。</p>
+                            <p><strong>七、隱私權保護政策之修正</strong><br>本網站隱私權保護政策將因應需求隨時進行修正，修正後的條款將刊登於網站上。</p>
+                            <p><strong>八、聯繫管道</strong><br>對於本站之隱私權政策有任何疑問，或者想提出變更、移除個人資料之請求，請填寫表單與我們聯繫。</p>
+                        </div>
+                    </div>
+                    <div class="collapse" id="terms-content" data-bs-parent="#footerAccordion">
+                        <div class="legal-text-wrapper">
+                            <h6>免責聲明與使用條款</h6>
+                            <p>歡迎您使用 PzahaCoupon，請在使用本網站前仔細閱讀以下條款。當您開始使用本網站，即表示您已閱讀、了解並同意接受本條款之所有內容。</p>
+                            <p><strong>一、服務說明</strong><br>1. 目的：本網站是一個非官方的資訊彙整平台，旨在為使用者提供必勝客（Pizza Hut）相關的優惠代碼及促銷資訊，僅供個人參考使用。<br>2. 資訊來源：本網站所有優惠資訊均蒐集自網路公開來源，並經過人工整理。</p>
+                            <p><strong>二、使用者的義務與承諾</strong><br>您承諾絕不為任何非法目的或以任何非法方式使用本網站，並承諾遵守中華民國相關法規及一切使用網際網路之國際慣例。您同意並保證不得利用本網站服務從事侵害他人權益或違法之行為。</p>
+                            <p><strong>三、免責聲明</strong><br>1. 資訊準確性：本網站致力於提供正確、即時的優惠資訊，但不對任何資訊的準確性、即時性、完整性或有效性做出任何明示或默示的保證。所有優惠券的最終使用規則、價格、期限及限制，均以必勝客官方網站或門市公告為準。<br>2. 服務中斷：本網站不保證服務不會中斷。對於因網路狀況、例行維護、不可抗力等因素所造成的服務中斷或資料遺失，本網站不負任何責任。<br>3. 外部連結：本網站可能包含連至第三方網站的連結。這些網站非由本網站所控制，本網站不對其內容、隱私權政策或行為負任何責任。<br>4. 使用者風險：您同意使用本網站服務所存在的一切風險將由您個人承擔。在根據本網站資訊進行任何消費決策前，您應自行向必勝客官方進行最終確認。對於您因使用或無法使用本網站資訊所造成的任何直接或間接損害，本網站概不負責。</p>
+                            <p><strong>四、智慧財產權</strong><br>本網站所使用之軟體或程式、網站上所有內容，其智慧財產權均為本網站或其他權利人依法擁有，詳情請參閱本網站之「著作權聲明」。</p>
+                            <p><strong>五、條款之修改</strong><br>本網站保留隨時修改本免責聲明與使用條款之權利。修改後的條款將公布於本網站上，不另行個別通知。建議您隨時留意本條款的修改或變更。</p>
+                        </div>
+                    </div>
+                    <div class="collapse" id="copyright-content" data-bs-parent="#footerAccordion">
+                        <div class="legal-text-wrapper">
+                            <h6>著作權聲明</h6>
+                            <p><strong>Copyright © 2025 PzahaCoupon. All Rights Reserved.</strong></p>
+                            <p>本網站（PzahaCoupon）上所有內容，包括但不限於文字、圖像、標誌、網頁設計及程式碼，其著作權均為 PzahaCoupon 所有。</p>
+                            <p>未經本網站書面許可，任何人不得以任何形式複製、轉載、散布、展示、或修改本網站的任何內容。本網站所提及之其他商標，例如「必勝客 Pizza Hut」、「PK雙饗卡」等，其權利均歸屬其各自的合法註冊公司所有。</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-copyright">
+                    Copyright © 2025 PzahaCoupon. All Rights Reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"></script>
+    <script src="./js/popper.min.js"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> 
+    <script src="./js/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/shepherd.js@10.0.1/dist/js/shepherd.min.js"></script>
+    <script src="./js/coupon.js"></script> 
+    <script src="./js/main.js"></script> 
+  </body>
+</html>
