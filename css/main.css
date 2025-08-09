@@ -237,73 +237,78 @@ body { font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; l
 header.tour-active {
     position: static !important;
 }
+
 .shepherd-button {
     background: #e9e9e9;
     color: #333;
     border-radius: 3px;
     padding: .5rem 1.5rem;
 }
+
 .shepherd-button:not(.shepherd-button-secondary):hover {
     background: #d4d4d4;
     color: #333;
 }
+
 .shepherd-button.shepherd-button-secondary {
     background: transparent;
     color: #555;
 }
+
 .shepherd-button.shepherd-button-secondary:hover {
     color: #333;
 }
+
 .shepherd-button:not(.shepherd-button-secondary) {
     background: #C8102E !important;
     color: #FFFFFF !important;
 }
+
 .shepherd-button:not(.shepherd-button-secondary):hover {
     background: #a80d26 !important;
     color: #FFFFFF !important;
 }
 
-/* FINAL FIX: Force tour internal layout and order */
+/* FINAL SIMPLIFIED LAYOUT */
 .shepherd-element {
-    max-height: 90vh;
+    max-height: 90vh; /* 限制整個彈窗的最大高度 */
 }
+
 .shepherd-content {
+    position: relative; /* 為了關閉按鈕的絕對定位 */
     display: flex;
     flex-direction: column;
-    padding: 0;
     height: 100%;
 }
-.shepherd-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1rem 0.75rem 1rem;
-    border-bottom: 1px solid var(--hr-border-color);
-    flex-shrink: 0;
-    order: 0; /* 強制標題在最上面 */
-}
-.shepherd-title {
-    margin: 0;
-    padding: 0;
-    font-weight: bold;
-    flex-grow: 1;
-}
+
 .shepherd-text {
-    padding: 0.75rem 1rem;
+    padding: 1rem;
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
     overflow-y: auto;
     flex-grow: 1;
-    order: 1; /* 強制內文在中間 */
 }
+
+/* 將標題樣式直接應用到內文中的 strong 標籤 */
+.shepherd-text strong {
+    font-size: 1.1rem;
+    font-weight: bold;
+    display: block; /* 讓它獨佔一行 */
+    margin-bottom: 0.5rem; /* 與下方文字的間距 */
+}
+
 .shepherd-footer {
     padding: 0 1rem 1rem 1rem;
     flex-shrink: 0;
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
-    order: 2; /* 強制按鈕區在最下面 */
+}
+
+/* 移除 header 相關樣式，因為 header 已被合併 */
+.shepherd-header, .shepherd-title {
+    display: none;
 }
 
 
