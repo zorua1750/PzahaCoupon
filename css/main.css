@@ -262,16 +262,30 @@ header.tour-active {
     background: #a80d26 !important;
     color: #FFFFFF !important;
 }
-/* NEW: Force tour internal layout to be correct */
+/* MODIFIED: Force tour internal layout to be correct */
+.shepherd-content {
+    display: flex !important;
+    flex-direction: column !important;
+}
 .shepherd-header {
-    padding-bottom: 1em;
+    padding-bottom: .75em;
+    margin-bottom: .75em;
+    border-bottom: 1px solid rgba(0,0,0,.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+body[data-theme="dark"] .shepherd-header {
+    border-bottom-color: var(--hr-border-color);
 }
 .shepherd-text {
-    padding-top: 1em;
-    border-top: 1px solid var(--hr-border-color);
+    padding: 0;
+    margin: 0;
 }
 .shepherd-title {
     font-weight: bold;
+    margin: 0;
+    padding: 0;
 }
 
 
