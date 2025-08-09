@@ -103,9 +103,9 @@ function renderCoupons(couponsToRender) {
         
         const descriptionToDisplay = coupon.simplifiedDescription || '';
         
-        // 【修正點 1】將 .split('\n') 改為 .split('\\n') 來處理從資料庫來的換行符號
+        // 【最終修正 1】使用正規表示式來處理所有可能的換行符號
         const descriptionHtml = descriptionToDisplay
-            ? `<ul class="coupon-description-list">${descriptionToDisplay.split('\\n').map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
+            ? `<ul class="coupon-description-list">${descriptionToDisplay.split(/\n|\\n/g).map(line => line.trim() ? `<li>${line}</li>` : '').filter(line => line).join('')}</ul>`
             : '';
         
         const isFavorited = favoriteCoupons.has(coupon.couponCode);
@@ -186,18 +186,18 @@ function showCouponDetailModal(coupon) {
     
     detailTitle.textContent = coupon.name;
     
-    // 【修正點 2】將 .replace(/\n/g, '<br>') 改為 .replace(/\\n/g, '<br>')
+    // 【最終修正 2】使用正規表示式來處理所有可能的換行符號
     detailBody.innerHTML = `
         <p><strong>優惠券代碼:</strong> <strong class="coupon-code-text">${coupon.couponCode}</strong> <i class="bi bi-files copy-code-btn" title="點擊複製代碼" data-coupon-code="${coupon.couponCode}"></i></p>
         <p><strong>價格:</strong> ${coupon.price}</p>
         <p><strong>到期日:</strong> ${coupon.endDate}</p>
         <p><strong>點餐類型:</strong> ${coupon.orderType || '不限'}</p>
-        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\\n/g, '<br>')}</p>`;
+        <p><strong>詳細內容:</strong><br>${(coupon.description || '').replace(/\n|\\n/g, '<br>')}</p>`;
     
     bootstrap.Modal.getOrCreateInstance(detailModal).show();
 }
 
-// ==== 篩選、排序、事件處理 ====
+// ==== 篩選、排序、事件處理 (以下程式碼不變) ====
 function performSearchAndFilter() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
     const enableFlavorSearch = document.getElementById('enableFlavorSearch').checked;
