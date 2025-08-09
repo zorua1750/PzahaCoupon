@@ -114,7 +114,8 @@ body {
 /* === 按鈕狀態修正 END === */
 
 .clear-all-filters-btn { background-color: transparent; color: var(--button-clear-color); border-color: var(--button-clear-color); }
-.clear-all-filters-btn:hover, .clear-all-filters-btn:active { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; }
+/* MODIFIED: Added :active state for click color */
+.clear-all-filters-btn:hover, .clear-all-filters-btn:active, .clear-all-filters-btn:focus { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; box-shadow: none !important; }
 
 .tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
 hr { border-top: 1px solid var(--hr-border-color); }
@@ -137,7 +138,6 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .share-btn:hover { color: var(--button-primary-bg); }
 .card .view-detail-btn { width: auto; margin-top: 0; }
 
-/* === NEW/MODIFIED: Styles for top-right actions === */
 .card-top-right-actions {
     position: absolute;
     top: 10px;
@@ -151,25 +151,24 @@ hr { border-top: 1px solid var(--hr-border-color); }
     cursor: pointer;
     color: var(--text-muted-color);
     transition: color 0.2s ease-in-out, transform 0.2s ease;
-    margin-right: 8px; /* Space between bookmark and price */
+    margin-right: 8px; 
 }
 .bookmark-btn:hover {
     transform: scale(1.2);
 }
 .bookmark-btn.favorited {
-    color: #FFD700; /* Gold color */
+    color: #FFD700; 
 }
 .coupon-price-badge {
     color: #333;
     background-color: #DAB785;
     padding: 8px 15px;
     border-bottom-left-radius: 10px;
-    border-top-left-radius: 10px; /* To make it look contained */
+    border-top-left-radius: 10px; 
     font-weight: bold;
     font-size: 1.2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-/* === END NEW STYLES === */
 
 .coupon-description-list {
     font-size: 0.95rem; 

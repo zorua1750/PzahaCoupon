@@ -50,6 +50,17 @@
           </div>
 
           <div class="row mb-3">
+            <div class="col-md-12 d-flex align-items-center">
+              <div class="form-check form-switch me-3">
+                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
+                <label class="form-check-label" for="enableFlavorSearch">
+                  <strong>同時搜尋詳細內容</strong>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-3">
               <div class="col-md-12">
                   <label class="form-label d-block">依餐點內容篩選:</label>
                   <div id="contentTagButtons" class="d-flex flex-wrap gap-2">
@@ -96,13 +107,7 @@
           
           <div class="row tools-row mb-3 align-items-center">
             <div class="col-sm-12 col-md-6 d-flex align-items-center">
-              <div class="form-check form-switch me-3">
-                <input class="form-check-input" type="checkbox" id="enableFlavorSearch">
-                <label class="form-check-label" for="enableFlavorSearch">
-                  <strong>同時搜尋詳細內容中的關鍵字</strong>
-                </label>
-              </div>
-              <div class="coupon-count text-muted ms-3">優惠券: <span id="searchResultCount">0</span></div>
+              <div class="coupon-count text-muted">優惠券: <span id="searchResultCount">0</span></div>
             </div>
             <div class="col-sm-12 col-md-6 text-md-end mt-2 mt-md-0">
               <label for="sortSelect" class="form-label mb-0 me-2">排序：</label>
