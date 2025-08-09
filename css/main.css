@@ -12,16 +12,16 @@
     --card-title-color: #333;
     --card-text-color: #555;
     --card-description-color: #666;
-    --card-code-color: #70A288; 
+    --card-code-color: #70A288;
     --hr-border-color: rgba(0, 0, 0, .1);
     --input-bg: #FFFFFF;
     --input-text: #212529;
-    --button-outline-primary-color: #04395E; 
-    --button-primary-bg: #04395E; 
+    --button-outline-primary-color: #04395E;
+    --button-primary-bg: #04395E;
     --button-outline-secondary-color: #6c757d;
     --button-secondary-bg: #6c757d;
-    --button-outline-danger-color: #70A288; 
-    --button-danger-bg: #70A288; 
+    --button-outline-danger-color: #70A288;
+    --button-danger-bg: #70A288;
     --button-clear-color: #C8102E;
     --popover-bg: #FFFFFF;
     --popover-text: #212529;
@@ -31,14 +31,14 @@
     --modal-header-text: #212529;
     --reminder-text-color: #664d03;
     --reminder-border-color: #ffc107;
-    --info-color: #031D44; 
+    --info-color: #031D44;
     --switch-bg-color: #031D44;
-    --footer-bg: #343a40; 
-    --footer-text: #adb5bd; 
-    --footer-link-color: #f8f9fa; 
-    --legal-text-bg: #495057; 
-    --info-accordion-bg: rgba(200, 22, 46, 0.1); 
-    --info-accordion-active-bg: rgba(200, 22, 46, 0.2); 
+    --footer-bg: #343a40;
+    --footer-text: #adb5bd;
+    --footer-link-color: #f8f9fa;
+    --legal-text-bg: #495057;
+    --info-accordion-bg: rgba(200, 22, 46, 0.1);
+    --info-accordion-active-bg: rgba(200, 22, 46, 0.2);
 }
 
 /* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
@@ -46,21 +46,21 @@ body[data-theme="dark"] {
     --body-bg: #1A1A1A;
     --text-color: #E0E0E0;
     --text-muted-color: #A0A0A0;
-    --header-bg: #C8102E; 
-    --header-text: #FFFFFF; 
+    --header-bg: #C8102E;
+    --header-text: #FFFFFF;
     --card-bg: #2C2C2C;
     --card-title-color: #FFFFFF;
     --card-text-color: #D0D0D0;
     --card-description-color: #A0A0A0;
-    --card-code-color: #A9D1B7; 
+    --card-code-color: #A9D1B7;
     --hr-border-color: rgba(255, 255, 255, .1);
     --input-bg: #3A3A3A;
     --input-text: #E0E0E0;
-    --button-outline-primary-color: #5A82A3; 
-    --button-primary-bg: #5A82A3; 
-    --button-outline-secondary-color: #ADB5BD; 
-    --button-secondary-bg: #495057; 
-    --button-outline-danger-color: #8FBC94; 
+    --button-outline-primary-color: #5A82A3;
+    --button-primary-bg: #5A82A3;
+    --button-outline-secondary-color: #ADB5BD;
+    --button-secondary-bg: #495057;
+    --button-outline-danger-color: #8FBC94;
     --button-danger-bg: #8FBC94;
     --button-clear-color: #D44C6A;
     --popover-bg: #333333;
@@ -69,17 +69,17 @@ body[data-theme="dark"] {
     --modal-text: #E0E0E0;
     --modal-header-bg: #333333;
     --modal-header-text: #E0E0E0;
-    --reminder-text-color: #FFD700; 
-    --reminder-border-color: #FFD700; 
-    --info-color: #6C91C2; 
-    --switch-bg-color: #6C91C2; 
-    --footer-bg: #1C1C1C; 
-    --footer-text: #A0A0A0; 
-    --footer-link-color: #E0E0E0; 
+    --reminder-text-color: #FFD700;
+    --reminder-border-color: #FFD700;
+    --info-color: #6C91C2;
+    --switch-bg-color: #6C91C2;
+    --footer-bg: #1C1C1C;
+    --footer-text: #A0A0A0;
+    --footer-link-color: #E0E0E0;
     --legal-text-bg: #2C2C2C;
-    --info-accordion-bg: rgba(255, 255, 255, 0.05); 
+    --info-accordion-bg: rgba(255, 255, 255, 0.05);
     --info-accordion-active-bg: rgba(255, 255, 255, 0.1);
-    --info-card-accent-color-dark: #d13d42; 
+    --info-card-accent-color-dark: #d13d42;
 }
 
 /* 應用 CSS 變數 */
@@ -97,7 +97,7 @@ body {
 header {
     position: sticky;
     top: 0;
-    z-index: 1020; 
+    z-index: 1020;
 }
 .navbar-dark { background-color: var(--header-bg) !important; }
 .navbar-dark .navbar-brand { color: var(--header-text) !important; font-size: 1.5rem; font-weight: bold; }
@@ -134,13 +134,13 @@ header {
 .clear-all-filters-btn { background-color: transparent; color: var(--button-clear-color); border-color: var(--button-clear-color); }
 .clear-all-filters-btn:hover, .clear-all-filters-btn:active, .clear-all-filters-btn:focus { background-color: var(--button-clear-color) !important; color: #FFFFFF !important; border-color: var(--button-clear-color) !important; box-shadow: none !important; }
 
-.tools-row { 
-    align-items: center; 
-    margin-top: 1rem; 
-    margin-bottom: 1rem; 
+.tools-row {
+    align-items: center;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 hr { border-top: 1px solid var(--hr-border-color); }
-.form-label.text-danger { color: var(--text-color) !important; } 
+.form-label.text-danger { color: var(--text-color) !important; }
 
 .form-check-input:checked {
     background-color: var(--switch-bg-color);
@@ -172,27 +172,27 @@ hr { border-top: 1px solid var(--hr-border-color); }
     cursor: pointer;
     color: var(--text-muted-color);
     transition: color 0.2s ease-in-out, transform 0.2s ease;
-    margin-right: 8px; 
+    margin-right: 8px;
 }
 .bookmark-btn:hover {
     transform: scale(1.2);
 }
 .bookmark-btn.favorited {
-    color: #FFD700; 
+    color: #FFD700;
 }
 .coupon-price-badge {
     color: #333;
     background-color: #DAB785;
     padding: 8px 15px;
     border-bottom-left-radius: 10px;
-    border-top-left-radius: 10px; 
+    border-top-left-radius: 10px;
     font-weight: bold;
     font-size: 1.2rem;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .coupon-description-list {
-    font-size: 0.95rem; 
+    font-size: 0.95rem;
     color: var(--card-description-color);
     line-height: 1.6em;
     list-style-type: none;
@@ -202,8 +202,8 @@ hr { border-top: 1px solid var(--hr-border-color); }
 }
 .coupon-description-list li {
     position: relative;
-    padding-left: 1.4em; 
-    margin-bottom: 0.25em; 
+    padding-left: 1.4em;
+    margin-bottom: 0.25em;
 }
 .coupon-description-list li::before {
     content: '▶';
@@ -216,7 +216,7 @@ hr { border-top: 1px solid var(--hr-border-color); }
 /* Modal & Popover */
 .modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
 .modal-header { background-color: var(--modal-header-bg); color: var(--modal-header-text); border-bottom-color: var(--hr-border-color); }
-.modal-header .modal-title { margin-right: auto; } 
+.modal-header .modal-title { margin-right: auto; }
 .modal-header .share-btn { margin-left: 1rem; font-size: 1.25rem; }
 .modal-title { color: var(--modal-header-text); }
 .modal-body { color: var(--modal-text); }
@@ -264,10 +264,14 @@ header.tour-active {
 }
 
 /* MODIFIED: Force tour internal layout to be correct */
+.shepherd-element {
+    max-height: 90vh; /* 新增：限制整個彈窗的最大高度 */
+}
 .shepherd-content {
     display: flex;
     flex-direction: column;
     padding: 0;
+    height: 100%; /* 新增：讓 flex 容器佔滿可用高度 */
 }
 .shepherd-header {
     display: flex;
@@ -275,7 +279,7 @@ header.tour-active {
     align-items: center;
     padding: 1rem 1rem 0.75rem 1rem;
     border-bottom: 1px solid var(--hr-border-color);
-    flex-shrink: 0;
+    flex-shrink: 0; /* 確保 header 不會被壓縮 */
 }
 .shepherd-title {
     margin: 0;
@@ -288,22 +292,21 @@ header.tour-active {
     margin: 0;
     font-size: 0.9rem;
     line-height: 1.5;
-    overflow-y: auto;
-    flex-grow: 1;
+    overflow-y: auto; /* 只在內文區塊產生滾動條 */
+    flex-grow: 1; /* 讓內文區塊填滿剩餘空間 */
 }
 .shepherd-footer {
     padding: 0 1rem 1rem 1rem;
-    flex-shrink: 0;
+    flex-shrink: 0; /* 確保 footer 不會被壓縮 */
     display: flex;
     justify-content: flex-end;
     gap: 0.5rem;
 }
 
-
 /* Info Card Styles */
 .info-card {
     border: 2px solid var(--header-bg) !important;
-    background-color: var(--card-bg); 
+    background-color: var(--card-bg);
 }
 .info-card .card-title {
     color: var(--header-bg) !important;
@@ -350,7 +353,6 @@ body[data-theme="dark"] .info-card .accordion-button::after {
 body[data-theme="dark"] .info-card .accordion-body a {
     color: var(--info-color);
 }
-
 
 /* Footer Styles */
 .site-footer {
