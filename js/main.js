@@ -60,7 +60,6 @@ function startSiteTour() {
     tour.addStep({
         title: '收藏優惠',
         text: '點擊卡片右上角的書籤圖示，就可以收藏您喜歡的優惠券！',
-        // MODIFIED: Changed 'on' from 'right' to 'bottom' for better mobile compatibility
         attachTo: { element: '#row .card:first-child .bookmark-btn', on: 'bottom' },
         buttons: [
              { action() { return this.back(); }, secondary: true, text: '上一步' },
@@ -91,5 +90,8 @@ function startSiteTour() {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('main.js 載入成功！');
-    // 現在 main.js 只負責定義導覽函式，由 coupon.js 在適當時機呼叫。
+    
+    // NEW: Initialize all Bootstrap tooltips on the page
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
 });
