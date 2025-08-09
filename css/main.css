@@ -2,7 +2,7 @@
 
 /* 定義 CSS 變數用於主題切換 */
 :root {
-    /* 淺色模式 (Light Mode) 顏色 */
+    /* 亮色模式 (Light Mode) 顏色 - NEW PALETTE */
     --body-bg: #F8F9FA;
     --text-color: #212529;
     --text-muted-color: #6c757d;
@@ -12,16 +12,16 @@
     --card-title-color: #333;
     --card-text-color: #555;
     --card-description-color: #666;
-    --card-code-color: #dc3545;
+    --card-code-color: #70A288; /* MODIFIED */
     --hr-border-color: rgba(0, 0, 0, .1);
     --input-bg: #FFFFFF;
     --input-text: #212529;
-    --button-outline-primary-color: #007bff;
-    --button-primary-bg: #007bff;
+    --button-outline-primary-color: #04395E; /* MODIFIED */
+    --button-primary-bg: #04395E; /* MODIFIED */
     --button-outline-secondary-color: #6c757d;
     --button-secondary-bg: #6c757d;
-    --button-outline-danger-color: #dc3545;
-    --button-danger-bg: #dc3545;
+    --button-outline-danger-color: #70A288; /* MODIFIED */
+    --button-danger-bg: #70A288; /* MODIFIED */
     --popover-bg: #FFFFFF;
     --popover-text: #212529;
     --modal-bg: #FFFFFF;
@@ -30,29 +30,30 @@
     --modal-header-text: #212529;
     --reminder-text-color: #664d03;
     --reminder-border-color: #ffc107;
+    --info-color: #031D44; /* NEW */
 }
 
-/* 夜間模式 (Dark Mode) 顏色 */
+/* 夜間模式 (Dark Mode) 顏色 - NEW PALETTE */
 body[data-theme="dark"] {
     --body-bg: #1A1A1A;
     --text-color: #E0E0E0;
-    --text-muted-color: #A0A0A0; /* 夜間模式 Muted 文字顏色修正 */
+    --text-muted-color: #A0A0A0;
     --header-bg: #C8102E; 
     --header-text: #FFFFFF; 
     --card-bg: #2C2C2C;
     --card-title-color: #FFFFFF;
     --card-text-color: #D0D0D0;
     --card-description-color: #A0A0A0;
-    --card-code-color: #FFD700; 
+    --card-code-color: #A9D1B7; /* MODIFIED */
     --hr-border-color: rgba(255, 255, 255, .1);
     --input-bg: #3A3A3A;
     --input-text: #E0E0E0;
-    --button-outline-primary-color: #7B68EE; 
-    --button-primary-bg: #6A5ACD;
+    --button-outline-primary-color: #5A82A3; /* MODIFIED */
+    --button-primary-bg: #5A82A3; /* MODIFIED */
     --button-outline-secondary-color: #ADB5BD; 
     --button-secondary-bg: #495057; 
-    --button-outline-danger-color: #FF6347;
-    --button-danger-bg: #DC143C;
+    --button-outline-danger-color: #8FBC94; /* MODIFIED */
+    --button-danger-bg: #8FBC94; /* MODIFIED */
     --popover-bg: #333333;
     --popover-text: #E0E0E0;
     --modal-bg: #282828;
@@ -61,6 +62,7 @@ body[data-theme="dark"] {
     --modal-header-text: #E0E0E0;
     --reminder-text-color: #FFD700; 
     --reminder-border-color: #FFD700; 
+    --info-color: #6C91C2; /* MODIFIED */
 }
 
 /* 應用 CSS 變數 */
@@ -110,6 +112,7 @@ body {
 .clear-all-filters-btn:hover { background-color: var(--button-danger-bg); color: #FFFFFF; }
 
 .tools-row { align-items: flex-end; margin-top: 1rem; margin-bottom: 1rem; padding-left: 15px; padding-right: 15px; }
+#flavorSearchInfo { color: var(--info-color); } /* NEW: Controls color from CSS */
 .coupon-count { color: var(--text-color) !important; }
 hr { border-top: 1px solid var(--hr-border-color); }
 
@@ -120,7 +123,11 @@ hr { border-top: 1px solid var(--hr-border-color); }
 .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 0.75rem; color: var(--card-title-color); }
 .card-text { margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--card-text-color); }
 .card-text strong { color: var(--card-code-color); font-size: 1.1em; }
-.coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #28a745; color: white; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+.coupon-price-badge { position: absolute; top: 0; right: 0; background-color: #DAB785; color: #333; padding: 8px 15px; border-bottom-left-radius: 10px; font-weight: bold; font-size: 1.2rem; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2); } /* MODIFIED */
+.coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+.share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
+.share-btn:hover { color: var(--button-primary-bg); }
+.card .view-detail-btn { width: auto; margin-top: 0; }
 
 /* === NEW/MODIFIED STYLES FOR DESCRIPTION LIST === */
 .coupon-description-list {
@@ -145,12 +152,6 @@ hr { border-top: 1px solid var(--hr-border-color); }
     color: var(--card-description-color);
 }
 /* === END NEW STYLES === */
-
-.coupon-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-.share-btn { font-size: 1.2rem; cursor: pointer; color: var(--button-outline-primary-color); transition: color 0.2s; }
-.share-btn:hover { color: var(--button-primary-bg); }
-.card .view-detail-btn { width: auto; margin-top: 0; }
-
 
 /* Modal & Popover */
 .modal-content { background-color: var(--modal-bg); color: var(--modal-text); }
